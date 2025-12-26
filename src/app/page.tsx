@@ -1,33 +1,104 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Car, Leaf, Users, Route, MapPin, Calendar, Twitter, Facebook, Instagram } from 'lucide-react';
+import { Car, Leaf, Users, Route, MapPin, Calendar, Twitter, Facebook, Instagram, RadioTower } from 'lucide-react';
+import { motion, useAnimation } from 'framer-motion';
+import { useInView } from 'react-intersection-observer';
+import { useToast } from '@/hooks/use-toast';
+import CountUp from '@/components/common/count-up';
 
-const StatCard = ({ value, label }: { value: string; label: string }) => (
-  <div className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center text-white">
-    <p className="text-2xl font-bold">{value}</p>
-    <p className="text-sm">{label}</p>
-  </div>
-);
+const MotionCard = motion(Card);
 
-const FeatureCard = ({ icon: Icon, title, description }: { icon: React.ElementType, title: string, description: string }) => (
-  <Card className="rounded-2xl shadow-lg text-center p-8">
-    <div className="mx-auto bg-gray-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
-      <Icon className="w-8 h-8 text-purple-600" />
-    </div>
-    <h3 className="text-xl font-bold mb-2">{title}</h3>
-    <p className="text-gray-600">{description}</p>
-  </Card>
-);
+const FeatureCard = ({ icon: Icon, title, description, delay }: { icon: React.ElementType, title: string, description: string, delay: number }) => {
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      controls.start({ opacity: 1, y: 0 });
+    }
+  }, [controls, inView]);
+
+  return (
+    <MotionCard
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={controls}
+      transition={{ duration: 0.5, delay }}
+      className="rounded-2xl shadow-lg text-center p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-purple-200 border"
+    >
+      <div className="mx-auto bg-gray-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
+        <Icon className="w-8 h-8 text-purple-600" />
+      </div>
+      <h3 className="text-xl font-bold mb-2">{title}</h3>
+      <p className="text-gray-600">{description}</p>
+    </MotionCard>
+  )
+};
+
+const StatCard = ({ end, label, delay, suffix, prefix }: { end: number; label: string; delay: number; suffix?: string; prefix?: string; }) => {
+  const controls = useAnimation();
+  const [ref, inView] = useInView({
+    triggerOnce: true,
+    threshold: 0.1,
+  });
+
+  useEffect(() => {
+    if (inView) {
+      controls.start({ opacity: 1, y: 0 });
+    }
+  }, [controls, inView]);
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={controls}
+      transition={{ duration: 0.5, delay }}
+      className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
+    >
+      <p className="text-2xl font-bold">
+        {inView && <CountUp end={end} duration={2} suffix={suffix} prefix={prefix} />}
+      </p>
+      <p className="text-sm">{label}</p>
+    </motion.div>
+  );
+};
 
 export default function LandingPage() {
+  const { toast } = useToast();
   const [pickup, setPickup] = useState('');
   const [dropoff, setDropoff] = useState('');
   const [date, setDate] = useState('');
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 50);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      toast({
+        title: (
+          <div className="flex items-center gap-2">
+            <RadioTower className="text-primary"/> New ride available!
+          </div>
+        ),
+        description: 'A driver just posted a route from Downtown to Northwood.',
+      });
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, [toast]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +109,18 @@ export default function LandingPage() {
     });
   };
 
+  const imageVariants = {
+    hidden: { opacity: 0, x: 50 },
+    visible: (i:number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.2,
+        duration: 0.5,
+      },
+    }),
+  };
+
   return (
     <div className="bg-white font-sans relative">
       {/* Gradient Blurs */}
@@ -45,41 +128,55 @@ export default function LandingPage() {
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full filter blur-3xl opacity-30 animate-pulse animation-delay-2000"></div>
 
       {/* Navigation */}
-      <header className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-sm shadow-sm">
+      <motion.header
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-lg bg-white/80 shadow-md' : 'bg-transparent'}`}
+      >
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-2xl font-bold">
             <Car className="w-7 h-7 text-purple-600" />
             <span className="gradient-text">GoAlong</span>
           </Link>
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="#" className="text-gray-600 hover:text-purple-600">Features</Link>
-            <Link href="#" className="text-gray-600 hover:text-purple-600">How it Works</Link>
-            <Link href="#" className="text-gray-600 hover:text-purple-600">Community</Link>
+            <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Features</Link>
+            <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">How it Works</Link>
+            <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Community</Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" asChild>
+            <Button variant="ghost" className="active:scale-95 transition-transform" asChild>
               <Link href="/login">Sign In</Link>
             </Button>
-            <Button asChild className="rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white">
+            <Button asChild className="rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
               <Link href="/dashboard">Get Started</Link>
             </Button>
           </div>
         </div>
-      </header>
+      </motion.header>
 
       {/* Hero Section */}
       <main className="pt-20">
         <section className="container mx-auto px-4 py-24">
           <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div className="text-center md:text-left">
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="text-center md:text-left"
+            >
               <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-                <span className="gradient-text">GoAlong</span>, Your Community, Your Commute.
+                <motion.span 
+                  className="gradient-text bg-gradient-to-r from-purple-600 to-blue-500"
+                  style={{ backgroundSize: '200% 200%' }}
+                  animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                >
+                  GoAlong
+                </motion.span>, Your Community, Your Commute.
               </h1>
               <p className="text-lg text-gray-600 mt-4 mb-8">
                 Share rides, send parcels, and connect with your neighbors.
               </p>
 
-              <Card className="rounded-2xl shadow-lg p-6">
+              <Card className="rounded-2xl shadow-lg p-6 bg-white/90 backdrop-blur-md border">
                 <CardContent className="p-0">
                   <form onSubmit={handleSearch} className="space-y-4">
                     <div className="relative">
@@ -87,7 +184,7 @@ export default function LandingPage() {
                       <Input
                         type="text"
                         placeholder="Pickup location"
-                        className="pl-10"
+                        className="pl-10 focus:ring-4 focus:ring-purple-100 transition-shadow"
                         value={pickup}
                         onChange={(e) => setPickup(e.target.value)}
                       />
@@ -97,7 +194,7 @@ export default function LandingPage() {
                       <Input
                         type="text"
                         placeholder="Drop-off location"
-                        className="pl-10"
+                        className="pl-10 focus:ring-4 focus:ring-purple-100 transition-shadow"
                         value={dropoff}
                         onChange={(e) => setDropoff(e.target.value)}
                       />
@@ -106,28 +203,35 @@ export default function LandingPage() {
                       <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                       <Input
                         type="date"
-                        className="pl-10"
+                        className="pl-10 focus:ring-4 focus:ring-purple-100 transition-shadow"
                         value={date}
                         onChange={(e) => setDate(e.target.value)}
                       />
                     </div>
-                    <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white">
+                    <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
                       Find a Ride
                     </Button>
                   </form>
                 </CardContent>
               </Card>
-            </div>
+            </motion.div>
             <div className="grid grid-cols-2 grid-rows-2 gap-4 h-[500px]">
-              <div className="col-span-2 row-span-1 rounded-2xl overflow-hidden shadow-lg">
-                <Image src="https://picsum.photos/seed/car-main/800/400" alt="Car" width={800} height={400} className="w-full h-full object-cover" data-ai-hint="driving sunset"/>
-              </div>
-              <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-lg">
-                <Image src="https://picsum.photos/seed/cyclist/400/400" alt="Cyclist" width={400} height={400} className="w-full h-full object-cover" data-ai-hint="city cyclist"/>
-              </div>
-              <div className="col-span-1 row-span-1 rounded-2xl overflow-hidden shadow-lg">
-                <Image src="https://picsum.photos/seed/delivery/400/400" alt="Delivery Bike" width={400} height={400} className="w-full h-full object-cover" data-ai-hint="delivery scooter"/>
-              </div>
+              {[
+                { src: "https://picsum.photos/seed/car-main/800/400", alt: "Car", hint: "driving sunset", className: "col-span-2 row-span-1" },
+                { src: "https://picsum.photos/seed/cyclist/400/400", alt: "Cyclist", hint: "city cyclist", className: "col-span-1 row-span-1" },
+                { src: "https://picsum.photos/seed/delivery/400/400", alt: "Delivery Bike", hint: "delivery scooter", className: "col-span-1 row-span-1" },
+              ].map((img, i) => (
+                <motion.div
+                  key={img.src}
+                  custom={i}
+                  variants={imageVariants}
+                  initial="hidden"
+                  animate="visible"
+                  className={`${img.className} rounded-2xl overflow-hidden shadow-lg`}
+                >
+                  <Image src={img.src} alt={img.alt} width={i === 0 ? 800 : 400} height={400} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" data-ai-hint={img.hint} />
+                </motion.div>
+              ))}
             </div>
           </div>
         </section>
@@ -137,9 +241,9 @@ export default function LandingPage() {
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-4xl font-bold mb-12">Why Choose GoAlong</h2>
             <div className="grid md:grid-cols-3 gap-8">
-              <FeatureCard icon={Leaf} title="Save Money & Earth" description="Reduce your carbon footprint and travel costs by sharing rides."/>
-              <FeatureCard icon={Route} title="Share Your Route" description="Easily list your regular commutes and find passengers along your way."/>
-              <FeatureCard icon={Users} title="Help Your Community" description="Connect with neighbors and build a stronger, more efficient local network."/>
+              <FeatureCard icon={Leaf} title="Save Money & Earth" description="Reduce your carbon footprint and travel costs by sharing rides." delay={0} />
+              <FeatureCard icon={Route} title="Share Your Route" description="Easily list your regular commutes and find passengers along your way." delay={0.2} />
+              <FeatureCard icon={Users} title="Help Your Community" description="Connect with neighbors and build a stronger, more efficient local network." delay={0.4} />
             </div>
           </div>
         </section>
@@ -148,10 +252,10 @@ export default function LandingPage() {
         <section className="py-24 bg-gradient-to-r from-purple-600 to-blue-500">
             <div className="container mx-auto px-4">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    <StatCard value="40%" label="Cost Reduction" />
-                    <StatCard value="10K+" label="Active Users" />
-                    <StatCard value="2.5M kg" label="CO2 Saved" />
-                    <StatCard value="85%" label="Match Rate" />
+                    <StatCard end={40} suffix="%" label="Cost Reduction" delay={0} />
+                    <StatCard end={10000} prefix="" label="Active Users" delay={0.2}/>
+                    <StatCard end={2500000} suffix=" kg" label="CO2 Saved" delay={0.4} />
+                    <StatCard end={85} suffix="%" label="Match Rate" delay={0.6}/>
                 </div>
             </div>
         </section>
@@ -169,10 +273,10 @@ export default function LandingPage() {
                         <p className="text-gray-300">Phone: +1 (555) 123-4567</p>
                     </div>
                     <form className="space-y-4">
-                        <Input type="text" placeholder="Your Name" className="bg-gray-800 border-gray-700 text-white" />
-                        <Input type="email" placeholder="Your Email" className="bg-gray-800 border-gray-700 text-white" />
-                        <textarea placeholder="Your Message" rows={4} className="w-full bg-gray-800 border-gray-700 text-white rounded-md p-2"></textarea>
-                        <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white">
+                        <Input type="text" placeholder="Your Name" className="bg-gray-800 border-gray-700 text-white focus:ring-purple-500" />
+                        <Input type="email" placeholder="Your Email" className="bg-gray-800 border-gray-700 text-white focus:ring-purple-500" />
+                        <textarea placeholder="Your Message" rows={4} className="w-full bg-gray-800 border-gray-700 text-white rounded-md p-2 focus:ring-purple-500"></textarea>
+                        <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white active:scale-95 transition-transform">
                             Send Message
                         </Button>
                     </form>
@@ -182,9 +286,9 @@ export default function LandingPage() {
                 <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center">
                     <p className="text-gray-400 text-sm">&copy; {new Date().getFullYear()} GoAlong. All rights reserved.</p>
                     <div className="flex gap-4 mt-4 md:mt-0">
-                       <Link href="#"><Twitter className="w-6 h-6 text-gray-400 hover:text-white" /></Link>
-                       <Link href="#"><Facebook className="w-6 h-6 text-gray-400 hover:text-white" /></Link>
-                       <Link href="#"><Instagram className="w-6 h-6 text-gray-400 hover:text-white" /></Link>
+                       <Link href="#"><Twitter className="w-6 h-6 text-gray-400 hover:text-white transition-colors" /></Link>
+                       <Link href="#"><Facebook className="w-6 h-6 text-gray-400 hover:text-white transition-colors" /></Link>
+                       <Link href="#"><Instagram className="w-6 h-6 text-gray-400 hover:text-white transition-colors" /></Link>
                     </div>
                 </div>
             </div>
