@@ -28,13 +28,6 @@ export default function LandingPage() {
   };
 
   useEffect(() => {
-    // Simulate login for demonstration
-    if (!isLoggedIn) {
-      login({ name: 'Jane Doe', email: 'jane.doe@example.com' });
-    }
-  }, [isLoggedIn, login]);
-
-  useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
@@ -99,7 +92,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <main>
         <section className="relative w-full overflow-hidden bg-white pt-20">
-           <div className="container mx-auto px-6 py-24 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-12">
+           <div className="container mx-auto px-6 py-16 flex flex-col lg:flex-row items-center justify-center gap-12">
             
             {/* Left Side: Text & Search */}
             <div className="w-full lg:w-1/2 space-y-8 z-10 text-center lg:text-left">
@@ -301,4 +294,3 @@ export default function LandingPage() {
     </div>
   );
 }
-    
