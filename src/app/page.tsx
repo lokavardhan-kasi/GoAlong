@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Car, Leaf, Users, Route, RadioTower, Search, LogIn, UserPlus } from 'lucide-react';
+import { Car, Leaf, Users, Route, RadioTower, Search, LogIn, UserPlus, Calendar, MapPin } from 'lucide-react';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useToast } from '@/hooks/use-toast';
@@ -13,6 +13,7 @@ import CountUp from '@/components/common/count-up';
 import { UserContext } from '@/context/user-context';
 import { useRouter } from 'next/navigation';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Input } from '@/components/ui/input';
 
 const MotionCard = motion(Card);
 
@@ -81,8 +82,12 @@ export default function LandingPage() {
   const router = useRouter();
 
   const handlePublishClick = () => {
-    alert("Please Login to Publish");
-    router.push('/login');
+    if (!isLoggedIn) {
+      alert("Please Login to Publish");
+      router.push('/login');
+    } else {
+      router.push('/plan-route');
+    }
   };
 
   useEffect(() => {
@@ -148,83 +153,115 @@ export default function LandingPage() {
             <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Community</Link>
           </nav>
           <div className="flex items-center gap-4">
-            <Button variant="ghost" className="active:scale-95 transition-transform" asChild>
-              <Link href="/login">Sign In</Link>
-            </Button>
-            <Button asChild className="rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
-              <Link href="/register">Get Started</Link>
-            </Button>
+            {isLoggedIn ? (
+              <Button asChild>
+                <Link href="/dashboard">Profile</Link>
+              </Button>
+            ) : (
+              <>
+                <Button variant="ghost" className="active:scale-95 transition-transform" asChild>
+                  <Link href="/login">Sign In</Link>
+                </Button>
+                <Button onClick={handlePublishClick} className="rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
         </div>
       </motion.header>
 
       {/* Hero Section */}
       <main className="pt-20">
-        {!isLoggedIn ? (
-          <section className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center min-h-[calc(100vh-80px)]">
-            <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-              <motion.span 
-                className="gradient-text bg-gradient-to-r from-purple-600 to-blue-500"
-                style={{ backgroundSize: '200% 200%' }}
-                animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
-                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-              >
-                GoAlong
-              </motion.span>, Your Community, Your Commute.
-            </h1>
-            <p className="text-lg text-gray-600 mt-4 mb-8 max-w-2xl">
-              Share rides, send parcels, and connect with your neighbors.
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
-              <MotionCard
-                whileHover={{ scale: 1.05 }}
-                className="rounded-2xl shadow-lg p-6 bg-white/50 backdrop-blur-md border cursor-pointer"
-                onClick={() => router.push('/find-ride')}
-              >
-                <CardContent className="flex flex-col items-center justify-center gap-4">
-                  <Search className="w-12 h-12 text-purple-600" />
-                  <h3 className="text-2xl font-bold">Find a Ride</h3>
-                </CardContent>
-              </MotionCard>
-
-              <MotionCard
-                whileHover={{ scale: 1.05 }}
-                className="rounded-2xl shadow-lg p-6 bg-white/50 backdrop-blur-md border cursor-pointer"
-                onClick={handlePublishClick}
-              >
-                <CardContent className="flex flex-col items-center justify-center gap-4">
-                  <Route className="w-12 h-12 text-blue-600" />
-                  <h3 className="text-2xl font-bold">Publish a Ride</h3>
-                </CardContent>
-              </MotionCard>
-
-              <Popover>
-                <PopoverTrigger asChild>
-                  <MotionCard
-                    whileHover={{ scale: 1.05 }}
-                    className="rounded-2xl shadow-lg p-6 bg-white/50 backdrop-blur-md border cursor-pointer"
-                  >
-                    <CardContent className="flex flex-col items-center justify-center gap-4">
-                      <Users className="w-12 h-12 text-green-600" />
-                      <h3 className="text-2xl font-bold">Profile</h3>
+        <section className="container mx-auto px-4 py-24 min-h-[calc(100vh-80px)] grid md:grid-cols-2 gap-16 items-center">
+            {/* Left Side */}
+            <div className="text-center md:text-left">
+                 <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+                    <motion.span 
+                        className="gradient-text bg-gradient-to-r from-purple-600 to-blue-500"
+                        style={{ backgroundSize: '200% 200%' }}
+                        animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+                        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+                    >
+                        GoAlong
+                    </motion.span>, Your Community, Your Commute.
+                </h1>
+                <p className="text-lg text-gray-600 mt-4 mb-8 max-w-2xl">
+                    Share rides, send parcels, and connect with your neighbors.
+                </p>
+                <Card className="rounded-2xl shadow-xl p-6 bg-white/90 backdrop-blur-md border">
+                    <CardContent className="p-0">
+                        <form className="space-y-4">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div className="relative">
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <Input
+                                        type="text"
+                                        placeholder="Leaving from..."
+                                        className="pl-10 h-12 text-base focus:ring-4 focus:ring-purple-100 transition-shadow bg-white"
+                                    />
+                                </div>
+                                <div className="relative">
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                    <Input
+                                        type="text"
+                                        placeholder="Going to..."
+                                        className="pl-10 h-12 text-base focus:ring-4 focus:ring-purple-100 transition-shadow bg-white"
+                                    />
+                                </div>
+                            </div>
+                            <div className="relative">
+                                <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                <Input
+                                    type="date"
+                                    defaultValue={new Date().toISOString().substring(0, 10)}
+                                    className="pl-10 h-12 text-base focus:ring-4 focus:ring-purple-100 transition-shadow bg-white"
+                                />
+                            </div>
+                            <Button asChild type="submit" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
+                                <Link href="/find-ride"><Search className="mr-2"/> Find a Ride</Link>
+                            </Button>
+                        </form>
                     </CardContent>
-                  </MotionCard>
-                </PopoverTrigger>
-                <PopoverContent className="w-48">
-                  <div className="grid gap-4">
-                    <Button variant="outline" asChild>
-                      <Link href="/login"><LogIn className="mr-2"/> Sign In</Link>
-                    </Button>
-                    <Button asChild>
-                      <Link href="/register"><UserPlus className="mr-2"/> Sign Up</Link>
-                    </Button>
-                  </div>
-                </PopoverContent>
-              </Popover>
+                </Card>
             </div>
-          </section>
-        ) : null}
+            {/* Right Side Image Grid */}
+            <div className="grid grid-cols-2 gap-4">
+                <motion.div 
+                    className="relative group rounded-2xl col-span-2 row-span-1"
+                    variants={imageVariants}
+                    initial="hidden"
+                    animate="visible"
+                    custom={0}
+                >
+                     <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
+                    <Image src="https://picsum.photos/seed/hero-car/800/400" width={800} height={400} alt="Red car" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="red car"/>
+                </motion.div>
+                <motion.div 
+                    className="relative group rounded-2xl"
+                    variants={imageVariants}
+                    initial="hidden"
+                    animate="visible"
+                    custom={1}
+                >
+                     <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
+                    <Image src="https://picsum.photos/seed/hero-bike/400/400" width={400} height={400} alt="Teal bike" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="teal bike" />
+                </motion.div>
+                <motion.div 
+                    className="relative group rounded-2xl"
+                     variants={imageVariants}
+                    initial="hidden"
+                    animate="visible"
+                    custom={2}
+                >
+                     <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
+                    <Image src="https://picsum.photos/seed/hero-delivery/400/400" width={400} height={400} alt="Delivery" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
+                </motion.div>
+            </div>
+        </section>
       </main>
     </div>
   );
 }
+
+    
