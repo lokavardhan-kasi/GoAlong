@@ -14,7 +14,7 @@ import { Logo } from '@/components/common/logo';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
-  const { isLoggedIn } = useContext(UserContext);
+  const { isLoggedIn, login } = useContext(UserContext);
   const router = useRouter();
 
   const handlePublishClick = (e: React.MouseEvent) => {
@@ -26,6 +26,13 @@ export default function LandingPage() {
       router.push('/plan-route');
     }
   };
+
+  useEffect(() => {
+    // Simulate login for demonstration
+    if (!isLoggedIn) {
+      login({ name: 'Jane Doe', email: 'jane.doe@example.com' });
+    }
+  }, [isLoggedIn, login]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -293,5 +300,5 @@ export default function LandingPage() {
       </main>
     </div>
   );
-
+}
     
