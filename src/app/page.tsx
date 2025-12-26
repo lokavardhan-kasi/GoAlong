@@ -5,78 +5,13 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Car, Leaf, Users, Route, RadioTower, Search, LogIn, UserPlus, Calendar, MapPin } from 'lucide-react';
-import { motion, useAnimation } from 'framer-motion';
-import { useInView } from 'react-intersection-observer';
-import { useToast } from '@/hooks/use-toast';
-import CountUp from '@/components/common/count-up';
+import { Car, Leaf, Users, Route, Search, Calendar, MapPin } from 'lucide-react';
+import { motion } from 'framer-motion';
 import { UserContext } from '@/context/user-context';
 import { useRouter } from 'next/navigation';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Input } from '@/components/ui/input';
 
-const MotionCard = motion(Card);
-
-const FeatureCard = ({ icon: Icon, title, description, delay }: { icon: React.ElementType, title: string, description: string, delay: number }) => {
-  const controls = useAnimation();
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  useEffect(() => {
-    if (inView) {
-      controls.start({ opacity: 1, y: 0 });
-    }
-  }, [controls, inView]);
-
-  return (
-    <MotionCard
-      ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={controls}
-      transition={{ duration: 0.5, delay }}
-      className="rounded-2xl shadow-lg text-center p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl hover:border-purple-200 border"
-    >
-      <div className="mx-auto bg-gray-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
-        <Icon className="w-8 h-8 text-purple-600" />
-      </div>
-      <h3 className="text-xl font-bold mb-2">{title}</h3>
-      <p className="text-gray-600">{description}</p>
-    </MotionCard>
-  )
-};
-
-const StatCard = ({ end, label, delay, suffix, prefix }: { end: number; label: string; delay: number; suffix?: string; prefix?: string; }) => {
-  const controls = useAnimation();
-  const [ref, inView] = useInView({
-    triggerOnce: true,
-    threshold: 0.1,
-  });
-
-  useEffect(() => {
-    if (inView) {
-      controls.start({ opacity: 1, y: 0 });
-    }
-  }, [controls, inView]);
-  return (
-    <motion.div
-      ref={ref}
-      initial={{ opacity: 0, y: 50 }}
-      animate={controls}
-      transition={{ duration: 0.5, delay }}
-      className="bg-white/10 backdrop-blur-sm rounded-lg p-4 text-center text-white transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl"
-    >
-      <p className="text-2xl font-bold">
-        {inView && <CountUp end={end} duration={2} suffix={suffix} prefix={prefix} />}
-      </p>
-      <p className="text-sm">{label}</p>
-    </motion.div>
-  );
-};
-
 export default function LandingPage() {
-  const { toast } = useToast();
   const [scrolled, setScrolled] = useState(false);
   const { isLoggedIn } = useContext(UserContext);
   const router = useRouter();
@@ -103,20 +38,6 @@ export default function LandingPage() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      toast({
-        title: (
-          <div className="flex items-center gap-2">
-            <RadioTower className="text-primary"/> New ride available!
-          </div>
-        ),
-        description: 'A driver just posted a route from Downtown to Northwood.',
-      });
-    }, 5000);
-    return () => clearTimeout(timer);
-  }, [toast]);
 
   const imageVariants = {
     hidden: { opacity: 0, x: 50 },
@@ -143,7 +64,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-2xl font-bold">
             <Car className="w-7 h-7 text-purple-600" />
-            <span className="gradient-text">GoAlong</span>
+            <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">GoAlong</span>
           </Link>
           <nav className="hidden md:flex items-center gap-8">
             <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Features</Link>
@@ -178,7 +99,7 @@ export default function LandingPage() {
             <div className="text-center md:text-left">
                  <h1 className="text-5xl md:text-6xl font-bold leading-tight">
                     <motion.span 
-                        className="gradient-text bg-gradient-to-r from-purple-600 to-blue-500"
+                        className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent"
                         style={{ backgroundSize: '200% 200%' }}
                         animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
                         transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
@@ -259,6 +180,103 @@ export default function LandingPage() {
                 </motion.div>
             </div>
         </section>
+
+        <section className="py-24 bg-gray-50/50">
+          <div className="container mx-auto px-4 text-center">
+            <h2 className="text-4xl font-bold mb-4">Why Choose <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">GoAlong</span>?</h2>
+            <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">GoAlong makes it easy to earn on every trip, whether you're commuting to work or heading out of town.</p>
+            <div className="grid md:grid-cols-3 gap-8">
+              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.1 }} className="rounded-2xl shadow-lg text-center p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border bg-card">
+                  <div className="mx-auto bg-green-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
+                    <Leaf className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Save Money & Earth</h3>
+                  <p className="text-gray-600">Reduce your carbon footprint and save on fuel costs by sharing your ride.</p>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.2 }} className="rounded-2xl shadow-lg text-center p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border bg-card">
+                  <div className="mx-auto bg-purple-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
+                    <Route className="w-8 h-8 text-purple-600" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Share Your Route</h3>
+                  <p className="text-gray-600">Offer seats to passengers or carry parcels. Your journey, your choice.</p>
+              </motion.div>
+              <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.3 }} className="rounded-2xl shadow-lg text-center p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border bg-card">
+                  <div className="mx-auto bg-blue-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
+                    <Users className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <h3 className="text-xl font-bold mb-2">Help Your Community</h3>
+                  <p className="text-gray-600">Connect with neighbors and make commuting more affordable and social.</p>
+              </motion.div>
+            </div>
+          </div>
+        </section>
+
+        <section className="py-24 bg-white">
+            <div className="container mx-auto px-4 text-center">
+                <h2 className="text-4xl font-bold mb-12">Making Real Impact</h2>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div className="text-center">
+                        <p className="text-5xl font-bold text-green-500">40%</p>
+                        <p className="text-gray-600 mt-2">Cost Reduction</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-5xl font-bold text-purple-500">10K+</p>
+                        <p className="text-gray-600 mt-2">Active Users</p>
+                    </div>
+                     <div className="text-center">
+                        <p className="text-5xl font-bold text-blue-500">2.5M kg</p>
+                        <p className="text-gray-600 mt-2">CO2 Saved</p>
+                    </div>
+                     <div className="text-center">
+                        <p className="text-5xl font-bold text-orange-500">85%</p>
+                        <p className="text-gray-600 mt-2">Match Rate</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <footer className="bg-gray-900 text-white">
+            <div className="container mx-auto px-4 py-16">
+                <div className="grid md:grid-cols-4 gap-8">
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">GoAlong</h3>
+                        <p className="text-gray-400 text-sm">Your community, your commute. Share rides, send parcels, and save money.</p>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
+                        <ul className="space-y-2 text-sm">
+                            <li><Link href="#" className="text-gray-400 hover:text-white">Find a Ride</Link></li>
+                            <li><Link href="/become-a-driver" className="text-gray-400 hover:text-white">Become a Driver</Link></li>
+                            <li><Link href="#" className="text-gray-400 hover:text-white">How It Works</Link></li>
+                        </ul>
+                    </div>
+                     <div>
+                        <h3 className="text-lg font-semibold mb-4">Support</h3>
+                        <ul className="space-y-2 text-sm">
+                            <li><Link href="#" className="text-gray-400 hover:text-white">Help Center</Link></li>
+                            <li><Link href="#" className="text-gray-400 hover:text-white">Contact Us</Link></li>
+                            <li><Link href="#" className="text-gray-400 hover:text-white">Terms of Service</Link></li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-semibold mb-4">Contact</h3>
+                        <p className="text-gray-400 text-sm">Email: support@goalong.com</p>
+                        <form className="mt-4 space-y-2" onSubmit={(e) => { e.preventDefault(); console.log('Form submitted'); }}>
+                            <Input type="email" placeholder="Your email" className="bg-gray-800 border-gray-700 text-white"/>
+                            <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500">Subscribe</Button>
+                        </form>
+                    </div>
+                </div>
+                <div className="mt-8 border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
+                    <p className="text-gray-500">&copy; {new Date().getFullYear()} GoAlong. All rights reserved.</p>
+                    <div className="flex gap-4 mt-4 md:mt-0">
+                         <Link href="#" className="text-gray-500 hover:text-white">X</Link>
+                         <Link href="#" className="text-gray-500 hover:text-white">Facebook</Link>
+                         <Link href="#" className="text-gray-500 hover:text-white">Instagram</Link>
+                    </div>
+                </div>
+            </div>
+        </footer>
       </main>
     </div>
   );

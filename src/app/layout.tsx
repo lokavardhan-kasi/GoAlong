@@ -24,7 +24,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${poppins.variable} ${ptSans.variable} font-sans antialiased bg-light-cyan`}>
+      <body className={`${poppins.variable} ${ptSans.variable} font-sans antialiased`}>
         <UserProvider>
           {children}
         </UserProvider>
@@ -33,3 +33,5 @@ export default function RootLayout({
     </html>
   );
 }
+
+    

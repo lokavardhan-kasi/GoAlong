@@ -1,3 +1,4 @@
+
 import type {Config} from 'tailwindcss';
 
 export default {
@@ -21,7 +22,6 @@ export default {
         sans: ['var(--font-pt-sans)', 'sans-serif'],
       },
       colors: {
-        'light-cyan': '#E5F5FF',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -115,3 +115,5 @@ export default {
   },
   plugins: [require('tailwindcss-animate')],
 } satisfies Config;
+
+    
