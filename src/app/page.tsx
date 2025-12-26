@@ -14,19 +14,23 @@ import { Logo } from '@/components/common/logo';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
-  const { isLoggedIn } = useContext(UserContext);
+  const { isLoggedIn, login } = useContext(UserContext);
   const router = useRouter();
 
   const handlePublishClick = (e: React.MouseEvent) => {
     e.preventDefault();
     if (!isLoggedIn) {
-      // Since this is a demo, we can just alert. In a real app, a modal would be better.
       alert("Please sign in to publish a ride.");
       router.push('/login');
     } else {
       router.push('/plan-route');
     }
   };
+
+  // Simulate login for demonstration purposes
+  useEffect(() => {
+    login({ name: 'Jane Doe', email: 'jane.doe@example.com' });
+  },[login]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -168,7 +172,7 @@ export default function LandingPage() {
                         custom={0}
                     >
                         <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                        <Image src="https://images.unsplash.com/photo-1568605117036-5fe5e7185743?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={800} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
+                        <Image src="https://picsum.photos/seed/hero1/800/400" width={800} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
                     </motion.div>
                     <motion.div 
                         className="relative group rounded-2xl"
@@ -178,7 +182,7 @@ export default function LandingPage() {
                         custom={1}
                     >
                         <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                        <Image src="https://images.unsplash.com/photo-1558632463-7d4e1a1c96a3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="pet travel" />
+                        <Image src="https://picsum.photos/seed/hero2/400/400" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="pet travel" />
                     </motion.div>
                     <motion.div 
                         className="relative group rounded-2xl"
@@ -188,7 +192,7 @@ export default function LandingPage() {
                         custom={2}
                     >
                         <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                        <Image src="https://images.unsplash.com/photo-1590846406792-0404b484c433?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
+                        <Image src="https://picsum.photos/seed/hero3/400/400" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
                     </motion.div>
                 </div>
             </div>

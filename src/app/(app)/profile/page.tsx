@@ -28,7 +28,7 @@ export default function ProfilePage() {
             <Card className="text-center">
                 <CardHeader>
                      <Avatar className="h-24 w-24 mx-auto border-4 border-primary/50">
-                        <AvatarImage src="https://picsum.photos/seed/user-avatar/100/100" alt={userProfile.name} data-ai-hint="person face"/>
+                        <AvatarImage src="https://picsum.photos/seed/user-profile/100/100" alt={userProfile.name} data-ai-hint="person face"/>
                         <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                 </CardHeader>
