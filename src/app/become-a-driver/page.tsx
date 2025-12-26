@@ -8,6 +8,7 @@ import { Calendar as CalendarIcon, MapPin, Users, Package, ArrowRight, SteeringW
 import { motion } from 'framer-motion';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Separator } from '@/components/ui/separator';
+import { Logo } from '@/components/common/logo';
 
 const FeatureCard = ({ icon: Icon, title, description, delay }: { icon: React.ElementType, title: string, description: string, delay: number }) => (
     <motion.div
@@ -18,7 +19,7 @@ const FeatureCard = ({ icon: Icon, title, description, delay }: { icon: React.El
       className="rounded-2xl shadow-lg text-center p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border bg-card"
     >
       <div className="mx-auto bg-gray-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
-        <Icon className="w-8 h-8 text-purple-600" />
+        <Icon className="w-8 h-8 text-primary" />
       </div>
       <h3 className="text-xl font-bold mb-2">{title}</h3>
       <p className="text-gray-600">{description}</p>
@@ -34,8 +35,9 @@ export default function BecomeDriverPage() {
       <div className="absolute top-0 left-0 w-96 h-96 bg-purple-200 rounded-full filter blur-3xl opacity-30 animate-pulse"></div>
       <div className="absolute top-0 right-0 w-96 h-96 bg-blue-200 rounded-full filter blur-3xl opacity-30 animate-pulse animation-delay-2000"></div>
 
-      {/* Hero Section */}
-      <main className="pt-20">
+      {/* Main Content */}
+      <main>
+        {/* Hero Section */}
         <section className="container mx-auto px-4 py-24">
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <motion.div 
@@ -103,7 +105,7 @@ export default function BecomeDriverPage() {
         </section>
 
         {/* Value Prop Section */}
-        <section className="py-24 bg-gray-50">
+        <section className="py-24 bg-gray-50/70">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-4xl font-bold mb-4">Drive. Share. Save.</h2>
             <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">GoAlong makes it easy to earn on every trip, whether you're commuting to work or heading out of town.</p>
@@ -126,8 +128,8 @@ export default function BecomeDriverPage() {
                     className="max-w-3xl mx-auto"
                 >
                     <Card className="bg-gradient-to-r from-blue-500 to-purple-600 text-white p-8 rounded-2xl">
-                        <CardContent className="flex flex-col md:flex-row items-center gap-6">
-                            <ShieldCheck className="w-16 h-16" />
+                        <CardContent className="flex flex-col md:flex-row items-center gap-6 p-0">
+                            <ShieldCheck className="w-16 h-16 shrink-0" />
                             <div className="text-left">
                                 <h3 className="text-2xl font-bold">100% Secure & Verified Community</h3>
                                 <p className="opacity-90 mt-2">Your safety is our priority. We check IDs and profiles so you can travel with confidence and build trust within your community.</p>
@@ -139,30 +141,30 @@ export default function BecomeDriverPage() {
         </section>
 
         {/* How it works */}
-        <section className="py-24 bg-gray-50">
+        <section className="py-24 bg-gray-50/70">
             <div className="container mx-auto px-4 text-center">
                 <h2 className="text-4xl font-bold mb-12">Getting Started is Easy</h2>
                 <div className="grid md:grid-cols-3 gap-8 text-left">
                     <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.1 }}>
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 font-bold text-xl">1</div>
+                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 font-bold text-xl shrink-0">1</div>
                             <h3 className="text-xl font-bold">Create Your Profile</h3>
                         </div>
-                        <p className="text-gray-600 ml-16">Sign up in minutes. Add your vehicle details and a quick bio to let others know you.</p>
+                        <p className="text-gray-600 md:ml-16">Sign up in minutes. Add your vehicle details and a quick bio to let others know you.</p>
                     </motion.div>
                      <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.3 }}>
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 font-bold text-xl">2</div>
+                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 font-bold text-xl shrink-0">2</div>
                             <h3 className="text-xl font-bold">Publish Your Route</h3>
                         </div>
-                        <p className="text-gray-600 ml-16">Let us know where you're going and whether you're offering seats for passengers or space for parcels.</p>
+                        <p className="text-gray-600 md:ml-16">Let us know where you're going and whether you're offering seats for passengers or space for parcels.</p>
                     </motion.div>
                      <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.5 }}>
                         <div className="flex items-center gap-4 mb-4">
-                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 font-bold text-xl">3</div>
+                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 font-bold text-xl shrink-0">3</div>
                             <h3 className="text-xl font-bold">Accept Requests & Drive</h3>
                         </div>
-                        <p className="text-gray-600 ml-16">Get notifications for ride or delivery requests. Accept, coordinate, and enjoy the shared journey!</p>
+                        <p className="text-gray-600 md:ml-16">Get notifications for ride or delivery requests. Accept, coordinate, and enjoy the shared journey!</p>
                     </motion.div>
                 </div>
             </div>
@@ -173,8 +175,8 @@ export default function BecomeDriverPage() {
             <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center">
                 <p className="text-gray-400 text-sm">&copy; {new Date().getFullYear()} GoAlong. All rights reserved.</p>
                 <div className="flex gap-4 mt-4 md:mt-0">
-                    <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Terms of Service</Link>
-                    <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Privacy Policy</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Terms of Service</Link>
+                    <Link href="#" className="text-sm text-gray-400 hover:text-white transition-colors">Privacy Policy</Link>
                 </div>
             </div>
         </footer>

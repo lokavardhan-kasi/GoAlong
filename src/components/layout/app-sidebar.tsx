@@ -76,7 +76,7 @@ function MenuItem({ href, label, icon: Icon, pathname, badge }: MenuItemProps) {
         <li>
             <Link 
                 href={href} 
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 transition-colors hover:bg-gray-50 hover:text-primary ${isActive ? "bg-gray-100 text-primary font-semibold" : "font-medium"}`}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 transition-colors hover:bg-gray-200/50 hover:text-primary ${isActive ? "bg-gray-200/70 text-primary font-semibold" : "font-medium"}`}
             >
                 <Icon className="h-5 w-5" />
                 <span>{label}</span>
@@ -91,11 +91,11 @@ export function AppSidebar() {
 
   return (
     <div className="hidden border-r bg-white md:block w-64">
-        <div className="flex h-full max-h-screen flex-col gap-2">
-            <div className="flex h-14 items-center border-b px-6">
+        <div className="flex h-full max-h-screen flex-col">
+            <div className="flex h-20 items-center border-b px-6">
                 <Logo />
             </div>
-            <div className="flex-1 overflow-auto py-2">
+            <div className="flex-1 overflow-auto py-4">
                 <nav className="grid items-start px-4 text-sm font-medium">
                     <ul className="space-y-1">
                         {menuItems.map(item => <MenuItem {...item} pathname={pathname} key={item.href} />)}
@@ -115,7 +115,7 @@ export function AppSidebar() {
             <div className="mt-auto border-t p-4">
                 <div className="flex items-center gap-3">
                      <Avatar className="h-10 w-10 border">
-                        <AvatarImage src="https://picsum.photos/seed/user-avatar/100/100" alt="Jane Doe" />
+                        <AvatarImage src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Jane Doe" />
                         <AvatarFallback>JD</AvatarFallback>
                     </Avatar>
                     <div>

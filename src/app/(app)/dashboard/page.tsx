@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Car, DollarSign, Leaf, Route, MapPin, MessageSquare, Star } from 'lucide-react';
+import { ArrowRight, Car, DollarSign, Leaf, MessageSquare, Route } from 'lucide-react';
 import CountUp from '@/components/common/count-up';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -19,8 +19,8 @@ const stats = [
 ];
 
 const rideRequests = [
-    { name: 'Ananya Sharma', action: 'wants to send a box', avatarUrl: 'https://picsum.photos/seed/ananya/100' },
-    { name: 'Ben Carter', action: 'requested a seat', avatarUrl: 'https://picsum.photos/seed/ben/100' },
+    { name: 'Ananya Sharma', action: 'wants to send a box', avatarUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
+    { name: 'Ben Carter', action: 'requested a seat', avatarUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
 ]
 
 const cardVariants = {
@@ -38,7 +38,7 @@ const cardVariants = {
 
 export default function DashboardPage() {
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 p-4 md:p-8">
+    <div className="grid grid-cols-1 lg:grid-cols-10 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-7 space-y-8">
             <PageHeader
@@ -104,14 +104,14 @@ export default function DashboardPage() {
 
         {/* Right Sidebar */}
         <aside className="lg:col-span-3">
-            <div className="sticky top-6 space-y-8">
+            <div className="sticky top-8 space-y-8">
                 <Card>
                     <CardHeader>
                         <CardTitle className="font-headline">Your Frequent Routes</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="relative h-56 w-full rounded-lg overflow-hidden">
-                            <Image src="https://picsum.photos/seed/map/600/400" alt="Map of frequent routes" fill className="object-cover" data-ai-hint="route map" />
+                            <Image src="https://images.unsplash.com/photo-1528740561639-624a733c3a37?q=80&w=1991&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Map of frequent routes" fill className="object-cover" data-ai-hint="route map" />
                             <div className="absolute top-2 left-2">
                                 <Badge variant="secondary">3 Active Routes</Badge>
                             </div>
@@ -143,7 +143,7 @@ export default function DashboardPage() {
                         <Separator />
                          <div className="flex items-start gap-4">
                             <Avatar>
-                                <AvatarImage src="https://picsum.photos/seed/driver/100" data-ai-hint="person face" />
+                                <AvatarImage src="https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" data-ai-hint="person face" />
                                 <AvatarFallback>M</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">

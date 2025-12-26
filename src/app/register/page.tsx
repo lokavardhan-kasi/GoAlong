@@ -7,12 +7,12 @@ import { Logo } from '@/components/common/logo';
 
 export default function RegisterPage() {
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-muted/50 p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100/50 p-4">
        <div className="mb-8">
         <Logo />
       </div>
       <Card className="w-full max-w-sm">
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle className="font-headline text-2xl">Sign Up</CardTitle>
           <CardDescription>Enter your information to create an account</CardDescription>
         </CardHeader>

@@ -24,12 +24,12 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-muted/50 p-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100/50 p-4">
       <div className="mb-8">
         <Logo />
       </div>
       <Card className="w-full max-w-sm">
-        <CardHeader>
+        <CardHeader className="text-center">
           <CardTitle className="font-headline text-2xl">Login</CardTitle>
           <CardDescription>Enter your email below to login to your account</CardDescription>
         </CardHeader>

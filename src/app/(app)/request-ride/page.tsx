@@ -73,7 +73,7 @@ export default function RequestRidePage() {
         title="Request a Ride"
         description="Tell us where you need to go and we'll find you a match."
       />
-      <Card>
+      <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="font-headline">Request Details</CardTitle>
           <CardDescription>Drivers will be notified based on your request.</CardDescription>

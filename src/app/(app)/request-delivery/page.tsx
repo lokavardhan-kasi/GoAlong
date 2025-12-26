@@ -73,7 +73,7 @@ export default function RequestDeliveryPage() {
         title="Request a Delivery"
         description="Send a parcel with a community member."
       />
-      <Card>
+      <Card className="max-w-2xl mx-auto">
         <CardHeader>
           <CardTitle className="font-headline">Parcel Details</CardTitle>
           <CardDescription>Drivers will be notified based on your request.</CardDescription>

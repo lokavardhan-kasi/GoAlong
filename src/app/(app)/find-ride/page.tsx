@@ -18,14 +18,14 @@ export default function FindRidePage() {
 
       <Card className="mb-8">
         <CardContent className="p-4">
-            <div className="flex flex-col gap-4 md:flex-row">
+            <form className="flex flex-col gap-4 md:flex-row">
                 <Input placeholder="Start location (e.g., Vizag)" className="bg-background"/>
                 <Input placeholder="End location (e.g., Hyderabad)" className="bg-background"/>
                 <Button className="w-full md:w-auto active:scale-95">
                     <Search className="mr-2"/>
                     Search
                 </Button>
-            </div>
+            </form>
         </CardContent>
       </Card>
 

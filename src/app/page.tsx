@@ -10,15 +10,18 @@ import { motion } from 'framer-motion';
 import { UserContext } from '@/context/user-context';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
+import { Logo } from '@/components/common/logo';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const { isLoggedIn } = useContext(UserContext);
   const router = useRouter();
 
-  const handlePublishClick = () => {
+  const handlePublishClick = (e: React.MouseEvent) => {
+    e.preventDefault();
     if (!isLoggedIn) {
-      localStorage.setItem('redirectAfterLogin', '/plan-route');
+      // Since this is a demo, we can just alert. In a real app, a modal would be better.
+      alert("Please sign in to publish a ride.");
       router.push('/login');
     } else {
       router.push('/plan-route');
@@ -27,7 +30,7 @@ export default function LandingPage() {
 
   useEffect(() => {
     const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
+      setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
@@ -41,6 +44,7 @@ export default function LandingPage() {
       transition: {
         delay: i * 0.2,
         duration: 0.5,
+        ease: "easeOut",
       },
     }),
   };
@@ -54,30 +58,30 @@ export default function LandingPage() {
       {/* Navigation */}
       <motion.header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'backdrop-blur-lg bg-white/80 shadow-md' : 'bg-transparent'}`}
+        initial={{ y: -100 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <div className="container mx-auto px-4 h-20 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-2xl font-bold">
-            <Car className="w-7 h-7 text-purple-600" />
-            <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">GoAlong</span>
-          </Link>
+          <Logo />
           <nav className="hidden md:flex items-center gap-8">
-            <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Features</Link>
-            <Button asChild variant="link" className="text-gray-600 hover:text-purple-600 transition-colors">
+            <Link href="#" className="text-gray-600 hover:text-primary transition-colors">Features</Link>
+            <Button asChild variant="link" className="text-gray-600 hover:text-primary transition-colors px-0">
               <Link href="/become-a-driver">Become a Driver</Link>
             </Button>
-            <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Community</Link>
+            <Link href="#" className="text-gray-600 hover:text-primary transition-colors">Community</Link>
           </nav>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             {isLoggedIn ? (
               <Button asChild>
-                <Link href="/dashboard">Profile</Link>
+                <Link href="/dashboard">Dashboard</Link>
               </Button>
             ) : (
               <>
                 <Button variant="ghost" className="active:scale-95 transition-transform" asChild>
                   <Link href="/login">Sign In</Link>
                 </Button>
-                <Button onClick={handlePublishClick} className="rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
+                <Button onClick={(e) => { e.preventDefault(); router.push('/register');}} className="rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
                   Get Started
                 </Button>
               </>
@@ -87,23 +91,34 @@ export default function LandingPage() {
       </motion.header>
 
       {/* Hero Section */}
-      <main className="pt-20">
-        <section className="container mx-auto px-4 py-24 min-h-[calc(100vh-80px)] flex flex-col lg:flex-row items-center justify-between gap-12">
+      <main>
+        <section className="relative w-full overflow-hidden bg-white pt-20">
+          <div className="container mx-auto px-6 py-24 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-12">
+            
             {/* Left Side: Text & Search */}
             <div className="w-full lg:w-1/2 space-y-8 z-10 text-center lg:text-left">
-                 <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-                    <motion.span 
-                        className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500"
-                        style={{ backgroundSize: '200% 200%' }}
-                        animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
-                        transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                    >
-                        GoAlong
-                    </motion.span>, Your Community, Your Commute.
-                </h1>
-                <p className="text-lg text-gray-600 max-w-2xl mx-auto lg:mx-0">
-                    Share rides, send parcels, and connect with your neighbors.
-                </p>
+              <motion.h1 
+                className="text-5xl md:text-6xl font-bold leading-tight"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+              >
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500">GoAlong</span>, <br/>Your Community, Your Commute.
+              </motion.h1>
+              <motion.p 
+                className="text-lg text-gray-600 max-w-xl mx-auto lg:mx-0"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.1 }}
+              >
+                Share rides, send parcels, and connect with your neighbors.
+              </motion.p>
+              
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
                 <Card className="rounded-2xl shadow-xl p-6 bg-white/90 backdrop-blur-md border">
                     <CardContent className="p-0">
                         <form className="space-y-4">
@@ -139,9 +154,11 @@ export default function LandingPage() {
                         </form>
                     </CardContent>
                 </Card>
+              </motion.div>
             </div>
+
             {/* Right Side: Image Grid */}
-            <div className="w-full lg:w-1/2 relative">
+            <div className="w-full lg:w-1/2 relative hidden lg:block">
                 <div className="grid grid-cols-2 gap-4">
                     <motion.div 
                         className="relative group rounded-2xl col-span-2 row-span-1"
@@ -151,7 +168,7 @@ export default function LandingPage() {
                         custom={0}
                     >
                         <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                        <Image src="https://picsum.photos/seed/hero/800/400" width={800} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
+                        <Image src="https://images.unsplash.com/photo-1568605117036-5fe5e7185743?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={800} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
                     </motion.div>
                     <motion.div 
                         className="relative group rounded-2xl"
@@ -161,7 +178,7 @@ export default function LandingPage() {
                         custom={1}
                     >
                         <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                        <Image src="https://picsum.photos/seed/pet-travel/400/400" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="pet travel" />
+                        <Image src="https://images.unsplash.com/photo-1558632463-7d4e1a1c96a3?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="pet travel" />
                     </motion.div>
                     <motion.div 
                         className="relative group rounded-2xl"
@@ -171,13 +188,14 @@ export default function LandingPage() {
                         custom={2}
                     >
                         <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                        <Image src="https://picsum.photos/seed/delivery/400/400" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
+                        <Image src="https://images.unsplash.com/photo-1590846406792-0404b484c433?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
                     </motion.div>
                 </div>
             </div>
+          </div>
         </section>
 
-        <section className="py-24 bg-gray-50/50">
+        <section className="py-24 bg-gray-50/70">
           <div className="container mx-auto px-4 text-center">
             <h2 className="text-4xl font-bold mb-4">Why Choose <span className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent">GoAlong</span>?</h2>
             <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">GoAlong makes it easy to earn on every trip, whether you're commuting to work or heading out of town.</p>
@@ -258,7 +276,7 @@ export default function LandingPage() {
                         <h3 className="text-lg font-semibold mb-4">Contact</h3>
                         <p className="text-gray-400 text-sm">Email: support@goalong.com</p>
                         <form className="mt-4 space-y-2" onSubmit={(e) => { e.preventDefault(); console.log('Form submitted'); }}>
-                            <Input type="email" placeholder="Your email" className="bg-gray-800 border-gray-700 text-white"/>
+                            <Input type="email" placeholder="Your email" className="bg-gray-800 border-gray-700 text-white h-10"/>
                             <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500">Subscribe</Button>
                         </form>
                     </div>
