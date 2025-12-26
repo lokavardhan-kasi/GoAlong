@@ -1,4 +1,3 @@
-
 'use client';
 import { useState, useEffect, useContext } from 'react';
 import Link from 'next/link';
@@ -14,7 +13,7 @@ import { Logo } from '@/components/common/logo';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
-  const { isLoggedIn, login } = useContext(UserContext);
+  const { isLoggedIn } = useContext(UserContext);
   const router = useRouter();
 
   const handlePublishClick = (e: React.MouseEvent) => {
