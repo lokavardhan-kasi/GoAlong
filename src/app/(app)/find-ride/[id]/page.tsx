@@ -1,5 +1,6 @@
+
 'use client';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter, usePathname } from 'next/navigation';
 import { rides } from '@/lib/mock-data';
 import { PageHeader } from '@/components/common/page-header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -11,15 +12,20 @@ import { Clock, DollarSign, MapPin, Star, Users, CheckCircle, Send } from 'lucid
 import Link from 'next/link';
 import CountUp from '@/components/common/count-up';
 import { useToast } from '@/hooks/use-toast';
+import { useContext } from 'react';
+import { UserContext } from '@/context/user-context';
 
 export default function RideDetailPage() {
   const params = useParams();
+  const router = useRouter();
+  const pathname = usePathname();
   const { toast } = useToast();
+  const { isLoggedIn } = useContext(UserContext);
   const ride = rides.find(r => r.id === params.id);
 
   if (!ride) {
     return (
-        <div>
+        <div className="p-4 md:p-8">
             <PageHeader title="Ride not found" description="This ride is no longer available or the link is incorrect."/>
             <Button asChild><Link href="/find-ride">Back to all rides</Link></Button>
         </div>
@@ -27,10 +33,27 @@ export default function RideDetailPage() {
   }
 
   const handleBooking = () => {
-    toast({
-        title: "Booking Confirmed!",
-        description: `Your seat for the ride with ${ride.driverName} has been booked.`,
-    })
+    if (!isLoggedIn) {
+      localStorage.setItem('redirectAfterLogin', pathname);
+      router.push('/login');
+    } else {
+      toast({
+          title: "Booking Confirmed!",
+          description: `Your seat for the ride with ${ride.driverName} has been booked.`,
+      })
+    }
+  }
+  
+  const handleMessage = () => {
+    if (!isLoggedIn) {
+      localStorage.setItem('redirectAfterLogin', pathname);
+      router.push('/login');
+    } else {
+       toast({
+          title: "Message Sent!",
+          description: `Your message to ${ride.driverName} has been sent.`,
+      })
+    }
   }
 
   const seatsToBook = 1;
@@ -114,7 +137,7 @@ export default function RideDetailPage() {
                       <Button size="lg" className="w-full active:scale-95" onClick={handleBooking}>
                           <CheckCircle className="mr-2"/> Confirm Booking
                       </Button>
-                      <Button size="lg" variant="outline" className="w-full active:scale-95">
+                      <Button size="lg" variant="outline" className="w-full active:scale-95" onClick={handleMessage}>
                           <Send className="mr-2"/> Message Driver
                       </Button>
                     </div>

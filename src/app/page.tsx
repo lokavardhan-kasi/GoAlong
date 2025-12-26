@@ -1,16 +1,18 @@
 
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Car, Leaf, Users, Route, MapPin, Calendar, Twitter, Facebook, Instagram, RadioTower } from 'lucide-react';
+import { Car, Leaf, Users, Route, RadioTower, Search, LogIn, UserPlus } from 'lucide-react';
 import { motion, useAnimation } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { useToast } from '@/hooks/use-toast';
 import CountUp from '@/components/common/count-up';
+import { UserContext } from '@/context/user-context';
+import { useRouter } from 'next/navigation';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const MotionCard = motion(Card);
 
@@ -74,10 +76,20 @@ const StatCard = ({ end, label, delay, suffix, prefix }: { end: number; label: s
 
 export default function LandingPage() {
   const { toast } = useToast();
-  const [pickup, setPickup] = useState('');
-  const [dropoff, setDropoff] = useState('');
-  const [date, setDate] = useState('');
   const [scrolled, setScrolled] = useState(false);
+  const { isLoggedIn } = useContext(UserContext);
+  const router = useRouter();
+
+  const handlePublishClick = () => {
+    alert("Please Login to Publish");
+    router.push('/login');
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      router.push('/dashboard');
+    }
+  }, [isLoggedIn, router]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -101,15 +113,6 @@ export default function LandingPage() {
     return () => clearTimeout(timer);
   }, [toast]);
 
-  const handleSearch = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log({
-      pickup,
-      dropoff,
-      date,
-    });
-  };
-
   const imageVariants = {
     hidden: { opacity: 0, x: 50 },
     visible: (i:number) => ({
@@ -121,12 +124,6 @@ export default function LandingPage() {
       },
     }),
   };
-  
-  const images = [
-      { src: "https://images.unsplash.com/photo-1533613220915-609f661a6fe1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Carpooling", hint: "people car", className: "col-span-2 row-span-1", gradient: "from-purple-500 to-pink-500" },
-      { src: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Happy passenger with dog", hint: "person dog", className: "col-span-1 row-span-1", gradient: "from-green-400 to-cyan-500" },
-      { src: "https://images.unsplash.com/photo-1618037238210-9ebd75467afd?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Delivery person with a package", hint: "delivery package", className: "col-span-1 row-span-1", gradient: "from-blue-500 to-indigo-500" },
-    ]
 
   return (
     <div className="bg-white font-sans relative">
@@ -155,7 +152,7 @@ export default function LandingPage() {
               <Link href="/login">Sign In</Link>
             </Button>
             <Button asChild className="rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
-              <Link href="/dashboard">Get Started</Link>
+              <Link href="/register">Get Started</Link>
             </Button>
           </div>
         </div>
@@ -163,142 +160,70 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="pt-20">
-        <section className="container mx-auto px-4 py-24">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <motion.div 
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.5 }}
-              className="text-center md:text-left"
-            >
-              <h1 className="text-5xl md:text-6xl font-bold leading-tight">
-                <motion.span 
-                  className="gradient-text bg-gradient-to-r from-purple-600 to-blue-500"
-                  style={{ backgroundSize: '200% 200%' }}
-                  animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
-                  transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
-                >
-                  GoAlong
-                </motion.span>, Your Community, Your Commute.
-              </h1>
-              <p className="text-lg text-gray-600 mt-4 mb-8">
-                Share rides, send parcels, and connect with your neighbors.
-              </p>
-
-              <Card className="rounded-2xl shadow-lg p-6 bg-white/90 backdrop-blur-md border">
-                <CardContent className="p-0">
-                  <form onSubmit={handleSearch} className="space-y-4">
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="text"
-                        placeholder="Pickup location"
-                        className="pl-10 focus:ring-4 focus:ring-purple-100 transition-shadow"
-                        value={pickup}
-                        onChange={(e) => setPickup(e.target.value)}
-                      />
-                    </div>
-                    <div className="relative">
-                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="text"
-                        placeholder="Drop-off location"
-                        className="pl-10 focus:ring-4 focus:ring-purple-100 transition-shadow"
-                        value={dropoff}
-                        onChange={(e) => setDropoff(e.target.value)}
-                      />
-                    </div>
-                    <div className="relative">
-                      <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                      <Input
-                        type="date"
-                        className="pl-10 focus:ring-4 focus:ring-purple-100 transition-shadow"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                      />
-                    </div>
-                    <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
-                      Find a Ride
-                    </Button>
-                  </form>
+        {!isLoggedIn ? (
+          <section className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center min-h-[calc(100vh-80px)]">
+            <h1 className="text-5xl md:text-6xl font-bold leading-tight">
+              <motion.span 
+                className="gradient-text bg-gradient-to-r from-purple-600 to-blue-500"
+                style={{ backgroundSize: '200% 200%' }}
+                animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
+                transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
+              >
+                GoAlong
+              </motion.span>, Your Community, Your Commute.
+            </h1>
+            <p className="text-lg text-gray-600 mt-4 mb-8 max-w-2xl">
+              Share rides, send parcels, and connect with your neighbors.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-4xl">
+              <MotionCard
+                whileHover={{ scale: 1.05 }}
+                className="rounded-2xl shadow-lg p-6 bg-white/50 backdrop-blur-md border cursor-pointer"
+                onClick={() => router.push('/find-ride')}
+              >
+                <CardContent className="flex flex-col items-center justify-center gap-4">
+                  <Search className="w-12 h-12 text-purple-600" />
+                  <h3 className="text-2xl font-bold">Find a Ride</h3>
                 </CardContent>
-              </Card>
-            </motion.div>
-            <div className="grid grid-cols-2 grid-rows-2 gap-4 h-[500px]">
-              {images.map((img, i) => (
-                <motion.div
-                  key={img.src}
-                  custom={i}
-                  variants={imageVariants}
-                  initial="hidden"
-                  animate="visible"
-                  className={`${img.className} relative group rounded-2xl shadow-lg`}
-                >
-                  <div className={`absolute -inset-4 bg-gradient-to-tr ${img.gradient} rounded-3xl blur-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10`}></div>
-                  <Image src={img.src} alt={img.alt} width={i === 0 ? 800 : 400} height={400} className="relative z-10 w-full h-full object-cover transition-transform duration-300 hover:scale-105 rounded-2xl" data-ai-hint={img.hint} />
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
+              </MotionCard>
 
-        {/* Features Section */}
-        <section className="py-24 bg-gray-50">
-          <div className="container mx-auto px-4 text-center">
-            <h2 className="text-4xl font-bold mb-12">Why Choose GoAlong</h2>
-            <div className="grid md:grid-cols-3 gap-8">
-              <FeatureCard icon={Leaf} title="Save Money & Earth" description="Reduce your carbon footprint and travel costs by sharing rides." delay={0} />
-              <FeatureCard icon={Route} title="Share Your Route" description="Easily list your regular commutes and find passengers along your way." delay={0.2} />
-              <FeatureCard icon={Users} title="Help Your Community" description="Connect with neighbors and build a stronger, more efficient local network." delay={0.4} />
-            </div>
-          </div>
-        </section>
-        
-        {/* Impact Stats Section */}
-        <section className="py-24 bg-gradient-to-r from-purple-600 to-blue-500">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                    <StatCard end={40} suffix="%" label="Cost Reduction" delay={0} />
-                    <StatCard end={10000} prefix="" label="Active Users" delay={0.2}/>
-                    <StatCard end={2500000} suffix=" kg" label="CO2 Saved" delay={0.4} />
-                    <StatCard end={85} suffix="%" label="Match Rate" delay={0.6}/>
-                </div>
-            </div>
-        </section>
+              <MotionCard
+                whileHover={{ scale: 1.05 }}
+                className="rounded-2xl shadow-lg p-6 bg-white/50 backdrop-blur-md border cursor-pointer"
+                onClick={handlePublishClick}
+              >
+                <CardContent className="flex flex-col items-center justify-center gap-4">
+                  <Route className="w-12 h-12 text-blue-600" />
+                  <h3 className="text-2xl font-bold">Publish a Ride</h3>
+                </CardContent>
+              </MotionCard>
 
-        {/* Contact & Footer */}
-        <footer className="bg-gray-900 text-white">
-            <div className="container mx-auto px-4 py-16">
-                <div className="grid md:grid-cols-2 gap-16 items-center">
-                    <div>
-                        <h2 className="text-3xl font-bold mb-4">Have Questions?</h2>
-                        <p className="text-gray-400 mb-4">
-                            Contact us for any inquiries or support. We're here to help!
-                        </p>
-                        <p className="text-gray-300">Email: support@goalong.com</p>
-                        <p className="text-gray-300">Phone: +1 (555) 123-4567</p>
-                    </div>
-                    <form className="space-y-4">
-                        <Input type="text" placeholder="Your Name" className="bg-gray-800 border-gray-700 text-white focus:ring-purple-500" />
-                        <Input type="email" placeholder="Your Email" className="bg-gray-800 border-gray-700 text-white focus:ring-purple-500" />
-                        <textarea placeholder="Your Message" rows={4} className="w-full bg-gray-800 border-gray-700 text-white rounded-md p-2 focus:ring-purple-500"></textarea>
-                        <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500 text-white active:scale-95 transition-transform">
-                            Send Message
-                        </Button>
-                    </form>
-                </div>
+              <Popover>
+                <PopoverTrigger asChild>
+                  <MotionCard
+                    whileHover={{ scale: 1.05 }}
+                    className="rounded-2xl shadow-lg p-6 bg-white/50 backdrop-blur-md border cursor-pointer"
+                  >
+                    <CardContent className="flex flex-col items-center justify-center gap-4">
+                      <Users className="w-12 h-12 text-green-600" />
+                      <h3 className="text-2xl font-bold">Profile</h3>
+                    </CardContent>
+                  </MotionCard>
+                </PopoverTrigger>
+                <PopoverContent className="w-48">
+                  <div className="grid gap-4">
+                    <Button variant="outline" asChild>
+                      <Link href="/login"><LogIn className="mr-2"/> Sign In</Link>
+                    </Button>
+                    <Button asChild>
+                      <Link href="/register"><UserPlus className="mr-2"/> Sign Up</Link>
+                    </Button>
+                  </div>
+                </PopoverContent>
+              </Popover>
             </div>
-            <div className="border-t border-gray-800">
-                <div className="container mx-auto px-4 py-8 flex flex-col md:flex-row justify-between items-center">
-                    <p className="text-gray-400 text-sm">&copy; {new Date().getFullYear()} GoAlong. All rights reserved.</p>
-                    <div className="flex gap-4 mt-4 md:mt-0">
-                       <Link href="#"><Twitter className="w-6 h-6 text-gray-400 hover:text-white transition-colors" /></Link>
-                       <Link href="#"><Facebook className="w-6 h-6 text-gray-400 hover:text-white transition-colors" /></Link>
-                       <Link href="#"><Instagram className="w-6 h-6 text-gray-400 hover:text-white transition-colors" /></Link>
-                    </div>
-                </div>
-            </div>
-        </footer>
+          </section>
+        ) : null}
       </main>
     </div>
   );

@@ -1,7 +1,9 @@
-import type { Metadata } from 'next';
+
+'use client';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import { Poppins, PT_Sans } from 'next/font/google'
+import { UserProvider } from '@/context/user-context';
 
 const poppins = Poppins({ 
   subsets: ['latin'],
@@ -15,11 +17,6 @@ const ptSans = PT_Sans({
   variable: '--font-pt-sans',
 })
 
-export const metadata: Metadata = {
-  title: 'GoAlong Community Mobility',
-  description: 'A community-driven mobility solution for rides and deliveries.',
-};
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -28,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.variable} ${ptSans.variable} font-sans antialiased bg-light-cyan`}>
-        {children}
+        <UserProvider>
+          {children}
+        </UserProvider>
         <Toaster />
       </body>
     </html>

@@ -1,3 +1,5 @@
+
+'use client';
 import { PageHeader } from '@/components/common/page-header';
 import { RouteCard } from '@/components/app/route-card';
 import { rides } from '@/lib/mock-data';
@@ -17,8 +19,8 @@ export default function FindRidePage() {
       <Card className="mb-8">
         <CardContent className="p-4">
             <div className="flex flex-col gap-4 md:flex-row">
-                <Input placeholder="Start location (e.g., Downtown)" className="bg-background"/>
-                <Input placeholder="End location (e.g., Northwood)" className="bg-background"/>
+                <Input placeholder="Start location (e.g., Vizag)" className="bg-background"/>
+                <Input placeholder="End location (e.g., Hyderabad)" className="bg-background"/>
                 <Button className="w-full md:w-auto active:scale-95">
                     <Search className="mr-2"/>
                     Search
