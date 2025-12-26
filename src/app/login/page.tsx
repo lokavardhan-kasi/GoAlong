@@ -31,10 +31,10 @@ export default function LoginPage() {
               </div>
               <Input id="password" type="password" required />
             </div>
-            <Button type="submit" className="w-full" asChild>
+            <Button type="submit" className="w-full active:scale-95" asChild>
                 <Link href="/dashboard">Login</Link>
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full active:scale-95">
               Login with Google
             </Button>
           </div>

@@ -13,7 +13,7 @@ type RouteCardProps = {
 
 export function RouteCard({ ride }: RouteCardProps) {
   return (
-    <Card className="overflow-hidden transition-shadow duration-300 hover:shadow-xl">
+    <Card className="overflow-hidden transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
       <CardHeader className="p-0">
         <div className="relative h-48 w-full">
             <Image
@@ -69,7 +69,7 @@ export function RouteCard({ ride }: RouteCardProps) {
                 <Users className="mr-1 h-3 w-3" /> {ride.availableSeats} seats left
             </Badge>
         </div>
-        <Button asChild>
+        <Button asChild className="active:scale-95">
           <Link href={`/find-ride/${ride.id}`}>
             View & Book <ArrowRight className="ml-2" />
           </Link>

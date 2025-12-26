@@ -19,7 +19,7 @@ export default function FindRidePage() {
             <div className="flex flex-col gap-4 md:flex-row">
                 <Input placeholder="Start location (e.g., Downtown)" className="bg-background"/>
                 <Input placeholder="End location (e.g., Northwood)" className="bg-background"/>
-                <Button className="w-full md:w-auto">
+                <Button className="w-full md:w-auto active:scale-95">
                     <Search className="mr-2"/>
                     Search
                 </Button>

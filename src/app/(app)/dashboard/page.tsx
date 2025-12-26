@@ -1,5 +1,6 @@
 'use client';
 
+import { motion } from 'framer-motion';
 import { PageHeader } from '@/components/common/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,6 +23,19 @@ const rideRequests = [
     { name: 'Ben Carter', action: 'requested a seat', avatarUrl: 'https://picsum.photos/seed/ben/100' },
 ]
 
+const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.1,
+        duration: 0.5,
+        ease: "easeOut"
+      },
+    }),
+};
+
 export default function DashboardPage() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-10 gap-8 p-4 md:p-8">
@@ -33,25 +47,33 @@ export default function DashboardPage() {
             />
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                {stats.map(stat => (
-                    <Card key={stat.title} className="transform transition-transform duration-300 hover:scale-105 hover:shadow-lg border">
-                        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                            <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-                            <div className={`p-2 rounded-full ${stat.bgColor}`}>
-                                <stat.icon className={`h-5 w-5 ${stat.color}`} />
-                            </div>
-                        </CardHeader>
-                        <CardContent>
-                            <div className="text-3xl font-bold">
-                            <CountUp 
-                                end={stat.value} 
-                                prefix={stat.prefix} 
-                                decimals={stat.decimals}
-                            />
-                            </div>
-                            <p className="text-xs text-muted-foreground">+20.1% from last month</p>
-                        </CardContent>
-                    </Card>
+                {stats.map((stat, i) => (
+                    <motion.div
+                        key={stat.title}
+                        custom={i}
+                        variants={cardVariants}
+                        initial="hidden"
+                        animate="visible"
+                    >
+                        <Card className="transform transition-transform duration-300 hover:scale-105 hover:shadow-lg border">
+                            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                                <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
+                                <div className={`p-2 rounded-full ${stat.bgColor}`}>
+                                    <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                                </div>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="text-3xl font-bold">
+                                <CountUp 
+                                    end={stat.value} 
+                                    prefix={stat.prefix} 
+                                    decimals={stat.decimals}
+                                />
+                                </div>
+                                <p className="text-xs text-muted-foreground">+20.1% from last month</p>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
                 ))}
             </div>
             
@@ -63,7 +85,7 @@ export default function DashboardPage() {
                             <h3 className="font-headline flex items-center gap-3 text-xl font-bold"><Route/> Plan a new commute</h3>
                             <p className="mt-2 opacity-90">Offer seats to others on your regular trips and earn.</p>
                        </div>
-                       <Button asChild variant="secondary" className="mt-6 w-fit">
+                       <Button asChild variant="secondary" className="mt-6 w-fit active:scale-95">
                            <Link href="/plan-route">Create Route <ArrowRight className="ml-2"/></Link>
                        </Button>
                     </Card>
@@ -72,7 +94,7 @@ export default function DashboardPage() {
                             <h3 className="font-headline flex items-center gap-3 text-xl font-bold"><Car/> Find a ride or send a parcel</h3>
                             <p className="text-muted-foreground mt-2">Catch a ride with a neighbor or send something along.</p>
                         </div>
-                        <Button asChild className="mt-6 w-fit">
+                        <Button asChild className="mt-6 w-fit active:scale-95">
                             <Link href="/find-ride">Find Ride <ArrowRight className="ml-2"/></Link>
                         </Button>
                     </Card>
@@ -112,8 +134,8 @@ export default function DashboardPage() {
                                 <div className="flex-1">
                                     <p className="text-sm"><span className="font-semibold">{req.name}</span> {req.action}.</p>
                                     <div className="flex gap-2 mt-2">
-                                        <Button size="sm" className="h-8">Accept</Button>
-                                        <Button size="sm" variant="outline" className="h-8">Decline</Button>
+                                        <Button size="sm" className="h-8 active:scale-95">Accept</Button>
+                                        <Button size="sm" variant="outline" className="h-8 active:scale-95">Decline</Button>
                                     </div>
                                 </div>
                             </div>
@@ -127,7 +149,7 @@ export default function DashboardPage() {
                             <div className="flex-1">
                                 <p className="text-sm"><span className="font-semibold">Message from Mike L.</span></p>
                                 <p className="text-sm text-muted-foreground p-3 bg-gray-100 rounded-lg mt-1">"Hey, where exactly is the pickup point?"</p>
-                                <Button size="sm" variant="ghost" className="h-8 mt-1 p-0 text-primary hover:text-primary">
+                                <Button size="sm" variant="ghost" className="h-8 mt-1 p-0 text-primary hover:text-primary active:scale-95">
                                     <MessageSquare className="mr-2"/> Reply
                                 </Button>
                             </div>

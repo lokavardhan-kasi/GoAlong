@@ -111,10 +111,10 @@ export default function RideDetailPage() {
                       </div>
                     </div>
                     <div className="space-y-2">
-                      <Button size="lg" className="w-full" onClick={handleBooking}>
+                      <Button size="lg" className="w-full active:scale-95" onClick={handleBooking}>
                           <CheckCircle className="mr-2"/> Confirm Booking
                       </Button>
-                      <Button size="lg" variant="outline" className="w-full">
+                      <Button size="lg" variant="outline" className="w-full active:scale-95">
                           <Send className="mr-2"/> Message Driver
                       </Button>
                     </div>

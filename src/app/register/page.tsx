@@ -30,10 +30,10 @@ export default function RegisterPage() {
               <Label htmlFor="password">Password</Label>
               <Input id="password" type="password" />
             </div>
-            <Button type="submit" className="w-full" asChild>
+            <Button type="submit" className="w-full active:scale-95" asChild>
                 <Link href="/dashboard">Create an account</Link>
             </Button>
-            <Button variant="outline" className="w-full">
+            <Button variant="outline" className="w-full active:scale-95">
               Sign up with Google
             </Button>
           </div>

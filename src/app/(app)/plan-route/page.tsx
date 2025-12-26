@@ -11,7 +11,6 @@ import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
-import { format } from 'date-fns';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { PageHeader } from '@/components/common/page-header';
 
@@ -117,7 +116,7 @@ export default function PlanRoutePage() {
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                                 <Input name="startPoint" value={formData.startPoint} onChange={handleChange} placeholder="Where are you leaving from?" className="pl-10 h-12 text-base" />
-                                <Button variant="ghost" className="absolute right-2 top-1/2 -translate-y-1/2 h-auto py-1 px-2 text-sm">Use current location</Button>
+                                <Button variant="ghost" className="absolute right-2 top-1/2 -translate-y-1/2 h-auto py-1 px-2 text-sm active:scale-95">Use current location</Button>
                             </div>
                             <div className="relative">
                                 <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -147,9 +146,9 @@ export default function PlanRoutePage() {
                             <div>
                                 <h3 className="font-semibold mb-4 text-lg flex items-center justify-center gap-2"><Users className="h-5 w-5 text-primary"/>How many seats?</h3>
                                 <div className="flex items-center justify-center gap-4">
-                                    <Button variant="outline" size="icon" onClick={() => setFormData(p => ({...p, passengers: Math.max(1, p.passengers - 1)}))}><Minus/></Button>
+                                    <Button variant="outline" size="icon" onClick={() => setFormData(p => ({...p, passengers: Math.max(1, p.passengers - 1)}))} className="active:scale-95"><Minus/></Button>
                                     <span className="text-2xl font-bold w-12">{formData.passengers}</span>
-                                    <Button variant="outline" size="icon" onClick={() => setFormData(p => ({...p, passengers: Math.min(8, p.passengers + 1)}))}><Plus/></Button>
+                                    <Button variant="outline" size="icon" onClick={() => setFormData(p => ({...p, passengers: Math.min(8, p.passengers + 1)}))} className="active:scale-95"><Plus/></Button>
                                 </div>
                             </div>
                             <div className="space-y-4">
@@ -194,15 +193,15 @@ export default function PlanRoutePage() {
         </Card>
         
         <div className="mt-6 flex justify-between">
-            <Button variant="outline" onClick={handlePrev} disabled={currentStep === 0}>
+            <Button variant="outline" onClick={handlePrev} disabled={currentStep === 0} className="active:scale-95">
                 <ArrowLeft className="mr-2"/> Previous
             </Button>
             {currentStep < steps.length - 1 ? (
-                <Button onClick={handleNext}>
+                <Button onClick={handleNext} className="active:scale-95">
                    Next <ArrowRight className="ml-2"/>
                 </Button>
             ) : (
-                <Button className="bg-gradient-to-r from-purple-600 to-blue-500 text-white" onClick={handlePublish}>
+                <Button className="bg-gradient-to-r from-purple-600 to-blue-500 text-white active:scale-95" onClick={handlePublish}>
                    <Save className="mr-2"/> Publish Ride
                 </Button>
             )}

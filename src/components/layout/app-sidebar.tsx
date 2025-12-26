@@ -2,9 +2,8 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '../common/logo';
-import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
-import { Car, History, LayoutDashboard, LucideIcon, Package, PlusCircle, Route, User, Send, Settings, Bell } from 'lucide-react';
+import { Car, History, LayoutDashboard, LucideIcon, User, Send, Settings, Bell, Route, PlusCircle } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 
@@ -77,7 +76,7 @@ function MenuItem({ href, label, icon: Icon, pathname, badge }: MenuItemProps) {
         <li>
             <Link 
                 href={href} 
-                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 transition-all hover:bg-gray-100 hover:text-primary ${isActive ? "bg-gray-100 text-primary font-semibold" : "font-medium"}`}
+                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-gray-700 transition-colors hover:bg-gray-50 hover:text-primary ${isActive ? "bg-gray-100 text-primary font-semibold" : "font-medium"}`}
             >
                 <Icon className="h-5 w-5" />
                 <span>{label}</span>

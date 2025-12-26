@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useTransition } from 'react';
+import { useTransition } from 'react';
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -39,6 +39,7 @@ export default function RequestRidePage() {
 
   const handleAiAssist = (field: 'pickupLocation' | 'dropoffLocation') => {
     const value = form.getValues(field);
+    if (!value) return;
     startAiTransition(async () => {
       const result = await getAccurateAddressAction({ locationDescription: value });
       if (result.success && result.data) {
@@ -89,7 +90,7 @@ export default function RequestRidePage() {
                     <FormControl>
                       <div className="relative">
                         <Input placeholder="e.g., Near the big fountain at Central Park" {...field} />
-                        <Button type="button" size="icon" variant="ghost" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8" onClick={() => handleAiAssist('pickupLocation')} disabled={isAiLoading || !field.value}>
+                        <Button type="button" size="icon" variant="ghost" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 active:scale-95" onClick={() => handleAiAssist('pickupLocation')} disabled={isAiLoading || !field.value}>
                           {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Sparkles className="h-4 w-4 text-primary"/>}
                           <span className="sr-only">Get Accurate Address with AI</span>
                         </Button>
@@ -108,7 +109,7 @@ export default function RequestRidePage() {
                     <FormControl>
                        <div className="relative">
                         <Input placeholder="e.g., The coffee shop next to the library" {...field} />
-                        <Button type="button" size="icon" variant="ghost" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8" onClick={() => handleAiAssist('dropoffLocation')} disabled={isAiLoading || !field.value}>
+                        <Button type="button" size="icon" variant="ghost" className="absolute right-1 top-1/2 -translate-y-1/2 h-8 w-8 active:scale-95" onClick={() => handleAiAssist('dropoffLocation')} disabled={isAiLoading || !field.value}>
                           {isAiLoading ? <Loader2 className="h-4 w-4 animate-spin"/> : <Sparkles className="h-4 w-4 text-primary"/>}
                           <span className="sr-only">Get Accurate Address with AI</span>
                         </Button>
@@ -149,7 +150,7 @@ export default function RequestRidePage() {
                 )}
                 />
               <div className="flex justify-end pt-2">
-                <Button type="submit">
+                <Button type="submit" className="active:scale-95">
                   <Send className="mr-2"/>
                   Send Request
                 </Button>
