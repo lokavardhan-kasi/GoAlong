@@ -138,7 +138,7 @@ export default function LandingPage() {
           </Link>
           <nav className="hidden md:flex items-center gap-8">
             <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Features</Link>
-            <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">How it Works</Link>
+            <Link href="/become-a-driver" className="text-gray-600 hover:text-purple-600 transition-colors">Become a Driver</Link>
             <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Community</Link>
           </nav>
           <div className="flex items-center gap-4">
