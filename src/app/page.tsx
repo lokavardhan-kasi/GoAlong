@@ -9,7 +9,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <header className="container mx-auto flex h-20 items-center justify-between px-4 md:px-6">
         <Logo />
-        <nav className="flex items-center gap-4">
+        <nav className="flex items-center gap-2">
           <Button variant="ghost" asChild>
             <Link href="/login">Login</Link>
           </Button>
@@ -46,39 +46,39 @@ export default function Home() {
             </div>
             <div className="grid gap-8 md:grid-cols-3">
               <Card className="transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                <CardHeader className="items-center">
+                <CardHeader className="items-center text-center">
                   <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
                     <Car className="h-8 w-8" />
                   </div>
                   <CardTitle className="font-headline">Share Your Ride</CardTitle>
                 </CardHeader>
-                <CardContent className="text-center">
+                <CardContent className="text-center pt-0">
                   <CardDescription>
                     Drivers can post their regular commute routes and offer available seats to neighbors.
                   </CardDescription>
                 </CardContent>
               </Card>
               <Card className="transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                <CardHeader className="items-center">
+                <CardHeader className="items-center text-center">
                   <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
                     <Users className="h-8 w-8" />
                   </div>
                   <CardTitle className="font-headline">Find a Match</CardTitle>
                 </CardHeader>
-                <CardContent className="text-center">
+                <CardContent className="text-center pt-0">
                   <CardDescription>
                     Riders can easily find drivers heading in the same direction, making their travel cheaper and more social.
                   </CardDescription>
                 </CardContent>
               </Card>
               <Card className="transform transition-transform duration-300 hover:scale-105 hover:shadow-xl">
-                <CardHeader className="items-center">
+                <CardHeader className="items-center text-center">
                   <div className="mb-4 rounded-full bg-primary/10 p-4 text-primary">
                     <Package className="h-8 w-8" />
                   </div>
                   <CardTitle className="font-headline">Send Parcels</CardTitle>
                 </CardHeader>
-                <CardContent className="text-center">
+                <CardContent className="text-center pt-0">
                   <CardDescription>
                     Need to send something across town? Find a neighbor already heading that way for quick, low-cost delivery.
                   </CardDescription>

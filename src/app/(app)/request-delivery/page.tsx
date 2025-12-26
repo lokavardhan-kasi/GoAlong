@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { MapPin, Clock, Package, Send, Sparkles, Loader2 } from 'lucide-react';
+import { MapPin, Clock, Send, Sparkles, Loader2 } from 'lucide-react';
 import { getAccurateAddressAction } from './actions';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -148,7 +148,7 @@ export default function RequestDeliveryPage() {
                     </FormItem>
                 )}
                 />
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-2">
                 <Button type="submit">
                   <Send className="mr-2"/>
                   Send Delivery Request

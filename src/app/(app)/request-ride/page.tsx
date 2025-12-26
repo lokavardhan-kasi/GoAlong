@@ -10,7 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { MapPin, Clock, Users, Send, Sparkles, Loader2 } from 'lucide-react';
+import { MapPin, Clock, Send, Sparkles, Loader2 } from 'lucide-react';
 import { getAccurateAddressAction } from './actions';
 import { Textarea } from '@/components/ui/textarea';
 
@@ -69,8 +69,8 @@ export default function RequestRidePage() {
   return (
     <>
       <PageHeader
-        title="Request a Ride or Delivery"
-        description="Tell us where you need to go or what you need to send."
+        title="Request a Ride"
+        description="Tell us where you need to go and we'll find you a match."
       />
       <Card>
         <CardHeader>
@@ -148,7 +148,7 @@ export default function RequestRidePage() {
                     </FormItem>
                 )}
                 />
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-2">
                 <Button type="submit">
                   <Send className="mr-2"/>
                   Send Request

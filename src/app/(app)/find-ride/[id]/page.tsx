@@ -30,8 +30,6 @@ export default function RideDetailPage() {
     toast({
         title: "Booking Confirmed!",
         description: `Your seat for the ride with ${ride.driverName} has been booked.`,
-        variant: 'default',
-        className: 'bg-green-100 border-green-300 text-green-800'
     })
   }
 
@@ -95,27 +93,31 @@ export default function RideDetailPage() {
                 <CardHeader>
                     <CardTitle className="font-headline">Booking Confirmation</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                    <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Seats to book</span>
-                        <Badge>{seatsToBook}</Badge>
+                <CardContent className="space-y-4">
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Seats to book</span>
+                          <Badge>{seatsToBook}</Badge>
+                      </div>
+                      <div className="flex items-center justify-between">
+                          <span className="text-muted-foreground">Price per seat</span>
+                          <span>${ride.pricePerSeat.toFixed(2)}</span>
+                      </div>
+                      <div className="border-t pt-4 flex items-center justify-between">
+                          <span className="text-lg font-semibold">Estimated Cost</span>
+                          <div className="text-2xl font-bold text-primary">
+                              <CountUp end={estimatedCost} prefix="$" decimals={2} />
+                          </div>
+                      </div>
                     </div>
-                     <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Price per seat</span>
-                        <span>${ride.pricePerSeat.toFixed(2)}</span>
+                    <div className="space-y-2">
+                      <Button size="lg" className="w-full" onClick={handleBooking}>
+                          <CheckCircle className="mr-2"/> Confirm Booking
+                      </Button>
+                      <Button size="lg" variant="outline" className="w-full">
+                          <Send className="mr-2"/> Message Driver
+                      </Button>
                     </div>
-                    <div className="border-t pt-4 flex items-center justify-between">
-                        <span className="text-lg font-semibold">Estimated Cost</span>
-                        <div className="text-2xl font-bold text-primary">
-                            <CountUp end={estimatedCost} prefix="$" decimals={2} />
-                        </div>
-                    </div>
-                    <Button size="lg" className="w-full" onClick={handleBooking}>
-                        <CheckCircle className="mr-2"/> Confirm Booking
-                    </Button>
-                     <Button size="lg" variant="outline" className="w-full">
-                        <Send className="mr-2"/> Message Driver
-                    </Button>
                 </CardContent>
             </Card>
         </div>
