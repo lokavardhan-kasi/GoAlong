@@ -18,7 +18,7 @@ export default function LandingPage() {
 
   const handlePublishClick = () => {
     if (!isLoggedIn) {
-      alert("Please login to publish a ride.");
+      localStorage.setItem('redirectAfterLogin', '/plan-route');
       router.push('/login');
     } else {
       router.push('/plan-route');
@@ -151,7 +151,7 @@ export default function LandingPage() {
                         custom={0}
                     >
                         <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                        <Image src="https://images.unsplash.com/photo-1570429616793-3d96114a1c39?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={800} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
+                        <Image src="https://picsum.photos/seed/hero/800/400" width={800} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
                     </motion.div>
                     <motion.div 
                         className="relative group rounded-2xl"
@@ -161,7 +161,7 @@ export default function LandingPage() {
                         custom={1}
                     >
                         <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                        <Image src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="person dog" />
+                        <Image src="https://picsum.photos/seed/pet-travel/400/400" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="pet travel" />
                     </motion.div>
                     <motion.div 
                         className="relative group rounded-2xl"
@@ -171,7 +171,7 @@ export default function LandingPage() {
                         custom={2}
                     >
                         <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                        <Image src="https://images.unsplash.com/photo-1617978241112-9a8c1edf32aa?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
+                        <Image src="https://picsum.photos/seed/delivery/400/400" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
                     </motion.div>
                 </div>
             </div>
