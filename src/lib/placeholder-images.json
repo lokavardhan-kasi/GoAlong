@@ -3,50 +3,74 @@
     {
       "id": "user1",
       "description": "Avatar of a smiling man",
-      "imageUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2NjY4ODUyN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1599566150163-29194dcaad36?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "imageHint": "person face"
     },
     {
       "id": "user2",
       "description": "Avatar of a woman with glasses",
-      "imageUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2NjY4ODUyN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "imageHint": "person face"
     },
     {
       "id": "user3",
       "description": "Avatar of a person with short hair",
-      "imageUrl": "https://images.unsplash.com/photo-1626526804650-7118ac691b7a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2NjY4ODUyN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "imageHint": "person face"
     },
     {
       "id": "user4",
       "description": "Avatar of a woman smiling",
-      "imageUrl": "https://images.unsplash.com/photo-1530268729831-4b0b9e170218?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxwZXJzb24lMjBmYWNlfGVufDB8fHx8MTc2NjY4ODUyN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
       "imageHint": "person face"
     },
     {
       "id": "car1",
       "description": "A modern blue sedan on the road",
-      "imageUrl": "https://images.unsplash.com/photo-1618767036477-2665a9459574?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxibHVlJTIwc2VkYW58ZW58MHx8fHwxNzY2NjY1NjMzfDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "blue sedan"
+      "imageUrl": "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "yellow car"
     },
     {
       "id": "car2",
       "description": "A white SUV parked in a city",
-      "imageUrl": "https://images.unsplash.com/photo-1649296303096-38245976e01e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHx3aGl0ZSUyMHN1dnxlbnwwfHx8fDE3NjY3NTgyMjB8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "white suv"
+      "imageUrl": "https://images.unsplash.com/photo-1514316454349-7629a42da93d?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "red car"
     },
     {
       "id": "car3",
       "description": "A red compact car driving on a highway",
-      "imageUrl": "https://images.unsplash.com/photo-1632726146281-a7239810ced1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8cmVkJTIwY2FyfGVufDB8fHx8MTc2NjY1NzA4OXww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "red car"
+      "imageUrl": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "black car"
+    },
+    {
+      "id": "car4",
+      "description": "A gray compact car",
+      "imageUrl": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "gray car"
     },
     {
       "id": "hero",
-      "description": "A scenic road with a car driving into the sunset",
-      "imageUrl": "https://images.unsplash.com/photo-1692433163046-f3acc22842a9?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxyb2FkJTIwc3Vuc2V0fGVufDB8fHx8MTc2Njc2MTk2NHww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "road sunset"
+      "description": "A group of friends in a car",
+      "imageUrl": "https://images.unsplash.com/photo-1533613220915-609f661a6fe1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "people car"
+    },
+    {
+      "id": "hero-dog",
+      "description": "A happy dog in a car",
+      "imageUrl": "https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "person dog"
+    },
+    {
+      "id": "hero-delivery",
+      "description": "A person holding a delivery package",
+      "imageUrl": "https://images.unsplash.com/photo-1618037238210-9ebd75467afd?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "delivery package"
+    },
+    {
+      "id": "map",
+      "description": "A map of a city showing routes",
+      "imageUrl": "https://images.unsplash.com/photo-1528740561639-624a733c3a37?q=80&w=1991&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "imageHint": "route map"
     }
   ]
 }

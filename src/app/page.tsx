@@ -123,9 +123,9 @@ export default function LandingPage() {
   };
   
   const images = [
-      { src: "https://picsum.photos/seed/car-main/800/400", alt: "Car", hint: "driving sunset", className: "col-span-2 row-span-1", gradient: "from-purple-500 to-pink-500" },
-      { src: "https://picsum.photos/seed/cyclist/400/400", alt: "Cyclist", hint: "city cyclist", className: "col-span-1 row-span-1", gradient: "from-green-400 to-cyan-500" },
-      { src: "https://picsum.photos/seed/delivery/400/400", alt: "Delivery Bike", hint: "delivery scooter", className: "col-span-1 row-span-1", gradient: "from-blue-500 to-indigo-500" },
+      { src: "https://images.unsplash.com/photo-1533613220915-609f661a6fe1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Carpooling", hint: "people car", className: "col-span-2 row-span-1", gradient: "from-purple-500 to-pink-500" },
+      { src: "https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Happy passenger with dog", hint: "person dog", className: "col-span-1 row-span-1", gradient: "from-green-400 to-cyan-500" },
+      { src: "https://images.unsplash.com/photo-1618037238210-9ebd75467afd?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D", alt: "Delivery person with a package", hint: "delivery package", className: "col-span-1 row-span-1", gradient: "from-blue-500 to-indigo-500" },
     ]
 
   return (
