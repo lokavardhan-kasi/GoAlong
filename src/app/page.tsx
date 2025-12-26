@@ -120,6 +120,12 @@ export default function LandingPage() {
       },
     }),
   };
+  
+  const images = [
+      { src: "https://picsum.photos/seed/car-main/800/400", alt: "Car", hint: "driving sunset", className: "col-span-2 row-span-1", gradient: "from-purple-500 to-pink-500" },
+      { src: "https://picsum.photos/seed/cyclist/400/400", alt: "Cyclist", hint: "city cyclist", className: "col-span-1 row-span-1", gradient: "from-green-400 to-cyan-500" },
+      { src: "https://picsum.photos/seed/delivery/400/400", alt: "Delivery Bike", hint: "delivery scooter", className: "col-span-1 row-span-1", gradient: "from-blue-500 to-indigo-500" },
+    ]
 
   return (
     <div className="bg-white font-sans relative">
@@ -216,20 +222,17 @@ export default function LandingPage() {
               </Card>
             </motion.div>
             <div className="grid grid-cols-2 grid-rows-2 gap-4 h-[500px]">
-              {[
-                { src: "https://picsum.photos/seed/car-main/800/400", alt: "Car", hint: "driving sunset", className: "col-span-2 row-span-1" },
-                { src: "https://picsum.photos/seed/cyclist/400/400", alt: "Cyclist", hint: "city cyclist", className: "col-span-1 row-span-1" },
-                { src: "https://picsum.photos/seed/delivery/400/400", alt: "Delivery Bike", hint: "delivery scooter", className: "col-span-1 row-span-1" },
-              ].map((img, i) => (
+              {images.map((img, i) => (
                 <motion.div
                   key={img.src}
                   custom={i}
                   variants={imageVariants}
                   initial="hidden"
                   animate="visible"
-                  className={`${img.className} rounded-2xl overflow-hidden shadow-lg`}
+                  className={`${img.className} relative group rounded-2xl overflow-hidden shadow-lg`}
                 >
-                  <Image src={img.src} alt={img.alt} width={i === 0 ? 800 : 400} height={400} className="w-full h-full object-cover transition-transform duration-300 hover:scale-105" data-ai-hint={img.hint} />
+                  <div className={`absolute -inset-2 bg-gradient-to-tr ${img.gradient} rounded-3xl blur-3xl opacity-0 group-hover:opacity-70 transition-all duration-500 -z-10`}></div>
+                  <Image src={img.src} alt={img.alt} width={i === 0 ? 800 : 400} height={400} className="relative z-10 w-full h-full object-cover transition-transform duration-300 hover:scale-105" data-ai-hint={img.hint} />
                 </motion.div>
               ))}
             </div>
