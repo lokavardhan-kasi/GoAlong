@@ -18,6 +18,7 @@ export default function LandingPage() {
 
   const handlePublishClick = () => {
     if (!isLoggedIn) {
+      alert("Please login to publish a ride.");
       router.push('/login');
     } else {
       router.push('/plan-route');
@@ -61,8 +62,8 @@ export default function LandingPage() {
           </Link>
           <nav className="hidden md:flex items-center gap-8">
             <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Features</Link>
-            <Button variant="ghost" asChild>
-                <Link href="/become-a-driver">Become a Driver</Link>
+            <Button asChild variant="link" className="text-gray-600 hover:text-purple-600 transition-colors">
+              <Link href="/become-a-driver">Become a Driver</Link>
             </Button>
             <Link href="#" className="text-gray-600 hover:text-purple-600 transition-colors">Community</Link>
           </nav>
@@ -87,12 +88,12 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="pt-20">
-        <section className="container mx-auto px-4 py-24 min-h-[calc(100vh-80px)] grid md:grid-cols-2 gap-16 items-center">
-            {/* Left Side */}
-            <div className="text-center md:text-left">
+        <section className="container mx-auto px-4 py-24 min-h-[calc(100vh-80px)] flex flex-col lg:flex-row items-center justify-between gap-12">
+            {/* Left Side: Text & Search */}
+            <div className="w-full lg:w-1/2 space-y-8 z-10 text-center lg:text-left">
                  <h1 className="text-5xl md:text-6xl font-bold leading-tight">
                     <motion.span 
-                        className="bg-gradient-to-r from-purple-600 to-blue-500 bg-clip-text text-transparent"
+                        className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-blue-500"
                         style={{ backgroundSize: '200% 200%' }}
                         animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
                         transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
@@ -100,7 +101,7 @@ export default function LandingPage() {
                         GoAlong
                     </motion.span>, Your Community, Your Commute.
                 </h1>
-                <p className="text-lg text-gray-600 mt-4 mb-8 max-w-2xl">
+                <p className="text-lg text-gray-600 max-w-2xl mx-auto lg:mx-0">
                     Share rides, send parcels, and connect with your neighbors.
                 </p>
                 <Card className="rounded-2xl shadow-xl p-6 bg-white/90 backdrop-blur-md border">
@@ -139,38 +140,40 @@ export default function LandingPage() {
                     </CardContent>
                 </Card>
             </div>
-            {/* Right Side Image Grid */}
-            <div className="grid grid-cols-2 gap-4">
-                <motion.div 
-                    className="relative group rounded-2xl col-span-2 row-span-1"
-                    variants={imageVariants}
-                    initial="hidden"
-                    animate="visible"
-                    custom={0}
-                >
-                     <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                    <Image src="https://images.unsplash.com/photo-1533613220915-609f661a6fe1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={800} height={400} alt="Red car" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
-                </motion.div>
-                <motion.div 
-                    className="relative group rounded-2xl"
-                    variants={imageVariants}
-                    initial="hidden"
-                    animate="visible"
-                    custom={1}
-                >
-                     <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                    <Image src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="Teal bike" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="person dog" />
-                </motion.div>
-                <motion.div 
-                    className="relative group rounded-2xl"
-                     variants={imageVariants}
-                    initial="hidden"
-                    animate="visible"
-                    custom={2}
-                >
-                     <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                    <Image src="https://images.unsplash.com/photo-1618037238210-9ebd75467afd?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="Delivery" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
-                </motion.div>
+            {/* Right Side: Image Grid */}
+            <div className="w-full lg:w-1/2 relative">
+                <div className="grid grid-cols-2 gap-4">
+                    <motion.div 
+                        className="relative group rounded-2xl col-span-2 row-span-1"
+                        variants={imageVariants}
+                        initial="hidden"
+                        animate="visible"
+                        custom={0}
+                    >
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
+                        <Image src="https://images.unsplash.com/photo-1570429616793-3d96114a1c39?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={800} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
+                    </motion.div>
+                    <motion.div 
+                        className="relative group rounded-2xl"
+                        variants={imageVariants}
+                        initial="hidden"
+                        animate="visible"
+                        custom={1}
+                    >
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
+                        <Image src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="person dog" />
+                    </motion.div>
+                    <motion.div 
+                        className="relative group rounded-2xl"
+                        variants={imageVariants}
+                        initial="hidden"
+                        animate="visible"
+                        custom={2}
+                    >
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
+                        <Image src="https://images.unsplash.com/photo-1617978241112-9a8c1edf32aa?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
+                    </motion.div>
+                </div>
             </div>
         </section>
 
@@ -183,7 +186,7 @@ export default function LandingPage() {
                   <div className="mx-auto bg-green-100 rounded-full h-16 w-16 flex items-center justify-center mb-4">
                     <Leaf className="w-8 h-8 text-green-600" />
                   </div>
-                  <h3 className="text-xl font-bold mb-2">Save Money & Earth</h3>
+                  <h3 className="text-xl font-bold mb-2">Save Money &amp; Earth</h3>
                   <p className="text-gray-600">Reduce your carbon footprint and save on fuel costs by sharing your ride.</p>
               </motion.div>
               <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.2 }} className="rounded-2xl shadow-lg text-center p-8 transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl border bg-card">
@@ -238,7 +241,7 @@ export default function LandingPage() {
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
                         <ul className="space-y-2 text-sm">
-                            <li><Link href="#" className="text-gray-400 hover:text-white">Find a Ride</Link></li>
+                            <li><Link href="/find-ride" className="text-gray-400 hover:text-white">Find a Ride</Link></li>
                             <li><Link href="/become-a-driver" className="text-gray-400 hover:text-white">Become a Driver</Link></li>
                             <li><Link href="#" className="text-gray-400 hover:text-white">How It Works</Link></li>
                         </ul>
@@ -274,5 +277,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
