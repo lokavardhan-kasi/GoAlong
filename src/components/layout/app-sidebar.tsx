@@ -66,15 +66,16 @@ function MenuItem({ href, label, icon: Icon, pathname }: MenuItemProps) {
     const isActive = pathname === href || (href !== "/dashboard" && pathname.startsWith(href));
     return (
         <SidebarMenuItem>
-            <Link href={href} legacyBehavior passHref>
-                <SidebarMenuButton
-                    isActive={isActive}
-                    tooltip={{ children: label, side: 'right' }}
-                >
+            <SidebarMenuButton
+                asChild
+                isActive={isActive}
+                tooltip={{ children: label, side: 'right' }}
+            >
+                <Link href={href}>
                     <Icon />
                     <span>{label}</span>
-                </SidebarMenuButton>
-            </Link>
+                </Link>
+            </SidebarMenuButton>
         </SidebarMenuItem>
     )
 }
