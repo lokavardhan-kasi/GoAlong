@@ -1,6 +1,6 @@
 'use server';
 
-import { assistRiderWithLocationDetails, RiderAssistanceInput } from '@/ai/flows/rider-assistance-with-location-details';
+import { assistRiderWithLocationDetails } from '@/ai/flows/rider-assistance-with-location-details';
 import { z } from 'zod';
 
 const ActionInputSchema = z.object({
