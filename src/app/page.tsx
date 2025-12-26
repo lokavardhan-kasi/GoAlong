@@ -18,18 +18,11 @@ export default function LandingPage() {
 
   const handlePublishClick = () => {
     if (!isLoggedIn) {
-      alert("Please Login to Publish");
       router.push('/login');
     } else {
       router.push('/plan-route');
     }
   };
-
-  useEffect(() => {
-    if (isLoggedIn) {
-      router.push('/dashboard');
-    }
-  }, [isLoggedIn, router]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -156,7 +149,7 @@ export default function LandingPage() {
                     custom={0}
                 >
                      <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                    <Image src="https://picsum.photos/seed/hero-car/800/400" width={800} height={400} alt="Red car" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="red car"/>
+                    <Image src="https://images.unsplash.com/photo-1533613220915-609f661a6fe1?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={800} height={400} alt="Red car" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
                 </motion.div>
                 <motion.div 
                     className="relative group rounded-2xl"
@@ -166,7 +159,7 @@ export default function LandingPage() {
                     custom={1}
                 >
                      <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                    <Image src="https://picsum.photos/seed/hero-bike/400/400" width={400} height={400} alt="Teal bike" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="teal bike" />
+                    <Image src="https://images.unsplash.com/photo-1543466835-00a7907e9de1?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="Teal bike" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="person dog" />
                 </motion.div>
                 <motion.div 
                     className="relative group rounded-2xl"
@@ -176,7 +169,7 @@ export default function LandingPage() {
                     custom={2}
                 >
                      <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
-                    <Image src="https://picsum.photos/seed/hero-delivery/400/400" width={400} height={400} alt="Delivery" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
+                    <Image src="https://images.unsplash.com/photo-1618037238210-9ebd75467afd?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" width={400} height={400} alt="Delivery" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
                 </motion.div>
             </div>
         </section>
