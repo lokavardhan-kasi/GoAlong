@@ -14,7 +14,7 @@ import { Logo } from '@/components/common/logo';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
-  const { isLoggedIn, login } = useContext(UserContext);
+  const { isLoggedIn } = useContext(UserContext);
   const router = useRouter();
 
   const handlePublishClick = (e: React.MouseEvent) => {
@@ -26,11 +26,6 @@ export default function LandingPage() {
       router.push('/plan-route');
     }
   };
-
-  // Simulate login for demonstration purposes
-  useEffect(() => {
-    login({ name: 'Jane Doe', email: 'jane.doe@example.com' });
-  },[login]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,7 +72,7 @@ export default function LandingPage() {
           </nav>
           <div className="flex items-center gap-2">
             {isLoggedIn ? (
-              <Button asChild>
+               <Button asChild>
                 <Link href="/dashboard">Dashboard</Link>
               </Button>
             ) : (
@@ -97,7 +92,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <main>
         <section className="relative w-full overflow-hidden bg-white pt-20">
-          <div className="container mx-auto px-6 py-24 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-12">
+           <div className="container mx-auto px-6 py-24 min-h-screen flex flex-col lg:flex-row items-center justify-center gap-12">
             
             {/* Left Side: Text & Search */}
             <div className="w-full lg:w-1/2 space-y-8 z-10 text-center lg:text-left">
@@ -298,4 +293,5 @@ export default function LandingPage() {
       </main>
     </div>
   );
-}
+
+    
