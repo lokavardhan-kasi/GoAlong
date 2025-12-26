@@ -1,9 +1,19 @@
 import type { Metadata } from 'next';
 import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
-import { Inter } from 'next/font/google'
+import { Poppins, PT_Sans } from 'next/font/google'
 
-const inter = Inter({ subsets: ['latin'] })
+const poppins = Poppins({ 
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-poppins',
+})
+
+const ptSans = PT_Sans({
+  subsets: ['latin'],
+  weight: ['400', '700'],
+  variable: '--font-pt-sans',
+})
 
 export const metadata: Metadata = {
   title: 'GoAlong Community Mobility',
@@ -17,7 +27,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased`}>
+      <body className={`${poppins.variable} ${ptSans.variable} font-sans antialiased bg-light-cyan`}>
         {children}
         <Toaster />
       </body>

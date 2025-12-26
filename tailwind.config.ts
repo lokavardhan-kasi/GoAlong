@@ -17,9 +17,11 @@ export default {
     },
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
+        headline: ['var(--font-poppins)', 'sans-serif'],
+        sans: ['var(--font-pt-sans)', 'sans-serif'],
       },
       colors: {
+        'light-cyan': '#E5F5FF',
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
