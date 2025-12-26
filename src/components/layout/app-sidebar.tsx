@@ -14,7 +14,7 @@ import {
 import { Logo } from '../common/logo';
 import { Button } from '../ui/button';
 import { Separator } from '../ui/separator';
-import { Car, History, LayoutDashboard, LucideIcon, Package, PlusCircle, Route, User } from 'lucide-react';
+import { Car, History, LayoutDashboard, LucideIcon, Package, PlusCircle, Route, User, Send } from 'lucide-react';
 
 const menuItems = [
     {
@@ -49,9 +49,14 @@ const riderMenuItems = [
         icon: Car,
     },
     {
-        label: "Request Ride/Delivery",
+        label: "Request Ride",
         href: "/request-ride",
         icon: PlusCircle,
+    },
+    {
+        label: "Request Delivery",
+        href: "/request-delivery",
+        icon: Send,
     }
 ]
 
@@ -82,6 +87,7 @@ function MenuItem({ href, label, icon: Icon, pathname }: MenuItemProps) {
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const isDeliveryMode = pathname.includes('delivery');
 
   return (
     <Sidebar>
@@ -105,10 +111,11 @@ export function AppSidebar() {
         </SidebarMenu>
       <Separator className="my-2" />
       <SidebarFooter>
-        <Button variant="ghost">
-          <Car className="mr-2" />
-          <Package />
-          <span className="ml-2">Switch to Delivery</span>
+        <Button variant="ghost" asChild>
+            <Link href={isDeliveryMode ? "/find-ride" : "/request-delivery"}>
+                {isDeliveryMode ? <Car className="mr-2" /> : <Package className="mr-2" />}
+                <span>{isDeliveryMode ? "Switch to Ride" : "Switch to Delivery"}</span>
+            </Link>
         </Button>
       </SidebarFooter>
     </Sidebar>
