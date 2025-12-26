@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -229,10 +230,10 @@ export default function LandingPage() {
                   variants={imageVariants}
                   initial="hidden"
                   animate="visible"
-                  className={`${img.className} relative group rounded-2xl overflow-hidden shadow-lg`}
+                  className={`${img.className} relative group rounded-2xl shadow-lg`}
                 >
                   <div className={`absolute -inset-2 bg-gradient-to-tr ${img.gradient} rounded-3xl blur-3xl opacity-0 group-hover:opacity-70 transition-all duration-500 -z-10`}></div>
-                  <Image src={img.src} alt={img.alt} width={i === 0 ? 800 : 400} height={400} className="relative z-10 w-full h-full object-cover transition-transform duration-300 hover:scale-105" data-ai-hint={img.hint} />
+                  <Image src={img.src} alt={img.alt} width={i === 0 ? 800 : 400} height={400} className="relative z-10 w-full h-full object-cover transition-transform duration-300 hover:scale-105 rounded-2xl" data-ai-hint={img.hint} />
                 </motion.div>
               ))}
             </div>
