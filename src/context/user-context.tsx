@@ -5,6 +5,7 @@ import React,
   createContext,
   useState,
   useMemo,
+  useCallback,
 } from 'react';
 
 type User = {
@@ -29,20 +30,20 @@ export const UserContext = createContext<UserContextType>({
 export function UserProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
 
-  const login = (userData: User) => {
+  const login = useCallback((userData: User) => {
     setUser(userData);
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     setUser(null);
-  };
+  }, []);
 
   const contextValue = useMemo(() => ({
     isLoggedIn: user !== null,
     user,
     login,
     logout,
-  }), [user]);
+  }), [user, login, logout]);
 
   return (
     <UserContext.Provider value={contextValue}>
