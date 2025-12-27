@@ -158,7 +158,7 @@ export default function PlanRoutePage() {
                     )}
                     {currentStep === 1 && (
                          <div className="flex flex-col items-center gap-8">
-                            <div className="flex flex-col items-center">
+                            <div className="flex flex-col items-center w-full">
                                 <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Days of the week</h3>
                                  <ToggleGroup type="multiple" variant="outline" className="justify-center flex-wrap" value={formData.routeDays} onValueChange={(value) => setFormData(p => ({...p, routeDays: value}))}>
                                     <ToggleGroupItem value="mon">Mon</ToggleGroupItem>
@@ -170,7 +170,7 @@ export default function PlanRoutePage() {
                                     <ToggleGroupItem value="sun">Sun</ToggleGroupItem>
                                 </ToggleGroup>
                             </div>
-                            <div className="flex flex-col items-center">
+                            <div className="flex flex-col items-center w-full pt-4">
                                  <h3 className="font-semibold mb-2 flex items-center gap-2"><Clock className="h-5 w-5 text-primary"/> Departure Time</h3>
                                  <Input name="travelTime" type="time" value={formData.travelTime} onChange={handleChange} className="h-12 text-base w-full max-w-xs" />
                             </div>
