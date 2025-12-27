@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Car, Leaf, MessageSquare, Route, IndianRupee, Trash2 } from 'lucide-react';
+import { ArrowRight, Car, Leaf, MessageSquare, Route, IndianRupee, Trash2, Calendar } from 'lucide-react';
 import CountUp from '@/components/common/count-up';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -17,6 +17,7 @@ import { collection, query, where, doc, deleteDoc, getDocs } from 'firebase/fire
 import { RideRequest, WithId, Route as RideRoute } from '@/lib/mock-data';
 import { CarLoader } from '@/components/ui/CarLoader';
 import { useToast } from '@/hooks/use-toast';
+import { format } from 'date-fns';
 
 const stats = [
     { title: "Rides Completed", value: 24, icon: Car, color: "text-blue-500", bgColor: "bg-blue-100" },
@@ -115,7 +116,7 @@ function FrequentRoutes() {
         return collection(firestore, `users/${user.uid}/routes`);
     }, [user, firestore]);
 
-    const { data: routes, isLoading } = useCollection<RideRoute>(routesQuery);
+    const { data: routes, isLoading } = useCollection<RideRoute & { scheduleType?: 'recurring' | 'one-time'; date?: string }>(routesQuery);
     
     const handleDeleteRoute = async (routeId: string) => {
         if (!user) return;
@@ -136,7 +137,13 @@ function FrequentRoutes() {
                             <div key={route.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
                                 <div>
                                     <p className="font-semibold">{route.startPoint} to {route.endPoint}</p>
-                                    <p className="text-sm text-muted-foreground">{route.travelTime} - {route.routeDays.join(', ')}</p>
+                                    <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                        {route.scheduleType === 'one-time' && route.date ? (
+                                            <><Calendar className="h-4 w-4" /> {format(new Date(route.date), 'PPP')} at {route.travelTime}</>
+                                        ) : (
+                                            <>{route.travelTime} - {route.routeDays.join(', ')}</>
+                                        )}
+                                    </p>
                                 </div>
                                 <div className="flex items-center gap-2">
                                   <Badge variant="secondary">{route.availableSeats} seats</Badge>

@@ -3,7 +3,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MapPin, ArrowRight, ArrowLeft, Calendar, Clock, Users, Package, Minus, Plus, Wallet, Save } from 'lucide-react';
+import { MapPin, ArrowRight, ArrowLeft, Calendar, Clock, Users, Package, Minus, Plus, Wallet, Save, Repeat } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -17,6 +17,7 @@ import { PageHeader } from '@/components/common/page-header';
 import { useFirestore, useUser } from '@/firebase';
 import { addDoc, collection } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { format } from 'date-fns';
 
 const steps = [
   { id: 'Step 1', name: 'Route', fields: ['startPoint', 'endPoint'] },
@@ -50,10 +51,13 @@ export default function PlanRoutePage() {
   const firestore = useFirestore();
   const router = useRouter();
   
+  const [scheduleType, setScheduleType] = useState<'recurring' | 'one-time'>('recurring');
+
   const [formData, setFormData] = useState({
       startPoint: '',
       endPoint: '',
       routeDays: [] as string[],
+      date: new Date(),
       travelTime: '09:00',
       availableSeats: 1,
       allowParcels: false,
@@ -84,15 +88,23 @@ export default function PlanRoutePage() {
       }
       try {
         const routeCollection = collection(firestore, `users/${user.uid}/routes`);
-        await addDoc(routeCollection, {
+        const routeData: any = {
           driverId: user.uid,
           startPoint: formData.startPoint,
           endPoint: formData.endPoint,
           travelTime: formData.travelTime,
           availableSeats: formData.availableSeats,
-          routeDays: formData.routeDays,
-          price: formData.price[0]
-        });
+          price: formData.price[0],
+          scheduleType: scheduleType
+        };
+
+        if (scheduleType === 'recurring') {
+          routeData.routeDays = formData.routeDays;
+        } else {
+          routeData.date = formData.date.toISOString();
+        }
+
+        await addDoc(routeCollection, routeData);
 
         toast({
             title: "Ride Published!",
@@ -157,19 +169,48 @@ export default function PlanRoutePage() {
                         </div>
                     )}
                     {currentStep === 1 && (
-                         <div className="flex flex-col items-center gap-8">
-                            <div className="flex flex-col items-center w-full">
-                                <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Days of the week</h3>
-                                 <ToggleGroup type="multiple" variant="outline" className="justify-center flex-wrap" value={formData.routeDays} onValueChange={(value) => setFormData(p => ({...p, routeDays: value}))}>
-                                    <ToggleGroupItem value="mon">Mon</ToggleGroupItem>
-                                    <ToggleGroupItem value="tue">Tue</ToggleGroupItem>
-                                    <ToggleGroupItem value="wed">Wed</ToggleGroupItem>
-                                    <ToggleGroupItem value="thu">Thu</ToggleGroupItem>
-                                    <ToggleGroupItem value="fri">Fri</ToggleGroupItem>
-                                    <ToggleGroupItem value="sat">Sat</ToggleGroupItem>
-                                    <ToggleGroupItem value="sun">Sun</ToggleGroupItem>
-                                </ToggleGroup>
-                            </div>
+                         <div className="flex flex-col items-center gap-6">
+                            <ToggleGroup type="single" value={scheduleType} onValueChange={(v) => v && setScheduleType(v as any)} variant="outline">
+                              <ToggleGroupItem value="recurring" aria-label="Set recurring schedule"><Repeat className="mr-2"/> Recurring</ToggleGroupItem>
+                              <ToggleGroupItem value="one-time" aria-label="Set one-time schedule"><Calendar className="mr-2"/> One-Time</ToggleGroupItem>
+                            </ToggleGroup>
+                            
+                            <AnimatePresence mode="wait">
+                              <motion.div
+                                key={scheduleType}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.2 }}
+                                className="w-full space-y-6"
+                              >
+                                {scheduleType === 'recurring' ? (
+                                    <div className="flex flex-col items-center w-full">
+                                        <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Days of the week</h3>
+                                        <ToggleGroup type="multiple" variant="outline" className="justify-center flex-wrap" value={formData.routeDays} onValueChange={(value) => setFormData(p => ({...p, routeDays: value}))}>
+                                            <ToggleGroupItem value="mon">Mon</ToggleGroupItem>
+                                            <ToggleGroupItem value="tue">Tue</ToggleGroupItem>
+                                            <ToggleGroupItem value="wed">Wed</ToggleGroupItem>
+                                            <ToggleGroupItem value="thu">Thu</ToggleGroupItem>
+                                            <ToggleGroupItem value="fri">Fri</ToggleGroupItem>
+                                            <ToggleGroupItem value="sat">Sat</ToggleGroupItem>
+                                            <ToggleGroupItem value="sun">Sun</ToggleGroupItem>
+                                        </ToggleGroup>
+                                    </div>
+                                ) : (
+                                    <div className="flex flex-col items-center">
+                                      <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Select a Date</h3>
+                                      <CalendarComponent
+                                        mode="single"
+                                        selected={formData.date}
+                                        onSelect={(day) => day && setFormData(p => ({...p, date: day}))}
+                                        className="rounded-md border"
+                                      />
+                                    </div>
+                                )}
+                              </motion.div>
+                            </AnimatePresence>
+
                             <div className="flex flex-col items-center w-full pt-4">
                                  <h3 className="font-semibold mb-2 flex items-center gap-2"><Clock className="h-5 w-5 text-primary"/> Departure Time</h3>
                                  <Input name="travelTime" type="time" value={formData.travelTime} onChange={handleChange} className="h-12 text-base w-full max-w-xs" />
