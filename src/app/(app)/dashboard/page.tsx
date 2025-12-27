@@ -7,22 +7,22 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Car, Leaf, MessageSquare, Route, IndianRupee } from 'lucide-react';
+import { ArrowRight, Car, Leaf, MessageSquare, Route, IndianRupee, Trash2 } from 'lucide-react';
 import CountUp from '@/components/common/count-up';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
+import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection, query, where, doc, deleteDoc, getDocs } from 'firebase/firestore';
+import { RideRequest, WithId, Route as RideRoute } from '@/lib/mock-data';
+import { CarLoader } from '@/components/ui/CarLoader';
+import { useToast } from '@/hooks/use-toast';
 
 const stats = [
     { title: "Rides Completed", value: 24, icon: Car, color: "text-blue-500", bgColor: "bg-blue-100" },
     { title: "Money Saved", value: 120.50, icon: IndianRupee, prefix: "₹", decimals: 2, color: "text-green-500", bgColor: "bg-green-100" },
     { title: "CO2 Reduced (kg)", value: 58, icon: Leaf, color: "text-emerald-500", bgColor: "bg-emerald-100" }
 ];
-
-const rideRequests = [
-    { name: 'Ananya Sharma', action: 'wants to send a box', avatarUrl: 'https://picsum.photos/seed/ride1/100/100' },
-    { name: 'Ben Carter', action: 'requested a seat', avatarUrl: 'https://picsum.photos/seed/ride2/100/100' },
-]
 
 const cardVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -36,6 +36,113 @@ const cardVariants = {
       },
     }),
 };
+
+function ActivityFeed() {
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const { toast } = useToast();
+
+    const rideRequestsQuery = useMemoFirebase(() => {
+        if (!user) return null;
+        return query(collection(firestore, 'rideRequests'), where('driverId', '==', user.uid), where('status', '==', 'pending'));
+    }, [user, firestore]);
+
+    const { data: rideRequests, isLoading } = useCollection<RideRequest>(rideRequestsQuery);
+    
+    const handleDelete = async (requestId: string) => {
+        await deleteDoc(doc(firestore, 'rideRequests', requestId));
+        toast({ title: "Request Declined", description: "The request has been removed." });
+    }
+
+    if (isLoading) {
+        return <CarLoader />;
+    }
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Activity Feed</CardTitle>
+                <CardDescription>Recent requests and messages.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {rideRequests && rideRequests.length > 0 ? (
+                    rideRequests.map((req) => (
+                        <div key={req.id} className="flex items-start gap-4">
+                            <Avatar>
+                                <AvatarImage src={`https://picsum.photos/seed/ride${req.id}/100/100`} data-ai-hint="person face" />
+                                <AvatarFallback>{req.riderId.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                                <p className="text-sm"><span className="font-semibold">{req.riderId.substring(0, 6)}...</span> wants to book a {req.bookingType}.</p>
+                                <div className="flex gap-2 mt-2">
+                                    <Button size="sm" className="h-8 active:scale-95">Accept</Button>
+                                    <Button size="sm" variant="ghost" className="h-8 text-destructive hover:bg-destructive/10 active:scale-95" onClick={() => handleDelete(req.id)}>
+                                        <Trash2 className="mr-2"/> Decline
+                                    </Button>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <p className="text-sm text-muted-foreground text-center py-4">No new ride requests.</p>
+                )}
+                <Separator />
+                <div className="flex items-start gap-4">
+                    <Avatar>
+                        <AvatarImage src="https://picsum.photos/seed/message/100/100" data-ai-hint="person face" />
+                        <AvatarFallback>M</AvatarFallback>
+                    </Avatar>
+                    <div className="flex-1">
+                        <p className="text-sm"><span className="font-semibold">Message from Mike L.</span></p>
+                        <p className="text-sm text-muted-foreground p-3 bg-gray-100 rounded-lg mt-1">"Hey, where exactly is the pickup point?"</p>
+                        <Button size="sm" variant="ghost" className="h-8 mt-1 p-0 text-primary hover:text-primary active:scale-95">
+                            <MessageSquare className="mr-2"/> Reply
+                        </Button>
+                    </div>
+                </div>
+            </CardContent>
+        </Card>
+    );
+}
+
+function FrequentRoutes() {
+    const { user } = useUser();
+    const firestore = useFirestore();
+
+    const routesQuery = useMemoFirebase(() => {
+        if (!user) return null;
+        return collection(firestore, `users/${user.uid}/routes`);
+    }, [user, firestore]);
+
+    const { data: routes, isLoading } = useCollection<RideRoute>(routesQuery);
+
+    return (
+        <Card>
+            <CardHeader>
+                <CardTitle className="font-headline">Your Published Routes</CardTitle>
+            </CardHeader>
+            <CardContent>
+                {isLoading && <CarLoader />}
+                {!isLoading && routes && routes.length > 0 ? (
+                    <div className="space-y-4">
+                        {routes.map(route => (
+                            <div key={route.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                <div>
+                                    <p className="font-semibold">{route.startPoint} to {route.endPoint}</p>
+                                    <p className="text-sm text-muted-foreground">{route.travelTime} - {route.routeDays.join(', ')}</p>
+                                </div>
+                                <Badge variant="secondary">{route.availableSeats} seats</Badge>
+                            </div>
+                        ))}
+                    </div>
+                ) : (
+                    !isLoading && <p className="text-sm text-muted-foreground">You haven't published any routes yet.</p>
+                )}
+            </CardContent>
+        </Card>
+    );
+}
+
 
 export default function DashboardPage() {
   return (
@@ -106,59 +213,12 @@ export default function DashboardPage() {
         {/* Right Sidebar */}
         <aside className="lg:col-span-3">
             <div className="sticky top-8 space-y-8">
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">Activity Feed</CardTitle>
-                        <CardDescription>Recent requests and messages.</CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        {rideRequests.map((req, index) => (
-                             <div key={index} className="flex items-start gap-4">
-                                <Avatar>
-                                    <AvatarImage src={req.avatarUrl} data-ai-hint="person face" />
-                                    <AvatarFallback>{req.name.charAt(0)}</AvatarFallback>
-                                </Avatar>
-                                <div className="flex-1">
-                                    <p className="text-sm"><span className="font-semibold">{req.name}</span> {req.action}.</p>
-                                    <div className="flex gap-2 mt-2">
-                                        <Button size="sm" className="h-8 active:scale-95">Accept</Button>
-                                        <Button size="sm" variant="outline" className="h-8 active:scale-95">Decline</Button>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
-                        <Separator />
-                         <div className="flex items-start gap-4">
-                            <Avatar>
-                                <AvatarImage src="https://picsum.photos/seed/message/100/100" data-ai-hint="person face" />
-                                <AvatarFallback>M</AvatarFallback>
-                            </Avatar>
-                            <div className="flex-1">
-                                <p className="text-sm"><span className="font-semibold">Message from Mike L.</span></p>
-                                <p className="text-sm text-muted-foreground p-3 bg-gray-100 rounded-lg mt-1">"Hey, where exactly is the pickup point?"</p>
-                                <Button size="sm" variant="ghost" className="h-8 mt-1 p-0 text-primary hover:text-primary active:scale-95">
-                                    <MessageSquare className="mr-2"/> Reply
-                                </Button>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                 <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">Your Frequent Routes</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="relative h-56 w-full rounded-lg overflow-hidden">
-                            <Image src="https://picsum.photos/seed/map/600/400" alt="Map of frequent routes" fill className="object-cover" data-ai-hint="route map" />
-                            <div className="absolute top-2 left-2">
-                                <Badge variant="secondary">3 Active Routes</Badge>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                 <ActivityFeed />
+                 <FrequentRoutes />
             </div>
         </aside>
     </div>
   );
 }
+
+    

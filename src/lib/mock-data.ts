@@ -287,4 +287,38 @@ export type UserProfile = {
     isDriver: boolean;
 };
 
+export type RideRequest = {
+    riderId: string;
+    driverId: string;
+    routeId: string;
+    pickupLocation: string;
+    dropoffLocation: string;
+    desiredTime: string;
+    status: 'pending' | 'accepted' | 'declined';
+    bookingType: 'seat' | 'parcel';
+    createdAt: Timestamp;
+}
+
+export type Route = {
+    driverId: string;
+    startPoint: string;
+    endPoint: string;
+    travelTime: string;
+    availableSeats: number;
+    routeDays: string[];
+    price: number;
+}
+
+export type BookingConfirmation = {
+    id: string;
+    rideRequestId: string;
+    driverId: string;
+    riderId: string;
+    estimatedCost: number;
+    confirmationTime: Timestamp;
+}
+
+
 export type WithId<T> = T & { id: string };
+
+    
