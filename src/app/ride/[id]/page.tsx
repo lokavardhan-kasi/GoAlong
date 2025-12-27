@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
-import { collection, addDoc, serverTimestamp, where, query, getDocs } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, where, query, getDocs, doc } from 'firebase/firestore';
 
 export default function RideDetailsPage() {
   const params = useParams();
@@ -65,7 +65,7 @@ export default function RideDetailsPage() {
         };
 
         const rideRequestsCollection = collection(firestore, 'rideRequests');
-        const rideRequestRef = await addDoc(rideRequestsCollection, rideRequestData);
+        await addDoc(rideRequestsCollection, rideRequestData);
 
         // Check if a conversation already exists
         const conversationsRef = collection(firestore, 'conversations');
@@ -127,7 +127,7 @@ export default function RideDetailsPage() {
 
 
         toast({
-            title: "Booking Request Sent!",
+            title: "Success: Booking Request Sent!",
             description: `Your request for the ride with ${ride.driver.name} has been sent.`,
         });
         
