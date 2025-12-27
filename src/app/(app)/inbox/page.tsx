@@ -1,6 +1,6 @@
 'use client';
 
-import { useCollection, useUser } from '@/firebase';
+import { useCollection, useUser, useMemoFirebase } from '@/firebase';
 import { useFirestore } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
 import { Conversation, type WithId } from '@/lib/mock-data';
@@ -9,7 +9,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Card, CardContent } from '@/components/ui/card';
 import { PageHeader } from '@/components/common/page-header';
 import { CarLoader } from '@/components/ui/CarLoader';
-import { useMemo } from 'react';
 
 function ConversationItem({ conv, currentUserId }: { conv: WithId<Conversation>; currentUserId: string }) {
   const otherParticipantId = conv.participantIds.find(p => p !== currentUserId);
@@ -41,8 +40,8 @@ export default function InboxPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
-  const conversationsQuery = useMemo(() => {
-    if (!user) return null;
+  const conversationsQuery = useMemoFirebase(() => {
+    if (!user || !firestore) return null;
     return query(
       collection(firestore, 'conversations'),
       where('participantIds', 'array-contains', user.uid)
