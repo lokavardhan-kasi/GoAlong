@@ -29,12 +29,12 @@ export default function AppLayout({
 
   return (
     <div className="flex min-h-screen bg-gray-50/50">
-      <AppSidebar />
+      <div className="sticky top-0 h-screen">
+        <AppSidebar />
+      </div>
       <main className="flex-1 p-4 sm:p-6 md:p-8">
         {children}
       </main>
     </div>
   );
 }
-
-    
