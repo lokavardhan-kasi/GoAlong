@@ -2,7 +2,7 @@
 
 import { useParams } from 'next/navigation';
 import { useCollection, useDoc, useFirestore, useUser, useMemoFirebase } from '@/firebase';
-import { FormEvent, useEffect, useRef, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
 import { collection, doc, orderBy, query, serverTimestamp, addDoc } from 'firebase/firestore';
 import { WithId, Conversation, Message } from '@/lib/mock-data';
 import { PageHeader } from '@/components/common/page-header';
