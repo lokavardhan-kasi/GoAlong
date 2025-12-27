@@ -33,9 +33,11 @@ function Combobox({ value, setValue, placeholder }: { value: string; setValue: (
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-12 text-base font-normal bg-white text-muted-foreground hover:text-muted-foreground"
+          className="w-full justify-between h-12 text-base font-normal bg-white hover:text-muted-foreground"
         >
-          <span className="truncate">{value ? locations.find((location) => location.value === value)?.label : placeholder}</span>
+          <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
+            {value ? locations.find((location) => location.value === value)?.label : placeholder}
+          </span>
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
