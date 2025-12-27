@@ -1,3 +1,4 @@
+
 'use client';
 
 import { PageHeader } from '@/components/common/page-header';
@@ -7,7 +8,7 @@ import { pastRides } from '@/lib/mock-data';
 import { StarRating } from '@/components/common/star-rating';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Car, DollarSign, MapPin } from 'lucide-react';
+import { Calendar, Car, IndianRupee, MapPin } from 'lucide-react';
 import { useState } from 'react';
 
 export default function RideHistoryPage() {
@@ -46,7 +47,7 @@ export default function RideHistoryPage() {
                                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                     <span className="flex items-center gap-1"><MapPin className="h-4 w-4"/> With {ride.driverName}</span>
                                     <span className="flex items-center gap-1"><Calendar className="h-4 w-4"/> {ride.date}</span>
-                                    <span className="flex items-center gap-1"><DollarSign className="h-4 w-4"/> ₹{ride.cost.toFixed(2)}</span>
+                                    <span className="flex items-center gap-1"><IndianRupee className="h-4 w-4"/> {ride.cost.toFixed(2)}</span>
                                 </div>
                             </div>
                              <div className="flex flex-col items-start md:items-end gap-2">

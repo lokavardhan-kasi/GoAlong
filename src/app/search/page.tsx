@@ -73,6 +73,7 @@ function RideCard({ ride }: { ride: any }) {
 
 
 export default function SearchPage() {
+    const router = useRouter();
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg -mx-4 -mt-8 mb-8 px-4 py-4 border-b">

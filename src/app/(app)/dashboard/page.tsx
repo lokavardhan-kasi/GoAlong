@@ -1,3 +1,4 @@
+
 'use client';
 
 import { motion } from 'framer-motion';
@@ -6,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Car, DollarSign, Leaf, MessageSquare, Route } from 'lucide-react';
+import { ArrowRight, Car, Leaf, MessageSquare, Route, IndianRupee } from 'lucide-react';
 import CountUp from '@/components/common/count-up';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -14,7 +15,7 @@ import { Separator } from '@/components/ui/separator';
 
 const stats = [
     { title: "Rides Completed", value: 24, icon: Car, color: "text-blue-500", bgColor: "bg-blue-100" },
-    { title: "Money Saved", value: 120.50, icon: DollarSign, prefix: "₹", decimals: 2, color: "text-green-500", bgColor: "bg-green-100" },
+    { title: "Money Saved", value: 120.50, icon: IndianRupee, prefix: "₹", decimals: 2, color: "text-green-500", bgColor: "bg-green-100" },
     { title: "CO2 Reduced (kg)", value: 58, icon: Leaf, color: "text-emerald-500", bgColor: "bg-emerald-100" }
 ];
 

@@ -8,7 +8,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, DollarSign, MapPin, Star, Users, CheckCircle, Send, Package, Zap, ShieldCheck } from 'lucide-react';
+import { Clock, IndianRupee, MapPin, Star, Users, CheckCircle, Send, Package, Zap, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import CountUp from '@/components/common/count-up';
 import { useToast } from '@/hooks/use-toast';
