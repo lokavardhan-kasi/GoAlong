@@ -2,8 +2,10 @@
 'use client';
 import { AppSidebar } from '@/components/layout/app-sidebar';
 import { UserContext } from '@/context/user-context';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useContext, useEffect } from 'react';
+
+const publicAppRoutes = ['/find-ride', '/become-a-driver'];
 
 export default function AppLayout({
   children,
@@ -12,14 +14,17 @@ export default function AppLayout({
 }) {
   const { isLoggedIn } = useContext(UserContext);
   const router = useRouter();
+  const pathname = usePathname();
+
+  const isPublicRoute = publicAppRoutes.some(route => pathname.startsWith(route));
 
   useEffect(() => {
-    if (!isLoggedIn) {
+    if (!isLoggedIn && !isPublicRoute) {
       router.push('/login');
     }
-  }, [isLoggedIn, router]);
+  }, [isLoggedIn, router, isPublicRoute, pathname]);
 
-  if (!isLoggedIn) {
+  if (!isLoggedIn && !isPublicRoute) {
     return null; // Or a loading spinner
   }
 

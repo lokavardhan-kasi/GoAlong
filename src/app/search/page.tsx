@@ -11,7 +11,7 @@ import Link from 'next/link';
 
 function RideCard({ ride }: { ride: any }) {
   return (
-    <Link href={`/find-ride/${ride.id}`} className="block">
+    <Link href={`/ride/${ride.id}`} className="block">
       <Card className="cursor-pointer transition-all duration-300 hover:shadow-lg hover:-translate-y-1 border-gray-100 rounded-2xl">
         <CardContent className="p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
           {/* Left: Time & Route */}
@@ -71,7 +71,7 @@ function RideCard({ ride }: { ride: any }) {
 }
 
 
-export default function FindRidePage() {
+export default function SearchPage() {
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg -mx-4 -mt-8 mb-8 px-4 py-4 border-b">

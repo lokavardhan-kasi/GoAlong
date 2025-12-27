@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Logo } from '../common/logo';
 import { Separator } from '../ui/separator';
-import { Car, History, LayoutDashboard, LucideIcon, User, Send, Settings, Bell, Route, PlusCircle } from 'lucide-react';
+import { Car, History, LayoutDashboard, LucideIcon, User, Send, Settings, Bell, Route, PlusCircle, Search } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
 
@@ -48,8 +48,8 @@ const driverMenuItems = [
 const riderMenuItems = [
     {
         label: "Find Ride",
-        href: "/find-ride",
-        icon: Car,
+        href: "/search",
+        icon: Search,
     },
     {
         label: "Request Ride",

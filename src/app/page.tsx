@@ -14,18 +14,8 @@ import { Logo } from '@/components/common/logo';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
-  const { isLoggedIn, login } = useContext(UserContext);
+  const { isLoggedIn } = useContext(UserContext);
   const router = useRouter();
-
-  const handlePublishClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    if (!isLoggedIn) {
-      alert("Please sign in to publish a ride.");
-      router.push('/login');
-    } else {
-      router.push('/plan-route');
-    }
-  };
 
   useEffect(() => {
     const handleScroll = () => {
@@ -92,7 +82,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <main>
         <section className="relative w-full overflow-hidden bg-white">
-          <div className="container mx-auto px-6 py-16 flex flex-col lg:flex-row items-center justify-center gap-12">
+        <div className="container mx-auto px-6 py-16 flex flex-col lg:flex-row items-center justify-center gap-12">
             
             {/* Left Side: Text & Search */}
             <div className="w-full lg:w-1/2 space-y-8 z-10 text-center lg:text-left">
@@ -148,7 +138,7 @@ export default function LandingPage() {
                                 />
                             </div>
                             <Button asChild type="submit" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
-                                <Link href="/find-ride"><Search className="mr-2"/> Find a Ride</Link>
+                                <Link href="/search"><Search className="mr-2"/> Find a Ride</Link>
                             </Button>
                         </form>
                     </CardContent>
@@ -158,7 +148,7 @@ export default function LandingPage() {
 
             {/* Right Side: Image Grid */}
             <div className="w-full lg:w-1/2 relative hidden lg:block">
-                <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-4">
                     <motion.div 
                         className="relative group rounded-2xl col-span-2 row-span-1"
                         variants={imageVariants}
@@ -258,7 +248,7 @@ export default function LandingPage() {
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Quick Links</h3>
                         <ul className="space-y-2 text-sm">
-                            <li><Link href="/find-ride" className="text-gray-400 hover:text-white">Find a Ride</Link></li>
+                            <li><Link href="/search" className="text-gray-400 hover:text-white">Find a Ride</Link></li>
                             <li><Link href="/become-a-driver" className="text-gray-400 hover:text-white">Become a Driver</Link></li>
                             <li><Link href="#" className="text-gray-400 hover:text-white">How It Works</Link></li>
                         </ul>

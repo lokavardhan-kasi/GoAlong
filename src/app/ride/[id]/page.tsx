@@ -17,7 +17,7 @@ import { UserContext } from '@/context/user-context';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
 
-export default function RideDetailPage() {
+export default function RideDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
