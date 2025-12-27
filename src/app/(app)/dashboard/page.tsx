@@ -108,6 +108,7 @@ function ActivityFeed() {
 function FrequentRoutes() {
     const { user } = useUser();
     const firestore = useFirestore();
+    const { toast } = useToast();
 
     const routesQuery = useMemoFirebase(() => {
         if (!user) return null;
@@ -115,6 +116,12 @@ function FrequentRoutes() {
     }, [user, firestore]);
 
     const { data: routes, isLoading } = useCollection<RideRoute>(routesQuery);
+    
+    const handleDeleteRoute = async (routeId: string) => {
+        if (!user) return;
+        await deleteDoc(doc(firestore, `users/${user.uid}/routes`, routeId));
+        toast({ title: "Route Deleted", description: "Your route has been successfully removed." });
+    }
 
     return (
         <Card>
@@ -131,7 +138,12 @@ function FrequentRoutes() {
                                     <p className="font-semibold">{route.startPoint} to {route.endPoint}</p>
                                     <p className="text-sm text-muted-foreground">{route.travelTime} - {route.routeDays.join(', ')}</p>
                                 </div>
-                                <Badge variant="secondary">{route.availableSeats} seats</Badge>
+                                <div className="flex items-center gap-2">
+                                  <Badge variant="secondary">{route.availableSeats} seats</Badge>
+                                   <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:scale-95" onClick={() => handleDeleteRoute(route.id)}>
+                                        <Trash2 className="h-4 w-4"/>
+                                    </Button>
+                                </div>
                             </div>
                         ))}
                     </div>
