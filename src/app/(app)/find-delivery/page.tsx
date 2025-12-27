@@ -9,6 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { useMemo } from 'react';
+import { IndianRupee } from 'lucide-react';
 
 function DeliveryCard({ ride }: { ride: Ride }) {
   return (

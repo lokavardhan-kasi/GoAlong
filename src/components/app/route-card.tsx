@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import type { Ride } from '@/lib/mock-data';
 import { ArrowRight, Clock, Star, Users } from 'lucide-react';
 import { MapPin } from 'lucide-react';
+import { IndianRupee } from 'lucide-react';
 
 type RouteCardProps = {
   ride: Ride;

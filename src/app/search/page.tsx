@@ -8,6 +8,7 @@ import { ArrowRight, Calendar, Clock, MapPin, Package, ShieldCheck, Users } from
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
+import { IndianRupee } from 'lucide-react';
 
 function RideCard({ ride }: { ride: Ride }) {
   return (
