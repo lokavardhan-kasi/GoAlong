@@ -168,9 +168,8 @@ service cloud.firestore {
      * @principle Secures conversations by checking for participation in the `participantIds` array.
      */
     match /conversations/{conversationId} {
-      allow get, list, update: if isSignedIn() && request.auth.uid in resource.data.participantIds;
+      allow get, list, update, delete: if isSignedIn() && request.auth.uid in resource.data.participantIds;
       allow create: if isSignedIn() && request.auth.uid in request.resource.data.participantIds;
-      allow delete: if isSignedIn() && request.auth.uid in resource.data.participantIds;
       
       /**
        * @description Manages messages within a conversation.
@@ -179,7 +178,7 @@ service cloud.firestore {
        * @principle Inherits security from the parent conversation document.
        */
       match /messages/{messageId} {
-        allow read, list, create: if isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds;
+        allow read, list, create: if isSignedIn() && get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds.hasAny([request.auth.uid]);
         allow update, delete: if false; // Messages are immutable
       }
     }
