@@ -13,6 +13,7 @@ import { useFirestore } from '@/firebase';
 import { UserProfile } from '@/lib/mock-data';
 import { useEffect, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
+import { CarLoader } from '@/components/ui/CarLoader';
 
 const stats = [
     { label: "Total Rides", value: 24 },
@@ -51,7 +52,11 @@ export default function ProfilePage() {
   }
 
   if (isLoading || !userProfile) {
-    return <div>Loading profile...</div>;
+    return (
+      <div className="flex h-full items-center justify-center">
+        <CarLoader />
+      </div>
+    );
   }
 
   return (

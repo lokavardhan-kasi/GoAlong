@@ -1,6 +1,7 @@
 
 'use client';
 import { AppSidebar } from '@/components/layout/app-sidebar';
+import { CarLoader } from '@/components/ui/CarLoader';
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
@@ -22,7 +23,7 @@ export default function AppLayout({
   if (isUserLoading || !user) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div>Loading...</div>
+        <CarLoader />
       </div>
     );
   }
