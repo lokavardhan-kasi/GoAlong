@@ -33,7 +33,7 @@ function Combobox({ value, setValue, placeholder }: { value: string; setValue: (
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-12 text-base font-normal bg-white hover:bg-white pl-10"
+          className="w-full justify-between h-12 text-base font-normal bg-white hover:bg-gray-50 pl-10"
         >
           <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
             {value ? locations.find((location) => location.value === value)?.label : placeholder}
@@ -179,11 +179,11 @@ export default function LandingPage() {
                         <form className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="relative">
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
                                     <Combobox value={leavingFrom} setValue={setLeavingFrom} placeholder="Leaving from..." />
                                 </div>
                                 <div className="relative">
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
                                      <Combobox value={goingTo} setValue={setGoingTo} placeholder="Going to..." />
                                 </div>
                             </div>
