@@ -157,10 +157,10 @@ export default function PlanRoutePage() {
                         </div>
                     )}
                     {currentStep === 1 && (
-                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                         <div className="flex flex-col items-center gap-8">
                             <div className="flex flex-col items-center">
                                 <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Days of the week</h3>
-                                 <ToggleGroup type="multiple" variant="outline" className="justify-center" value={formData.routeDays} onValueChange={(value) => setFormData(p => ({...p, routeDays: value}))}>
+                                 <ToggleGroup type="multiple" variant="outline" className="justify-center flex-wrap" value={formData.routeDays} onValueChange={(value) => setFormData(p => ({...p, routeDays: value}))}>
                                     <ToggleGroupItem value="mon">Mon</ToggleGroupItem>
                                     <ToggleGroupItem value="tue">Tue</ToggleGroupItem>
                                     <ToggleGroupItem value="wed">Wed</ToggleGroupItem>
@@ -245,3 +245,5 @@ export default function PlanRoutePage() {
     </>
   );
 }
+
+    
