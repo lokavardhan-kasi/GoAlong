@@ -10,7 +10,7 @@ import { Edit } from 'lucide-react';
 const stats = [
     { label: "Total Rides", value: userProfile.totalRides },
     { label: "Total Deliveries", value: userProfile.totalDeliveries },
-    { label: "Total Savings", value: `$${userProfile.savings.toFixed(2)}` },
+    { label: "Total Savings", value: `₹${userProfile.savings.toFixed(2)}` },
 ];
 
 export default function ProfilePage() {

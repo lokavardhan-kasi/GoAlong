@@ -45,7 +45,7 @@ export default function RideHistoryPage() {
                                 <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                     <span className="flex items-center gap-1"><MapPin className="h-4 w-4"/> With {ride.driverName}</span>
                                     <span className="flex items-center gap-1"><Calendar className="h-4 w-4"/> {ride.date}</span>
-                                    <span className="flex items-center gap-1"><DollarSign className="h-4 w-4"/> ${ride.cost.toFixed(2)}</span>
+                                    <span className="flex items-center gap-1"><DollarSign className="h-4 w-4"/> ₹{ride.cost.toFixed(2)}</span>
                                 </div>
                             </div>
                              <div className="flex flex-col items-start md:items-end gap-2">

@@ -174,8 +174,8 @@ export default function PlanRoutePage() {
                         <div className="space-y-6 text-center">
                              <h3 className="font-semibold text-lg flex items-center justify-center gap-2"><Wallet className="h-5 w-5 text-primary"/>Set your price per seat</h3>
                              <div className="relative">
-                                <p className="text-4xl font-bold text-primary">${formData.price[0]}</p>
-                                <p className="text-sm text-muted-foreground">Our recommendation is $22</p>
+                                <p className="text-4xl font-bold text-primary">₹{formData.price[0]}</p>
+                                <p className="text-sm text-muted-foreground">Our recommendation is ₹22</p>
                              </div>
                              <Slider
                                 defaultValue={[25]}
