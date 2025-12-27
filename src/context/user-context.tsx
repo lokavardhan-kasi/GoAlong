@@ -1,49 +1,29 @@
 
 'use client';
-import React,
-{
-  createContext,
-  useState,
-  useMemo,
-  useCallback,
-} from 'react';
-
-type User = {
-  name: string;
-  email: string;
-};
+import React, { createContext, useMemo } from 'react';
+import type { User } from 'firebase/auth';
+import { useUser as useFirebaseAuthUser } from '@/firebase';
 
 type UserContextType = {
   isLoggedIn: boolean;
   user: User | null;
-  login: (user: User) => void;
-  logout: () => void;
+  isUserLoading: boolean;
 };
 
 export const UserContext = createContext<UserContextType>({
   isLoggedIn: false,
   user: null,
-  login: () => { },
-  logout: () => { },
+  isUserLoading: true,
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-
-  const login = useCallback((userData: User) => {
-    setUser(userData);
-  }, []);
-
-  const logout = useCallback(() => {
-    setUser(null);
-  }, []);
+  const { user, isUserLoading } = useFirebaseAuthUser();
 
   const contextValue = useMemo(() => ({
-    isLoggedIn: user !== null,
+    isLoggedIn: !isUserLoading && user !== null,
     user,
-    login,
-    logout,
-  }), [user, login, logout]);
+    isUserLoading,
+  }), [user, isUserLoading]);
 
   return (
     <UserContext.Provider value={contextValue}>

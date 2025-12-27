@@ -1,19 +1,58 @@
+'use client';
 import { PageHeader } from '@/components/common/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { userProfile } from '@/lib/mock-data';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Edit } from 'lucide-react';
+import { useDoc, useUser } from '@/firebase';
+import { doc, setDoc } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
+import { UserProfile } from '@/lib/mock-data';
+import { useEffect, useState } from 'react';
+import { useToast } from '@/hooks/use-toast';
 
 const stats = [
-    { label: "Total Rides", value: userProfile.totalRides },
-    { label: "Total Deliveries", value: userProfile.totalDeliveries },
-    { label: "Total Savings", value: `₹${userProfile.savings.toFixed(2)}` },
+    { label: "Total Rides", value: 24 },
+    { label: "Total Deliveries", value: 5 },
+    { label: "Total Savings", value: `₹120.50` },
 ];
 
 export default function ProfilePage() {
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+  
+  const userProfileRef = user ? doc(firestore, 'userProfiles', user.uid) : null;
+  const { data: userProfile, isLoading } = useDoc<UserProfile>(userProfileRef);
+
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState<Partial<UserProfile>>({});
+
+  useEffect(() => {
+    if (userProfile) {
+      setFormData(userProfile);
+    }
+  }, [userProfile]);
+
+  const handleSave = async () => {
+    if (userProfileRef) {
+      await setDoc(userProfileRef, formData, { merge: true });
+      toast({ title: "Profile updated successfully!" });
+      setIsEditing(false);
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({...prev, [id]: value}));
+  }
+
+  if (isLoading || !userProfile) {
+    return <div>Loading profile...</div>;
+  }
+
   return (
     <>
       <PageHeader
@@ -21,7 +60,11 @@ export default function ProfilePage() {
         description="Manage your personal information and see your stats."
         showBackButton
       >
-        <Button><Edit className="mr-2"/> Edit Profile</Button>
+        {!isEditing ? (
+          <Button onClick={() => setIsEditing(true)}><Edit className="mr-2"/> Edit Profile</Button>
+        ) : (
+          <Button onClick={handleSave}>Save Changes</Button>
+        )}
       </PageHeader>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -29,14 +72,13 @@ export default function ProfilePage() {
             <Card className="text-center">
                 <CardHeader>
                      <Avatar className="h-24 w-24 mx-auto border-4 border-primary/50">
-                        <AvatarImage src="https://picsum.photos/seed/user-profile/100/100" alt={userProfile.name} data-ai-hint="person face"/>
-                        <AvatarFallback>{userProfile.name.charAt(0)}</AvatarFallback>
+                        <AvatarImage src={userProfile.profilePictureUrl || "https://picsum.photos/seed/user-profile/100/100"} alt={userProfile.firstName} data-ai-hint="person face"/>
+                        <AvatarFallback>{userProfile.firstName?.charAt(0)}</AvatarFallback>
                     </Avatar>
                 </CardHeader>
                 <CardContent>
-                    <h2 className="text-2xl font-bold font-headline">{userProfile.name}</h2>
+                    <h2 className="text-2xl font-bold font-headline">{userProfile.firstName} {userProfile.lastName}</h2>
                     <p className="text-muted-foreground">{userProfile.email}</p>
-                    <p className="text-sm text-muted-foreground mt-2">Member since {userProfile.memberSince}</p>
                 </CardContent>
             </Card>
 
@@ -63,17 +105,23 @@ export default function ProfilePage() {
                     <CardDescription>This information is private and will not be shared.</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Label htmlFor="name">Full Name</Label>
-                        <Input id="name" defaultValue={userProfile.name} readOnly />
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                          <Label htmlFor="firstName">First Name</Label>
+                          <Input id="firstName" value={formData.firstName || ''} readOnly={!isEditing} onChange={handleInputChange} />
+                      </div>
+                       <div className="space-y-2">
+                          <Label htmlFor="lastName">Last Name</Label>
+                          <Input id="lastName" value={formData.lastName || ''} readOnly={!isEditing} onChange={handleInputChange} />
+                      </div>
                     </div>
                      <div className="space-y-2">
                         <Label htmlFor="email">Email Address</Label>
-                        <Input id="email" defaultValue={userProfile.email} readOnly />
+                        <Input id="email" value={userProfile.email} readOnly />
                     </div>
                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number (Optional)</Label>
-                        <Input id="phone" defaultValue="+1 (555) 123-4567" readOnly />
+                        <Label htmlFor="phoneNumber">Phone Number (Optional)</Label>
+                        <Input id="phoneNumber" value={formData.phoneNumber || ''} readOnly={!isEditing} onChange={handleInputChange} />
                     </div>
                 </CardContent>
             </Card>

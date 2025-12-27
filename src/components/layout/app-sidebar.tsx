@@ -7,6 +7,7 @@ import { Separator } from '../ui/separator';
 import { Car, History, LayoutDashboard, LucideIcon, User, Send, Settings, Bell, Route, PlusCircle, Search } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
+import { useUser } from '@/firebase';
 
 const menuItems = [
     {
@@ -89,6 +90,7 @@ function MenuItem({ href, label, icon: Icon, pathname, badge }: MenuItemProps) {
 
 export function AppSidebar() {
   const pathname = usePathname();
+  const { user } = useUser();
 
   return (
     <div className="hidden border-r bg-white md:block w-64">
@@ -116,12 +118,12 @@ export function AppSidebar() {
             <div className="mt-auto border-t p-4">
                 <div className="flex items-center gap-3">
                      <Avatar className="h-10 w-10 border">
-                        <AvatarImage src="https://picsum.photos/seed/user-profile-2/100/100" alt="Jane Doe" data-ai-hint="person face"/>
-                        <AvatarFallback>JD</AvatarFallback>
+                        <AvatarImage src={user?.photoURL || "https://picsum.photos/seed/user-profile-2/100/100"} alt={user?.displayName || 'User'} data-ai-hint="person face"/>
+                        <AvatarFallback>{user?.displayName?.charAt(0) || 'U'}</AvatarFallback>
                     </Avatar>
                     <div>
-                        <p className="font-semibold text-sm">Jane Doe</p>
-                        <p className="text-xs text-gray-500">jane.doe@example.com</p>
+                        <p className="font-semibold text-sm">{user?.displayName || 'Guest'}</p>
+                        <p className="text-xs text-gray-500">{user?.email}</p>
                     </div>
                 </div>
             </div>

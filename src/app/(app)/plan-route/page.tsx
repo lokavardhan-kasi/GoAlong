@@ -13,6 +13,9 @@ import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { PageHeader } from '@/components/common/page-header';
+import { useFirestore, useUser } from '@/firebase';
+import { addDoc, collection } from 'firebase/firestore';
+import { useRouter } from 'next/navigation';
 
 const steps = [
   { id: 'Step 1', name: 'Route', fields: ['startPoint', 'endPoint'] },
@@ -42,14 +45,18 @@ const variants = {
 export default function PlanRoutePage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [direction, setDirection] = useState(0);
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const router = useRouter();
+  
   const [formData, setFormData] = useState({
       startPoint: '',
       endPoint: '',
-      date: new Date(),
-      time: '09:00',
-      passengers: 1,
+      routeDays: [] as string[],
+      travelTime: '09:00',
+      availableSeats: 1,
       allowParcels: false,
-      parcelSizes: [],
+      parcelSizes: [] as string[],
       price: [25]
   });
   const { toast } = useToast();
@@ -69,12 +76,35 @@ export default function PlanRoutePage() {
       setFormData(prev => ({ ...prev, [name]: value }));
   }
 
-  const handlePublish = () => {
-      console.log('Publishing ride with data:', formData);
-      toast({
-          title: "Ride Published!",
-          description: "Your route is now live for others to see.",
-      });
+  const handlePublish = async () => {
+      if (!user) {
+        toast({ title: "You must be logged in to publish a ride.", variant: "destructive" });
+        return;
+      }
+      try {
+        const routeCollection = collection(firestore, `users/${user.uid}/routes`);
+        await addDoc(routeCollection, {
+          driverId: user.uid,
+          startPoint: formData.startPoint,
+          endPoint: formData.endPoint,
+          travelTime: formData.travelTime,
+          availableSeats: formData.availableSeats,
+          routeDays: formData.routeDays,
+          price: formData.price[0]
+        });
+
+        toast({
+            title: "Ride Published!",
+            description: "Your route is now live for others to see.",
+        });
+        router.push('/dashboard');
+      } catch (error: any) {
+         toast({
+            title: "Error Publishing Ride",
+            description: error.message,
+            variant: "destructive",
+        });
+      }
   }
 
   const progressValue = ((currentStep + 1) / steps.length) * 100;
@@ -128,17 +158,20 @@ export default function PlanRoutePage() {
                     {currentStep === 1 && (
                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div className="flex flex-col items-center">
-                                <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Departure Date</h3>
-                                <CalendarComponent
-                                    mode="single"
-                                    selected={formData.date}
-                                    onSelect={(date) => setFormData(prev => ({ ...prev, date: date || new Date() }))}
-                                    className="rounded-md border"
-                                />
+                                <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Days of the week</h3>
+                                 <ToggleGroup type="multiple" variant="outline" className="justify-center" value={formData.routeDays} onValueChange={(value) => setFormData(p => ({...p, routeDays: value}))}>
+                                    <ToggleGroupItem value="mon">Mon</ToggleGroupItem>
+                                    <ToggleGroupItem value="tue">Tue</ToggleGroupItem>
+                                    <ToggleGroupItem value="wed">Wed</ToggleGroupItem>
+                                    <ToggleGroupItem value="thu">Thu</ToggleGroupItem>
+                                    <ToggleGroupItem value="fri">Fri</ToggleGroupItem>
+                                    <ToggleGroupItem value="sat">Sat</ToggleGroupItem>
+                                    <ToggleGroupItem value="sun">Sun</ToggleGroupItem>
+                                </ToggleGroup>
                             </div>
                             <div className="flex flex-col items-center">
                                  <h3 className="font-semibold mb-2 flex items-center gap-2"><Clock className="h-5 w-5 text-primary"/> Departure Time</h3>
-                                 <Input name="time" type="time" value={formData.time} onChange={handleChange} className="h-12 text-base w-full max-w-xs" />
+                                 <Input name="travelTime" type="time" value={formData.travelTime} onChange={handleChange} className="h-12 text-base w-full max-w-xs" />
                             </div>
                         </div>
                     )}
@@ -147,9 +180,9 @@ export default function PlanRoutePage() {
                             <div>
                                 <h3 className="font-semibold mb-4 text-lg flex items-center justify-center gap-2"><Users className="h-5 w-5 text-primary"/>How many seats?</h3>
                                 <div className="flex items-center justify-center gap-4">
-                                    <Button variant="outline" size="icon" onClick={() => setFormData(p => ({...p, passengers: Math.max(1, p.passengers - 1)}))} className="active:scale-95"><Minus/></Button>
-                                    <span className="text-2xl font-bold w-12">{formData.passengers}</span>
-                                    <Button variant="outline" size="icon" onClick={() => setFormData(p => ({...p, passengers: Math.min(8, p.passengers + 1)}))} className="active:scale-95"><Plus/></Button>
+                                    <Button variant="outline" size="icon" onClick={() => setFormData(p => ({...p, availableSeats: Math.max(1, p.availableSeats - 1)}))} className="active:scale-95"><Minus/></Button>
+                                    <span className="text-2xl font-bold w-12">{formData.availableSeats}</span>
+                                    <Button variant="outline" size="icon" onClick={() => setFormData(p => ({...p, availableSeats: Math.min(8, p.availableSeats + 1)}))} className="active:scale-95"><Plus/></Button>
                                 </div>
                             </div>
                             <div className="space-y-4">

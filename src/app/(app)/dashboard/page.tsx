@@ -42,7 +42,7 @@ export default function DashboardPage() {
         {/* Main Content */}
         <div className="lg:col-span-7 space-y-8">
             <PageHeader
-                title="Welcome Back, Jane!"
+                title="Welcome Back!"
                 description="Here's a snapshot of your GoAlong activity."
             />
 
@@ -95,7 +95,7 @@ export default function DashboardPage() {
                             <p className="text-muted-foreground mt-2">Catch a ride with a neighbor or send something along.</p>
                         </div>
                         <Button asChild className="mt-6 w-fit active:scale-95">
-                            <Link href="/find-ride">Find Ride <ArrowRight className="ml-2"/></Link>
+                            <Link href="/search">Find Ride <ArrowRight className="ml-2"/></Link>
                         </Button>
                     </Card>
                 </div>

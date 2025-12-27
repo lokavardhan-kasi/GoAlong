@@ -2,26 +2,54 @@
 'use client';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useContext } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/common/logo';
-import { UserContext } from '@/context/user-context';
+import { useAuth } from '@/firebase';
+import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
+import { useToast } from '@/hooks/use-toast';
+import { FormEvent, useState } from 'react';
 
 export default function LoginPage() {
-  const { login } = useContext(UserContext);
+  const auth = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
-    // Simulate login
-    login({ name: 'Jane Doe', email: 'jane.doe@example.com' });
-    const redirectPath = localStorage.getItem('redirectAfterLogin') || '/dashboard';
-    localStorage.removeItem('redirectAfterLogin');
-    router.push(redirectPath);
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+      const redirectPath = localStorage.getItem('redirectAfterLogin') || '/dashboard';
+      localStorage.removeItem('redirectAfterLogin');
+      router.push(redirectPath);
+    } catch (error: any) {
+      toast({
+        title: 'Login Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
   };
+  
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      const redirectPath = localStorage.getItem('redirectAfterLogin') || '/dashboard';
+      localStorage.removeItem('redirectAfterLogin');
+      router.push(redirectPath);
+    } catch (error: any) {
+      toast({
+        title: 'Login Failed',
+        description: error.message,
+        variant: 'destructive',
+      });
+    }
+  }
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-gray-100/50 p-4">
@@ -38,7 +66,7 @@ export default function LoginPage() {
             <div className="grid gap-4">
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" type="email" placeholder="m@example.com" required defaultValue="jane.doe@example.com" />
+                <Input id="email" type="email" placeholder="m@example.com" required value={email} onChange={e => setEmail(e.target.value)} />
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center">
@@ -47,12 +75,12 @@ export default function LoginPage() {
                     Forgot your password?
                   </Link>
                 </div>
-                <Input id="password" type="password" required defaultValue="password" />
+                <Input id="password" type="password" required value={password} onChange={e => setPassword(e.target.value)} />
               </div>
               <Button type="submit" className="w-full active:scale-95">
                   Login
               </Button>
-              <Button variant="outline" className="w-full active:scale-95" onClick={handleLogin}>
+              <Button variant="outline" className="w-full active:scale-95" onClick={handleGoogleLogin} type="button">
                 Login with Google
               </Button>
             </div>

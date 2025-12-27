@@ -1,5 +1,7 @@
 
 
+import { Timestamp } from "firebase/firestore";
+
 export type Ride = {
   id: string;
   driver: {
@@ -249,3 +251,33 @@ export const userProfile = {
     totalDeliveries: 5,
     savings: 120.50,
 };
+
+export type Message = {
+    id: string;
+    text: string;
+    senderId: string;
+    timestamp: Timestamp;
+};
+
+export type Conversation = {
+    id: string;
+    participantIds: string[];
+    lastMessage: Message | null;
+    participantDetails: {
+        [key: string]: {
+            displayName: string;
+            avatarUrl?: string;
+        }
+    }
+};
+
+export type UserProfile = {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phoneNumber?: string;
+    profilePictureUrl?: string;
+    isDriver: boolean;
+};
+

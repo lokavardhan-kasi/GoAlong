@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster"
 import './globals.css';
 import { Poppins, PT_Sans } from 'next/font/google'
 import { UserProvider } from '@/context/user-context';
+import { FirebaseClientProvider } from "@/firebase/client-provider";
 
 const poppins = Poppins({ 
   subsets: ['latin'],
@@ -25,9 +26,11 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${poppins.variable} ${ptSans.variable} font-sans antialiased`}>
-        <UserProvider>
-          {children}
-        </UserProvider>
+        <FirebaseClientProvider>
+          <UserProvider>
+            {children}
+          </UserProvider>
+        </FirebaseClientProvider>
         <Toaster />
       </body>
     </html>
