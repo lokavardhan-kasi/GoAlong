@@ -33,7 +33,7 @@ function Combobox({ value, setValue, placeholder }: { value: string; setValue: (
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-full justify-between h-12 text-base font-normal bg-white hover:text-muted-foreground"
+          className="w-full justify-between h-12 text-base font-normal bg-white hover:bg-white pl-10"
         >
           <span className={cn("truncate", value ? "text-foreground" : "text-muted-foreground")}>
             {value ? locations.find((location) => location.value === value)?.label : placeholder}
