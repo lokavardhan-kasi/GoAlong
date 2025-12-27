@@ -1,3 +1,4 @@
+
 'use client';
 import { useState, useEffect, useContext } from 'react';
 import Link from 'next/link';
@@ -13,7 +14,7 @@ import { Logo } from '@/components/common/logo';
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
-  const { isLoggedIn } = useContext(UserContext);
+  const { isLoggedIn, login } = useContext(UserContext);
   const router = useRouter();
 
   const handlePublishClick = (e: React.MouseEvent) => {
@@ -90,8 +91,8 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main>
-        <section className="relative w-full overflow-hidden bg-white pt-20">
-           <div className="container mx-auto px-6 py-16 flex flex-col lg:flex-row items-center justify-center gap-12">
+        <section className="relative w-full overflow-hidden bg-white">
+          <div className="container mx-auto px-6 py-16 flex flex-col lg:flex-row items-center justify-center gap-12">
             
             {/* Left Side: Text & Search */}
             <div className="w-full lg:w-1/2 space-y-8 z-10 text-center lg:text-left">
@@ -165,7 +166,7 @@ export default function LandingPage() {
                         animate="visible"
                         custom={0}
                     >
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
                         <Image src="https://picsum.photos/seed/hero1/800/400" width={800} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
                     </motion.div>
                     <motion.div 
@@ -175,7 +176,7 @@ export default function LandingPage() {
                         animate="visible"
                         custom={1}
                     >
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
                         <Image src="https://picsum.photos/seed/hero2/400/400" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="pet travel" />
                     </motion.div>
                     <motion.div 
@@ -185,7 +186,7 @@ export default function LandingPage() {
                         animate="visible"
                         custom={2}
                     >
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500 ease-in-out -z-10"></div>
+                        <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
                         <Image src="https://picsum.photos/seed/hero3/400/400" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
                     </motion.div>
                 </div>
