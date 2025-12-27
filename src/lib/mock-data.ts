@@ -5,6 +5,7 @@ import { Timestamp } from "firebase/firestore";
 export type Ride = {
   id: string;
   driver: {
+    id: string;
     name: string;
     avatarUrl: string;
     rating: number;
@@ -50,6 +51,7 @@ export const rides: Ride[] = [
   {
     id: '1',
     driver: {
+      id: 'driver-rohan',
       name: 'Rohan',
       avatarUrl: 'https://picsum.photos/seed/driver5/100/100',
       rating: 4.9,
@@ -83,6 +85,7 @@ export const rides: Ride[] = [
   {
     id: '2',
     driver: {
+      id: 'driver-priya',
       name: 'Priya',
       avatarUrl: 'https://picsum.photos/seed/driver6/100/100',
       rating: 4.8,
@@ -116,6 +119,7 @@ export const rides: Ride[] = [
   {
     id: '3',
     driver: {
+      id: 'driver-amit',
       name: 'Amit',
       avatarUrl: 'https://picsum.photos/seed/driver7/100/100',
       rating: 4.9,
@@ -149,6 +153,7 @@ export const rides: Ride[] = [
     {
     id: '4',
     driver: {
+      id: 'driver-emily',
       name: 'Emily R.',
       avatarUrl: 'https://picsum.photos/seed/driver8/100/100',
       rating: 5.0,
@@ -182,6 +187,7 @@ export const rides: Ride[] = [
    {
     id: '5',
     driver: {
+      id: 'driver-suresh',
       name: 'Suresh',
       avatarUrl: 'https://picsum.photos/seed/driver9/100/100',
       rating: 4.7,
@@ -281,3 +287,4 @@ export type UserProfile = {
     isDriver: boolean;
 };
 
+export type WithId<T> = T & { id: string };

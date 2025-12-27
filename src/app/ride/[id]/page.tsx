@@ -12,20 +12,22 @@ import { Clock, IndianRupee, MapPin, Star, Users, CheckCircle, Send, Package, Za
 import Link from 'next/link';
 import CountUp from '@/components/common/count-up';
 import { useToast } from '@/hooks/use-toast';
-import { useContext, useState } from 'react';
-import { UserContext } from '@/context/user-context';
+import { useState } from 'react';
+import { useUser, useFirestore } from '@/firebase';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
+import { collection, addDoc, serverTimestamp, where, query, getDocs } from 'firebase/firestore';
 
 export default function RideDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
   const { toast } = useToast();
-  const { isLoggedIn } = useContext(UserContext);
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
   const ride = rides.find(r => r.id === params.id);
   const [bookingType, setBookingType] = useState<'seat' | 'parcel'>('seat');
-
+  const [isBooking, setIsBooking] = useState(false);
 
   if (!ride) {
     return (
@@ -38,15 +40,107 @@ export default function RideDetailsPage() {
   
   const estimatedCost = bookingType === 'seat' ? ride.price.seat : ride.price.parcel;
 
-  const handleBooking = () => {
-    if (!isLoggedIn) {
+  const handleBooking = async () => {
+    if (isUserLoading) return;
+    if (!user) {
       localStorage.setItem('redirectAfterLogin', pathname);
       router.push('/login');
-    } else {
-      toast({
-          title: "Booking Request Sent!",
-          description: `Your request for the ride with ${ride.driver.name} has been sent.`,
-      })
+      return;
+    }
+    if (!firestore || !ride) return;
+
+    setIsBooking(true);
+
+    try {
+        const rideRequestData = {
+            riderId: user.uid,
+            driverId: ride.driver.id,
+            routeId: ride.id,
+            pickupLocation: ride.route.from,
+            dropoffLocation: ride.route.to,
+            desiredTime: ride.times.departure,
+            status: 'pending',
+            bookingType,
+            createdAt: serverTimestamp(),
+        };
+
+        const rideRequestsCollection = collection(firestore, 'rideRequests');
+        const rideRequestRef = await addDoc(rideRequestsCollection, rideRequestData);
+
+        // Check if a conversation already exists
+        const conversationsRef = collection(firestore, 'conversations');
+        const q = query(
+          conversationsRef,
+          where('participantIds', 'array-contains', user.uid)
+        );
+        const querySnapshot = await getDocs(q);
+        let existingConversation = null;
+        querySnapshot.forEach(doc => {
+            const conv = doc.data();
+            if (conv.participantIds.includes(ride.driver.id)) {
+                existingConversation = { id: doc.id, ...conv };
+            }
+        });
+
+        let conversationId;
+
+        if (existingConversation) {
+            conversationId = existingConversation.id;
+        } else {
+            // Create a new conversation
+            const newConversation = {
+                participantIds: [user.uid, ride.driver.id],
+                participantDetails: {
+                    [user.uid]: {
+                        displayName: user.displayName || 'Me',
+                        avatarUrl: user.photoURL || '',
+                    },
+                    [ride.driver.id]: {
+                        displayName: ride.driver.name,
+                        avatarUrl: ride.driver.avatarUrl,
+                    }
+                },
+                createdAt: serverTimestamp(),
+                lastMessage: null,
+            };
+            const conversationRef = await addDoc(conversationsRef, newConversation);
+            conversationId = conversationRef.id;
+        }
+
+        // Add the initial message to the conversation
+        const messageText = `Hi ${ride.driver.name}, I'd like to request a ${bookingType} for your ride from ${ride.route.from} to ${ride.route.to}.`;
+        const messagesCol = collection(firestore, `conversations/${conversationId}/messages`);
+        await addDoc(messagesCol, {
+            text: messageText,
+            senderId: user.uid,
+            timestamp: serverTimestamp(),
+        });
+        
+        // Update the last message on the conversation
+        // This is a fire-and-forget operation, we don't need to wait for it.
+        const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+        setDocumentNonBlocking(
+            doc(firestore, 'conversations', conversationId), 
+            { lastMessage: { text: messageText, senderId: user.uid, timestamp: serverTimestamp() }}, 
+            { merge: true }
+        );
+
+
+        toast({
+            title: "Booking Request Sent!",
+            description: `Your request for the ride with ${ride.driver.name} has been sent.`,
+        });
+        
+        router.push(`/inbox/${conversationId}`);
+
+    } catch (error: any) {
+        toast({
+            title: "Booking Failed",
+            description: "Could not send booking request. " + error.message,
+            variant: "destructive",
+        });
+    } finally {
+        setIsBooking(false);
     }
   }
   
@@ -155,8 +249,8 @@ export default function RideDetailsPage() {
                             <span className="text-muted-foreground"> / {bookingType}</span>
                         </div>
                         
-                        <Button size="lg" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95" onClick={handleBooking}>
-                          Request to Book
+                        <Button size="lg" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95" onClick={handleBooking} disabled={isBooking || isUserLoading}>
+                          {isBooking ? 'Requesting...' : 'Request to Book'}
                         </Button>
 
                          {ride.features.instantBooking && (

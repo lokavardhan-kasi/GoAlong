@@ -53,7 +53,8 @@ service cloud.firestore {
         request.auth.uid == docData.driverId ||
         request.auth.uid == docData.riderId ||
         request.auth.uid == docData.senderId ||
-        request.auth.uid == docData.requesterId
+        request.auth.uid == docData.requesterId ||
+        (docData.participantIds != null && request.auth.uid in docData.participantIds)
       );
     }
 
@@ -158,6 +159,28 @@ service cloud.firestore {
       allow create: if false; // TODO: Add create validation (e.g., isCreator(request.resource.data.authorId)) once schema includes an 'authorId'.
       allow update: if false; // TODO: Add update validation (e.g., isExistingOwner(resource.data.authorId)) once schema includes an 'authorId'.
       allow delete: if false; // TODO: Add delete validation (e.g., isExistingOwner(resource.data.authorId)) once schema includes an 'authorId'.
+    }
+
+    /**
+     * @description Manages conversations between users.
+     * @path /conversations/{conversationId}
+     * @allow (read, write) A user who is a participant in the conversation.
+     * @principle Secures conversations by checking for participation in the `participantIds` array.
+     */
+    match /conversations/{conversationId} {
+      allow get, list, update: if isSignedIn() && request.auth.uid in resource.data.participantIds;
+      allow create: if isSignedIn() && request.auth.uid in request.resource.data.participantIds;
+      
+      /**
+       * @description Manages messages within a conversation.
+       * @path /conversations/{conversationId}/messages/{messageId}
+       * @allow (read, write) A user who is a participant in the parent conversation.
+       * @principle Inherits security from the parent conversation document.
+       */
+      match /messages/{messageId} {
+        allow read, list, create: if isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/conversations/$(conversationId)).data.participantIds;
+        allow update, delete: if false; // Messages are immutable
+      }
     }
   }
 }
