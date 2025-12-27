@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Calendar as CalendarIcon, MapPin, Users, Package, ArrowRight, SteeringWheel, Wallet, ShieldCheck } from 'lucide-react';
+import { Calendar as CalendarIcon, MapPin, Users, Package, ArrowRight, Car, Wallet, ShieldCheck } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Separator } from '@/components/ui/separator';
@@ -110,7 +110,7 @@ export default function BecomeDriverPage() {
             <h2 className="text-4xl font-bold mb-4">Drive. Share. Save.</h2>
             <p className="text-lg text-gray-600 mb-12 max-w-2xl mx-auto">GoAlong makes it easy to earn on every trip, whether you're commuting to work or heading out of town.</p>
             <div className="grid md:grid-cols-3 gap-8">
-              <FeatureCard icon={SteeringWheel} title="Keep Your Plans" description="Hit the road just as you anticipated. We match you with people or packages going your way." delay={0} />
+              <FeatureCard icon={Car} title="Keep Your Plans" description="Hit the road just as you anticipated. We match you with people or packages going your way." delay={0} />
               <FeatureCard icon={Users} title="Two Ways to Earn" description="Fill empty seats with verified neighbors OR fill your trunk with local deliveries." delay={0.2} />
               <FeatureCard icon={Wallet} title="Cut Commuting Costs" description="Offset petrol and maintenance expenses by sharing the ride. Easily divvy up costs." delay={0.4} />
             </div>
