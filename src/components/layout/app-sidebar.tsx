@@ -17,6 +17,7 @@ import {
   PlusCircle,
   Search,
   LogOut,
+  PackageSearch,
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
@@ -63,6 +64,11 @@ const riderMenuItems = [
     label: 'Find Ride',
     href: '/search',
     icon: Search,
+  },
+  {
+    label: 'Find Delivery',
+    href: '/find-delivery',
+    icon: PackageSearch,
   },
   {
     label: 'Request Ride',
