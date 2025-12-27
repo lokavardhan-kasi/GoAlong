@@ -105,7 +105,6 @@ service cloud.firestore {
      */
     match /rideRequests/{rideRequestId} {
       allow get: if isSignedIn() && isParticipant(resource.data);
-      // Allow a user to list requests if they are the driver or the rider.
       allow list: if isSignedIn() && 
       							(request.query.where.driverId == request.auth.uid && request.query.where.status == 'pending') ||
                     (request.query.where.riderId == request.auth.uid);
