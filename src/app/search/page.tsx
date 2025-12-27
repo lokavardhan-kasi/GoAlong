@@ -5,9 +5,10 @@ import { rides } from '@/lib/mock-data';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Calendar, Car, Clock, MapPin, Package, Search, ShieldCheck, User, Users } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Calendar, Car, Clock, MapPin, Package, Search, ShieldCheck, User, Users } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 function RideCard({ ride }: { ride: any }) {
   return (
@@ -72,11 +73,16 @@ function RideCard({ ride }: { ride: any }) {
 
 
 export default function SearchPage() {
+    const router = useRouter();
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg -mx-4 -mt-8 mb-8 px-4 py-4 border-b">
          <div className="flex items-center justify-between">
-             <div className="flex gap-4 items-center">
+            <div className="flex gap-4 items-center">
+                <Button variant="outline" size="icon" onClick={() => router.back()} className="shrink-0 active:scale-95 h-8 w-8">
+                    <ArrowLeft className="h-4 w-4"/>
+                    <span className="sr-only">Go Back</span>
+                </Button>
                 <p className="font-semibold">Visakhapatnam</p>
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />
                 <p className="font-semibold">Hyderabad</p>

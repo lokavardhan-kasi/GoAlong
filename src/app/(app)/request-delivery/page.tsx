@@ -72,6 +72,7 @@ export default function RequestDeliveryPage() {
       <PageHeader
         title="Request a Delivery"
         description="Send a parcel with a community member."
+        showBackButton
       />
       <Card className="max-w-2xl mx-auto">
         <CardHeader>

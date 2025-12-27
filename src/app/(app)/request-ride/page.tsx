@@ -72,6 +72,7 @@ export default function RequestRidePage() {
       <PageHeader
         title="Request a Ride"
         description="Tell us where you need to go and we'll find you a match."
+        showBackButton
       />
       <Card className="max-w-2xl mx-auto">
         <CardHeader>

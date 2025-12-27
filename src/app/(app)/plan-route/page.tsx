@@ -84,6 +84,7 @@ export default function PlanRoutePage() {
       <PageHeader
         title="Publish a Ride"
         description="Share your upcoming trip with the community."
+        showBackButton
       />
       <div className="max-w-2xl mx-auto">
         <Card className="overflow-hidden">

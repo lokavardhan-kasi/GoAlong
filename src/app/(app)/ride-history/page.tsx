@@ -27,6 +27,7 @@ export default function RideHistoryPage() {
       <PageHeader
         title="Ride & Delivery History"
         description="Review your past trips and provide feedback."
+        showBackButton
       />
       <Card>
         <CardHeader>

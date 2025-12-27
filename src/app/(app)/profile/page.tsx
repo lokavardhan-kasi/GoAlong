@@ -19,6 +19,7 @@ export default function ProfilePage() {
       <PageHeader
         title="Your Profile"
         description="Manage your personal information and see your stats."
+        showBackButton
       >
         <Button><Edit className="mr-2"/> Edit Profile</Button>
       </PageHeader>

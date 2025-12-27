@@ -30,7 +30,7 @@ export default function RideDetailsPage() {
   if (!ride) {
     return (
         <div className="p-4 md:p-8">
-            <PageHeader title="Ride not found" description="This ride is no longer available or the link is incorrect."/>
+            <PageHeader title="Ride not found" description="This ride is no longer available or the link is incorrect." showBackButton />
             <Button asChild><Link href="/find-ride">Back to all rides</Link></Button>
         </div>
     );
@@ -52,6 +52,7 @@ export default function RideDetailsPage() {
   
   return (
     <>
+      <PageHeader title="Ride Details" showBackButton />
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-8">
           <Card>
