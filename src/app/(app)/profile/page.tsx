@@ -6,7 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Edit } from 'lucide-react';
+import { Edit, IndianRupee } from 'lucide-react';
 import { useDoc, useUser } from '@/firebase';
 import { doc, setDoc } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
@@ -97,7 +97,10 @@ export default function ProfilePage() {
                         {stats.map(stat => (
                             <div key={stat.label} className="flex justify-between">
                                 <dt className="text-muted-foreground">{stat.label}</dt>
-                                <dd className="font-semibold">{stat.value}</dd>
+                                <dd className="font-semibold flex items-center gap-1">
+                                  {stat.label === 'Total Savings' && <IndianRupee className="h-4 w-4" />}
+                                  {stat.value}
+                                </dd>
                             </div>
                         ))}
                     </dl>

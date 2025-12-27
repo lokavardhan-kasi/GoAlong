@@ -26,7 +26,7 @@ function RideHistoryList({ bookings }: { bookings: any[] | null }) {
         });
     };
 
-    if (!bookings) {
+    if (!bookings || bookings.length === 0) {
         return (
             <div className="flex items-center justify-center h-64 border rounded-lg bg-gray-50">
               <p className="text-muted-foreground">You have no rides in this category yet.</p>
@@ -48,8 +48,8 @@ function RideHistoryList({ bookings }: { bookings: any[] | null }) {
                                     </div>
                                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                         <span className="flex items-center gap-1"><MapPin className="h-4 w-4"/> With {ride.driverId.substring(0, 6)}...</span>
-                                        <span className="flex items-center gap-1"><Calendar className="h-4 w-4"/> {new Date(ride.createdAt?.toDate()).toLocaleDateString()}</span>
-                                        <span className="flex items-center gap-1"><IndianRupee className="h-4 w-4"/> TBD</span>
+                                        <span className="flex items-center gap-1"><Calendar className="h-4 w-4"/> {new Date(ride.confirmationTime?.toDate()).toLocaleDateString()}</span>
+                                        <span className="flex items-center gap-1"><IndianRupee className="h-4 w-4"/> ₹{ride.estimatedCost}</span>
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-start md:items-end gap-2">
@@ -109,5 +109,3 @@ export default function RideHistoryPage() {
     </>
   );
 }
-
-    
