@@ -106,7 +106,9 @@ service cloud.firestore {
     match /rideRequests/{rideRequestId} {
       allow get: if isSignedIn() && isParticipant(resource.data);
       // Allow a user to list requests if they are the driver or the rider.
-      allow list: if isSignedIn() && (request.query.where.driverId == request.auth.uid || request.query.where.riderId == request.auth.uid);
+      allow list: if isSignedIn() && 
+      							(request.query.where.driverId == request.auth.uid && request.query.where.status == 'pending') ||
+                    (request.query.where.riderId == request.auth.uid);
       allow create: if isCreator(request.resource.data.riderId);
       allow update: if resource != null && isSignedIn() && isParticipant(resource.data);
       allow delete: if resource != null && (isOwner(resource.data.driverId) || isOwner(resource.data.riderId));
@@ -169,7 +171,7 @@ service cloud.firestore {
      * @principle Secures conversations by checking for participation in the `participantIds` array.
      */
     match /conversations/{conversationId} {
-      allow get: if isSignedIn() && request.auth.uid in resource.data.participantIds;
+      allow get: if isSignedIn() && resource.data.participantIds.hasAny([request.auth.uid]);
       allow list: if isSignedIn() && request.query.where.participantIds.hasAny([request.auth.uid]);
       allow create, update, delete: if isSignedIn() && request.auth.uid in request.resource.data.participantIds;
       
