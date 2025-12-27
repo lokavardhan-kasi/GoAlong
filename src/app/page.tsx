@@ -5,17 +5,80 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Car, Leaf, Users, Route, Search, Calendar, MapPin } from 'lucide-react';
+import { Car, Leaf, Users, Route, Search, Calendar, MapPin, Check, ChevronsUpDown } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { UserContext } from '@/context/user-context';
 import { useRouter } from 'next/navigation';
 import { Input } from '@/components/ui/input';
 import { Logo } from '@/components/common/logo';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
+import { cn } from '@/lib/utils';
+import { rides } from '@/lib/mock-data';
+
+const uniqueLocations = Array.from(new Set(rides.flatMap(r => [r.route.from, r.route.to, ...r.route.stops])));
+
+const locations = uniqueLocations.map(location => ({
+  value: location.toLowerCase(),
+  label: location,
+}));
+
+function Combobox({ value, setValue, placeholder }: { value: string; setValue: (value: string) => void; placeholder: string }) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          className="w-full justify-between h-12 text-base font-normal bg-white text-muted-foreground hover:text-muted-foreground"
+        >
+          <span className="truncate">{value ? locations.find((location) => location.value === value)?.label : placeholder}</span>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0">
+        <Command>
+          <CommandInput placeholder="Search for a location..." />
+          <CommandList>
+            <CommandEmpty>No location found.</CommandEmpty>
+            <CommandGroup>
+              {locations.map((location) => (
+                <CommandItem
+                  key={location.value}
+                  value={location.value}
+                  onSelect={(currentValue) => {
+                    setValue(currentValue === value ? '' : currentValue);
+                    setOpen(false);
+                  }}
+                >
+                  <Check
+                    className={cn(
+                      'mr-2 h-4 w-4',
+                      value === location.value ? 'opacity-100' : 'opacity-0'
+                    )}
+                  />
+                  {location.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 
 export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const { isLoggedIn } = useContext(UserContext);
   const router = useRouter();
+
+  const [leavingFrom, setLeavingFrom] = useState('');
+  const [goingTo, setGoingTo] = useState('');
 
   useEffect(() => {
     const handleScroll = () => {
@@ -82,7 +145,7 @@ export default function LandingPage() {
       {/* Hero Section */}
       <main>
         <section className="relative w-full overflow-hidden bg-white">
-        <div className="container mx-auto px-6 py-16 flex flex-col lg:flex-row items-center justify-center gap-12">
+        <div className="container mx-auto px-6 py-16 flex flex-col lg:flex-row items-center justify-center gap-12 pt-32">
             
             {/* Left Side: Text & Search */}
             <div className="w-full lg:w-1/2 space-y-8 z-10 text-center lg:text-left">
@@ -107,26 +170,19 @@ export default function LandingPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
+                className="max-w-lg mx-auto lg:mx-0"
               >
                 <Card className="rounded-2xl shadow-xl p-6 bg-white/90 backdrop-blur-md border">
                     <CardContent className="p-0">
                         <form className="space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div className="relative">
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <Input
-                                        type="text"
-                                        placeholder="Leaving from..."
-                                        className="pl-10 h-12 text-base focus:ring-4 focus:ring-purple-100 transition-shadow bg-white"
-                                    />
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
+                                    <Combobox value={leavingFrom} setValue={setLeavingFrom} placeholder="Leaving from..." />
                                 </div>
                                 <div className="relative">
-                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                    <Input
-                                        type="text"
-                                        placeholder="Going to..."
-                                        className="pl-10 h-12 text-base focus:ring-4 focus:ring-purple-100 transition-shadow bg-white"
-                                    />
+                                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10 pointer-events-none" />
+                                     <Combobox value={goingTo} setValue={setGoingTo} placeholder="Going to..." />
                                 </div>
                             </div>
                             <div className="relative">
