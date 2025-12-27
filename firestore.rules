@@ -106,10 +106,10 @@ service cloud.firestore {
     match /rideRequests/{rideRequestId} {
       allow get: if isSignedIn() && isParticipant(resource.data);
       // Allow a driver to list requests assigned to them
-      allow list: if isSignedIn() && (request.query.where.driverId == request.auth.uid || request.query.where.riderId == request.auth.uid);
+      allow list: if isSignedIn() && request.query.where.driverId == request.auth.uid;
       allow create: if isCreator(request.resource.data.riderId);
       allow update: if resource != null && isSignedIn() && isParticipant(resource.data);
-      allow delete: if resource != null && isOwner(resource.data.driverId);
+      allow delete: if resource != null && (isOwner(resource.data.driverId) || isOwner(resource.data.riderId));
     }
 
     /**
