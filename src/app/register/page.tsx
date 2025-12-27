@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -5,11 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/common/logo';
-import { useAuth, useFirestore } from '@/firebase';
+import { useAuth, useFirestore, useUser } from '@/firebase';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
 
 export default function RegisterPage() {
@@ -17,12 +18,20 @@ export default function RegisterPage() {
   const firestore = useFirestore();
   const { toast } = useToast();
   const router = useRouter();
+  const { user, isUserLoading } = useUser();
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, isUserLoading, router]);
+
   const handleRegister = async (e: FormEvent) => {
     e.preventDefault();
+    if (!auth || !firestore) return;
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
@@ -52,6 +61,7 @@ export default function RegisterPage() {
   };
   
   const handleGoogleLogin = async () => {
+    if (!auth || !firestore) return;
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
@@ -77,6 +87,14 @@ export default function RegisterPage() {
         variant: 'destructive',
       });
     }
+  }
+
+  if (isUserLoading || user) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
 
@@ -124,3 +142,5 @@ export default function RegisterPage() {
     </div>
   );
 }
+
+    

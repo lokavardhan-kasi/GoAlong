@@ -7,25 +7,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Logo } from '@/components/common/logo';
-import { useAuth } from '@/firebase';
+import { useAuth, useUser } from '@/firebase';
 import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
-import { FormEvent, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 
 export default function LoginPage() {
   const auth = useAuth();
   const router = useRouter();
   const { toast } = useToast();
+  const { user, isUserLoading } = useUser();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
+  useEffect(() => {
+    if (!isUserLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, isUserLoading, router]);
+
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
+    if (!auth) return;
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      const redirectPath = localStorage.getItem('redirectAfterLogin') || '/dashboard';
-      localStorage.removeItem('redirectAfterLogin');
-      router.push(redirectPath);
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         title: 'Login Failed',
@@ -36,12 +42,11 @@ export default function LoginPage() {
   };
   
   const handleGoogleLogin = async () => {
+    if (!auth) return;
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider);
-      const redirectPath = localStorage.getItem('redirectAfterLogin') || '/dashboard';
-      localStorage.removeItem('redirectAfterLogin');
-      router.push(redirectPath);
+      router.push('/dashboard');
     } catch (error: any) {
       toast({
         title: 'Login Failed',
@@ -49,6 +54,14 @@ export default function LoginPage() {
         variant: 'destructive',
       });
     }
+  }
+
+  if (isUserLoading || user) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center">
+        Loading...
+      </div>
+    );
   }
 
   return (
@@ -96,3 +109,5 @@ export default function LoginPage() {
     </div>
   );
 }
+
+    

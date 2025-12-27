@@ -1,31 +1,30 @@
 
 'use client';
 import { AppSidebar } from '@/components/layout/app-sidebar';
-import { UserContext } from '@/context/user-context';
-import { useRouter, usePathname } from 'next/navigation';
-import { useContext, useEffect } from 'react';
-
-const publicAppRoutes = ['/find-ride', '/become-a-driver'];
+import { useUser } from '@/firebase';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 export default function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const { isLoggedIn } = useContext(UserContext);
+  const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const pathname = usePathname();
-
-  const isPublicRoute = publicAppRoutes.some(route => pathname.startsWith(route));
 
   useEffect(() => {
-    if (!isLoggedIn && !isPublicRoute) {
+    if (!isUserLoading && !user) {
       router.push('/login');
     }
-  }, [isLoggedIn, router, isPublicRoute, pathname]);
+  }, [user, isUserLoading, router]);
 
-  if (!isLoggedIn && !isPublicRoute) {
-    return null; // Or a loading spinner
+  if (isUserLoading || !user) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div>Loading...</div>
+      </div>
+    );
   }
 
   return (
@@ -37,3 +36,5 @@ export default function AppLayout({
     </div>
   );
 }
+
+    
