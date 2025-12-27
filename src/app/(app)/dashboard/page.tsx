@@ -46,6 +46,30 @@ export default function DashboardPage() {
                 title="Welcome Back!"
                 description="Here's a snapshot of your GoAlong activity."
             />
+            
+            <div>
+                <h2 className="text-2xl font-bold mb-4 font-headline tracking-tight">Quick Actions</h2>
+                <div className="grid gap-6 md:grid-cols-2">
+                    <Card className="flex flex-col justify-between p-6 bg-gradient-to-br from-primary to-blue-600 text-primary-foreground transition-all duration-300 hover:shadow-2xl hover:brightness-110">
+                       <div>
+                            <h3 className="font-headline flex items-center gap-3 text-xl font-bold"><Route/> Plan a new commute</h3>
+                            <p className="mt-2 opacity-90">Offer seats to others on your regular trips and earn.</p>
+                       </div>
+                       <Button asChild variant="secondary" className="mt-6 w-fit active:scale-95">
+                           <Link href="/plan-route">Create Route <ArrowRight className="ml-2"/></Link>
+                       </Button>
+                    </Card>
+                    <Card className="flex flex-col justify-between p-6 border-2 border-dashed transition-all duration-300 hover:border-solid hover:border-primary hover:shadow-lg">
+                         <div>
+                            <h3 className="font-headline flex items-center gap-3 text-xl font-bold"><Car/> Find a ride or send a parcel</h3>
+                            <p className="text-muted-foreground mt-2">Catch a ride with a neighbor or send something along.</p>
+                        </div>
+                        <Button asChild className="mt-6 w-fit active:scale-95">
+                            <Link href="/search">Find Ride <ArrowRight className="ml-2"/></Link>
+                        </Button>
+                    </Card>
+                </div>
+            </div>
 
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
                 {stats.map((stat, i) => (
@@ -77,49 +101,11 @@ export default function DashboardPage() {
                     </motion.div>
                 ))}
             </div>
-            
-            <div>
-                <h2 className="text-2xl font-bold mb-4 font-headline tracking-tight">Quick Actions</h2>
-                <div className="grid gap-6 md:grid-cols-2">
-                    <Card className="flex flex-col justify-between p-6 bg-gradient-to-br from-primary to-blue-600 text-primary-foreground transition-all duration-300 hover:shadow-2xl hover:brightness-110">
-                       <div>
-                            <h3 className="font-headline flex items-center gap-3 text-xl font-bold"><Route/> Plan a new commute</h3>
-                            <p className="mt-2 opacity-90">Offer seats to others on your regular trips and earn.</p>
-                       </div>
-                       <Button asChild variant="secondary" className="mt-6 w-fit active:scale-95">
-                           <Link href="/plan-route">Create Route <ArrowRight className="ml-2"/></Link>
-                       </Button>
-                    </Card>
-                    <Card className="flex flex-col justify-between p-6 border-2 border-dashed transition-all duration-300 hover:border-solid hover:border-primary hover:shadow-lg">
-                         <div>
-                            <h3 className="font-headline flex items-center gap-3 text-xl font-bold"><Car/> Find a ride or send a parcel</h3>
-                            <p className="text-muted-foreground mt-2">Catch a ride with a neighbor or send something along.</p>
-                        </div>
-                        <Button asChild className="mt-6 w-fit active:scale-95">
-                            <Link href="/search">Find Ride <ArrowRight className="ml-2"/></Link>
-                        </Button>
-                    </Card>
-                </div>
-            </div>
         </div>
 
         {/* Right Sidebar */}
         <aside className="lg:col-span-3">
             <div className="sticky top-8 space-y-8">
-                <Card>
-                    <CardHeader>
-                        <CardTitle className="font-headline">Your Frequent Routes</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="relative h-56 w-full rounded-lg overflow-hidden">
-                            <Image src="https://picsum.photos/seed/map/600/400" alt="Map of frequent routes" fill className="object-cover" data-ai-hint="route map" />
-                            <div className="absolute top-2 left-2">
-                                <Badge variant="secondary">3 Active Routes</Badge>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
-
                  <Card>
                     <CardHeader>
                         <CardTitle className="font-headline">Activity Feed</CardTitle>
@@ -153,6 +139,20 @@ export default function DashboardPage() {
                                 <Button size="sm" variant="ghost" className="h-8 mt-1 p-0 text-primary hover:text-primary active:scale-95">
                                     <MessageSquare className="mr-2"/> Reply
                                 </Button>
+                            </div>
+                        </div>
+                    </CardContent>
+                </Card>
+
+                 <Card>
+                    <CardHeader>
+                        <CardTitle className="font-headline">Your Frequent Routes</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="relative h-56 w-full rounded-lg overflow-hidden">
+                            <Image src="https://picsum.photos/seed/map/600/400" alt="Map of frequent routes" fill className="object-cover" data-ai-hint="route map" />
+                            <div className="absolute top-2 left-2">
+                                <Badge variant="secondary">3 Active Routes</Badge>
                             </div>
                         </div>
                     </CardContent>
