@@ -1,16 +1,37 @@
 
+
 export type Ride = {
   id: string;
-  driverName: string;
-  driverAvatarUrl: string;
-  startPoint: string;
-  endPoint:string;
-  travelTime: string;
-  availableSeats: number;
-  pricePerSeat: number;
-  carModel: string;
-  carImageUrl: string;
-  rating: number;
+  driver: {
+    name: string;
+    avatarUrl: string;
+    rating: number;
+    verified: boolean;
+  };
+  route: {
+    from: string;
+    to: string;
+    stops: string[];
+  };
+  times: {
+    departure: string;
+    arrival: string;
+    duration: string;
+  };
+  price: {
+    seat: number;
+    parcel: number;
+  };
+  vehicle: {
+    model: string;
+    imageUrl: string;
+  },
+  features: {
+    instantBooking: boolean;
+    maxSeats: number;
+    availableSeats: number;
+    parcelSpace: 'Small' | 'Medium' | 'Large' | 'None';
+  };
 };
 
 export type PastRide = {
@@ -26,55 +47,168 @@ export type PastRide = {
 export const rides: Ride[] = [
   {
     id: '1',
-    driverName: 'Rohan',
-    driverAvatarUrl: 'https://picsum.photos/seed/driver5/100/100',
-    startPoint: 'Vizag',
-    endPoint: 'Hyderabad',
-    travelTime: '8:00 AM',
-    availableSeats: 3,
-    pricePerSeat: 25.50,
-    carModel: 'Toyota Camry',
-    carImageUrl: 'https://picsum.photos/seed/car5/600/400',
-    rating: 4.9,
+    driver: {
+      name: 'Rohan',
+      avatarUrl: 'https://picsum.photos/seed/driver5/100/100',
+      rating: 4.9,
+      verified: true,
+    },
+    route: {
+      from: 'Vizag',
+      to: 'Hyderabad',
+      stops: ['Rajahmundry', 'Vijayawada'],
+    },
+    times: {
+      departure: '08:00',
+      arrival: '16:30',
+      duration: '8h 30m'
+    },
+    price: {
+      seat: 450,
+      parcel: 150,
+    },
+    vehicle: {
+      model: 'Toyota Camry',
+      imageUrl: 'https://picsum.photos/seed/car5/600/400',
+    },
+    features: {
+      instantBooking: true,
+      maxSeats: 4,
+      availableSeats: 3,
+      parcelSpace: 'Medium',
+    }
   },
   {
     id: '2',
-    driverName: 'Priya',
-    driverAvatarUrl: 'https://picsum.photos/seed/driver6/100/100',
-    startPoint: 'Vizag',
-    endPoint: 'Hyderabad',
-    travelTime: '9:30 AM',
-    availableSeats: 1,
-    pricePerSeat: 22.00,
-    carModel: 'Honda Civic',
-    carImageUrl: 'https://picsum.photos/seed/car6/600/400',
-    rating: 4.8,
+    driver: {
+      name: 'Priya',
+      avatarUrl: 'https://picsum.photos/seed/driver6/100/100',
+      rating: 4.8,
+      verified: true,
+    },
+    route: {
+      from: 'Vizag',
+      to: 'Hyderabad',
+      stops: [],
+    },
+    times: {
+      departure: '09:30',
+      arrival: '18:00',
+      duration: '8h 30m'
+    },
+    price: {
+      seat: 420,
+      parcel: 120,
+    },
+    vehicle: {
+      model: 'Honda Civic',
+      imageUrl: 'https://picsum.photos/seed/car6/600/400',
+    },
+    features: {
+      instantBooking: false,
+      maxSeats: 3,
+      availableSeats: 1,
+      parcelSpace: 'Small',
+    }
   },
   {
     id: '3',
-    driverName: 'Amit',
-    driverAvatarUrl: 'https://picsum.photos/seed/driver7/100/100',
-    startPoint: 'Vizag',
-    endPoint: 'Hyderabad',
-    travelTime: '5:00 PM',
-    availableSeats: 2,
-    pricePerSeat: 30.00,
-    carModel: 'Ford Explorer',
-    carImageUrl: 'https://picsum.photos/seed/car7/600/400',
-    rating: 4.9,
+    driver: {
+      name: 'Amit',
+      avatarUrl: 'https://picsum.photos/seed/driver7/100/100',
+      rating: 4.9,
+      verified: false,
+    },
+    route: {
+      from: 'Vizag',
+      to: 'Hyderabad',
+      stops: ['Vijayawada'],
+    },
+    times: {
+      departure: '17:00',
+      arrival: '01:30',
+      duration: '8h 30m'
+    },
+    price: {
+      seat: 500,
+      parcel: 200,
+    },
+    vehicle: {
+      model: 'Ford Explorer',
+      imageUrl: 'https://picsum.photos/seed/car7/600/400',
+    },
+     features: {
+      instantBooking: true,
+      maxSeats: 5,
+      availableSeats: 2,
+      parcelSpace: 'Large',
+    }
   },
     {
     id: '4',
-    driverName: 'Emily R.',
-    driverAvatarUrl: 'https://picsum.photos/seed/driver8/100/100',
-    startPoint: 'University Campus',
-    endPoint: 'Downtown Central',
-    travelTime: '6:00 PM',
-    availableSeats: 4,
-    pricePerSeat: 8.50,
-    carModel: 'Hyundai Elantra',
-    carImageUrl: 'https://picsum.photos/seed/car8/600/400',
-    rating: 5.0,
+    driver: {
+      name: 'Emily R.',
+      avatarUrl: 'https://picsum.photos/seed/driver8/100/100',
+      rating: 5.0,
+      verified: true,
+    },
+     route: {
+      from: 'University Campus',
+      to: 'Downtown Central',
+      stops: [],
+    },
+    times: {
+      departure: '18:00',
+      arrival: '18:45',
+      duration: '45m',
+    },
+    price: {
+      seat: 85,
+      parcel: 30,
+    },
+    vehicle: {
+      model: 'Hyundai Elantra',
+      imageUrl: 'https://picsum.photos/seed/car8/600/400',
+    },
+     features: {
+      instantBooking: true,
+      maxSeats: 4,
+      availableSeats: 4,
+      parcelSpace: 'None',
+    }
+  },
+   {
+    id: '5',
+    driver: {
+      name: 'Suresh',
+      avatarUrl: 'https://picsum.photos/seed/driver9/100/100',
+      rating: 4.7,
+      verified: true,
+    },
+     route: {
+      from: 'Vizag',
+      to: 'Vijayawada',
+      stops: [],
+    },
+    times: {
+      departure: '10:00',
+      arrival: '15:00',
+      duration: '5h 0m',
+    },
+    price: {
+      seat: 300,
+      parcel: 100,
+    },
+    vehicle: {
+      model: 'Maruti Swift',
+      imageUrl: 'https://picsum.photos/seed/car9/600/400',
+    },
+     features: {
+      instantBooking: false,
+      maxSeats: 4,
+      availableSeats: 2,
+      parcelSpace: 'Small',
+    }
   },
 ];
 
