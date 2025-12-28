@@ -344,7 +344,7 @@ export default function LandingPage() {
                     </div>
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Contact</h3>
-                        <p className="text-gray-400 text-sm">Email: support@goalong.com</p>
+                        <p className="text-gray-400 text-sm">Email: kasilokavardhan20@gmail.com</p>
                         <form className="mt-4 space-y-2" onSubmit={(e) => { e.preventDefault(); console.log('Form submitted'); }}>
                             <Input type="email" placeholder="Your email" className="bg-gray-800 border-gray-700 text-white h-10"/>
                             <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500">Subscribe</Button>
