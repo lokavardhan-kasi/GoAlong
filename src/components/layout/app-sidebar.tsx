@@ -153,85 +153,81 @@ export function AppSidebar() {
   };
 
   return (
-    <div className="hidden border-r bg-white md:block w-64">
-      <div className="flex h-full max-h-screen flex-col">
-        <div className="flex h-20 items-center border-b px-6">
-          <Logo />
-        </div>
-        <div className="flex-1 overflow-auto py-4">
-          <nav className="grid items-start px-4 text-sm font-medium">
-            <ul className="space-y-1">
-              {menuItems.map(item => (
-                <MenuItem {...item} pathname={pathname} key={item.href} />
-              ))}
-            </ul>
-            <Separator className="my-4" />
-            <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Driver Mode
-            </h3>
-            <ul className="space-y-1">
-              {driverMenuItems.map(item => (
-                <MenuItem {...item} pathname={pathname} key={item.href} />
-              ))}
-            </ul>
-            <Separator className="my-4" />
-            <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
-              Rider & Sender
-            </h3>
-            <ul className="space-y-1">
-              {riderMenuItems.map(item => (
-                <MenuItem {...item} pathname={pathname} key={item.href} />
-              ))}
-            </ul>
-          </nav>
-        </div>
-        <div className="mt-auto border-t p-4">
-          <DropdownMenu>
-            <DropdownMenuTrigger className="flex w-full items-center gap-3 rounded-md p-2 text-left hover:bg-gray-100">
-              <Avatar className="h-10 w-10 border">
-                <AvatarImage
-                  src={
-                    user?.photoURL ||
-                    'https://picsum.photos/seed/user-profile-2/100/100'
-                  }
-                  alt={user?.displayName || 'User'}
-                  data-ai-hint="person face"
-                />
-                <AvatarFallback>
-                  {user?.displayName?.charAt(0) || 'U'}
-                </AvatarFallback>
-              </Avatar>
-              <div className="flex-1 truncate">
-                <p className="font-semibold text-sm">{user?.displayName || 'Guest'}</p>
-                <p className="text-xs text-gray-500 truncate">{user?.email}</p>
-              </div>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="w-56 mb-2" side="top" align="start">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem asChild>
-                <Link href="/profile">
-                  <User className="mr-2" />
-                  Profile
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuItem asChild>
-                <Link href="/settings">
-                  <Settings className="mr-2" />
-                  Settings
-                </Link>
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem onClick={handleLogout}>
-                <LogOut className="mr-2" />
-                <span>Log out</span>
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+    <div className="hidden border-r bg-white md:block w-64 h-screen flex flex-col">
+      <div className="flex h-20 items-center border-b px-6 shrink-0">
+        <Logo />
+      </div>
+      <div className="flex-1 overflow-y-auto py-4">
+        <nav className="grid items-start px-4 text-sm font-medium">
+          <ul className="space-y-1">
+            {menuItems.map(item => (
+              <MenuItem {...item} pathname={pathname} key={item.href} />
+            ))}
+          </ul>
+          <Separator className="my-4" />
+          <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            Driver Mode
+          </h3>
+          <ul className="space-y-1">
+            {driverMenuItems.map(item => (
+              <MenuItem {...item} pathname={pathname} key={item.href} />
+            ))}
+          </ul>
+          <Separator className="my-4" />
+          <h3 className="px-3 text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
+            Rider & Sender
+          </h3>
+          <ul className="space-y-1">
+            {riderMenuItems.map(item => (
+              <MenuItem {...item} pathname={pathname} key={item.href} />
+            ))}
+          </ul>
+        </nav>
+      </div>
+      <div className="mt-auto border-t p-4 shrink-0">
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex w-full items-center gap-3 rounded-md p-2 text-left hover:bg-gray-100">
+            <Avatar className="h-10 w-10 border">
+              <AvatarImage
+                src={
+                  user?.photoURL ||
+                  'https://picsum.photos/seed/user-profile-2/100/100'
+                }
+                alt={user?.displayName || 'User'}
+                data-ai-hint="person face"
+              />
+              <AvatarFallback>
+                {user?.displayName?.charAt(0) || 'U'}
+              </AvatarFallback>
+            </Avatar>
+            <div className="flex-1 truncate">
+              <p className="font-semibold text-sm">{user?.displayName || 'Guest'}</p>
+              <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+            </div>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56 mb-2" side="top" align="start">
+            <DropdownMenuLabel>My Account</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <Link href="/profile">
+                <User className="mr-2" />
+                Profile
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/settings">
+                <Settings className="mr-2" />
+                Settings
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleLogout}>
+              <LogOut className="mr-2" />
+              <span>Log out</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </div>
   );
 }
-
-    
