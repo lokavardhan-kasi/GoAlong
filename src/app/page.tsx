@@ -204,49 +204,33 @@ export default function LandingPage() {
               </motion.div>
             </div>
 
-            {/* Right Side: Image Grid */}
-            <div className="w-full lg:w-1/2 relative hidden lg:block">
-              <div className="grid grid-cols-2 gap-4">
-                  <motion.div 
-                      className="relative group rounded-2xl"
-                      variants={imageVariants}
-                      initial="hidden"
-                      animate="visible"
-                      custom={0}
-                  >
-                      <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
-                      <Image src="https://picsum.photos/seed/hero1/400/400" width={400} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
-                  </motion.div>
-                  <motion.div 
-                      className="relative group rounded-2xl"
-                      variants={imageVariants}
-                      initial="hidden"
-                      animate="visible"
-                      custom={1}
-                  >
-                      <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
-                      <Image src="https://picsum.photos/seed/hero2/400/400" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="pet travel" />
-                  </motion.div>
-                  <motion.div 
-                      className="relative group rounded-2xl"
-                      variants={imageVariants}
-                      initial="hidden"
-                      animate="visible"
-                      custom={2}
-                  >
-                      <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
-                      <Image src="https://picsum.photos/seed/hero3/400/400" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
-                  </motion.div>
-                  <motion.div 
-                      className="relative group rounded-2xl"
-                      variants={imageVariants}
-                      initial="hidden"
-                      animate="visible"
-                      custom={3}
-                  >
-                      <div className="absolute -inset-4 bg-gradient-to-tr from-yellow-400 to-orange-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
-                      <Image src="https://picsum.photos/seed/hero4/400/400" width={400} height={400} alt="Scenic road trip" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="road trip" />
-                  </motion.div>
+            {/* Right Side: Image Grid (Compact) */}
+            <div className="w-full lg:w-[45%] max-w-lg relative hidden lg:block">
+              <div className="grid grid-cols-2 gap-3">
+                <img
+                  src="https://images.unsplash.com/photo-1449965408869-eaa3f722e40d?auto=format&fit=crop&w=600&q=80"
+                  alt="Car"
+                  className="w-full h-32 lg:h-40 object-cover rounded-2xl shadow-md transform hover:scale-105 transition duration-500"
+                  data-ai-hint="people car"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1541625602330-2277a4c46182?auto=format&fit=crop&w=600&q=80"
+                  alt="Cyclists"
+                  className="w-full h-32 lg:h-40 object-cover rounded-2xl shadow-md transform hover:scale-105 transition duration-500"
+                  data-ai-hint="pet travel"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=600&q=80"
+                  alt="Bike"
+                  className="w-full h-32 lg:h-40 object-cover rounded-2xl shadow-md transform hover:scale-105 transition duration-500"
+                  data-ai-hint="delivery package"
+                />
+                <img
+                  src="https://images.unsplash.com/photo-1616401784845-180882ba9ba8?auto=format&fit=crop&w=600&q=80"
+                  alt="Delivery"
+                  className="w-full h-32 lg:h-40 object-cover rounded-2xl shadow-md transform hover:scale-105 transition duration-500"
+                  data-ai-hint="road trip"
+                />
               </div>
             </div>
           </div>
@@ -352,5 +336,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
