@@ -21,7 +21,7 @@ import { format } from 'date-fns';
 
 const stats = [
     { title: "Rides Completed", value: 24, icon: Car, color: "text-blue-500", bgColor: "bg-blue-100" },
-    { title: "Money Saved", value: 120.50, icon: IndianRupee, prefix: "₹", decimals: 2, color: "text-green-500", bgColor: "bg-green-100" },
+    { title: "Money Saved", value: 120.50, icon: IndianRupee, prefix: "INR ", decimals: 2, color: "text-green-500", bgColor: "bg-green-100" },
     { title: "CO2 Reduced (kg)", value: 58, icon: Leaf, color: "text-emerald-500", bgColor: "bg-emerald-100" }
 ];
 
@@ -239,5 +239,3 @@ export default function DashboardPage() {
     </div>
   );
 }
-
-    

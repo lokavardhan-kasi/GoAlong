@@ -16,9 +16,9 @@ import { useToast } from '@/hooks/use-toast';
 import { CarLoader } from '@/components/ui/CarLoader';
 
 const stats = [
-    { label: "Total Rides", value: 24 },
-    { label: "Total Deliveries", value: 5 },
-    { label: "Total Savings", value: `₹120.50` },
+    { label: "Total Rides", value: "24" },
+    { label: "Total Deliveries", value: "5" },
+    { label: "Total Savings", value: `INR 120.50` },
 ];
 
 export default function ProfilePage() {
@@ -98,8 +98,8 @@ export default function ProfilePage() {
                             <div key={stat.label} className="flex justify-between">
                                 <dt className="text-muted-foreground">{stat.label}</dt>
                                 <dd className="font-semibold flex items-center gap-1">
-                                  {stat.label === 'Total Savings' && <IndianRupee className="h-4 w-4" />}
-                                  {stat.value}
+                                  {stat.label === 'Total Savings' ? stat.value.split(' ')[0] : ''} {stat.label === 'Total Savings' ? <IndianRupee className="h-4 w-4" /> : ''}
+                                  {stat.label !== 'Total Savings' ? stat.value : stat.value.split(' ')[1]}
                                 </dd>
                             </div>
                         ))}

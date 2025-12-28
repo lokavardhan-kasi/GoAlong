@@ -65,7 +65,7 @@ export function RouteCard({ ride }: RouteCardProps) {
       <CardFooter className="flex items-center justify-between bg-muted/50 p-4">
         <div className="flex flex-col">
             <div className="flex items-baseline gap-1">
-                <span className="text-2xl font-bold">₹{ride.price.seat.toFixed(2)}</span>
+                <span className="text-2xl font-bold">INR {ride.price.seat.toFixed(2)}</span>
                 <span className="text-sm text-muted-foreground">/ seat</span>
             </div>
             <Badge variant="outline" className="w-fit">

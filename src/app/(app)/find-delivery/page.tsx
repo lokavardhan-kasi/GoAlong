@@ -62,7 +62,7 @@ function DeliveryCard({ ride }: { ride: Ride }) {
           <div className="flex flex-col items-end text-right min-w-[120px]">
             <div className="flex items-center gap-1 bg-purple-50 px-2 py-1 rounded-lg">
                 <Package className="w-3 h-3 text-purple-600" />
-                <span className="text-sm font-semibold text-purple-700">₹{ride.price.parcel}</span>
+                <span className="text-sm font-semibold text-purple-700">INR {ride.price.parcel}</span>
                 <span className="text-[10px] text-purple-600">/box</span>
             </div>
           </div>
