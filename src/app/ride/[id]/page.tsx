@@ -254,7 +254,7 @@ export default function RideDetailsPage() {
                         </ToggleGroup>
 
                         <div className="text-center py-4">
-                            <span className="text-4xl font-bold">INR {estimatedCost}</span>
+                            <span className="text-4xl font-bold">₹{estimatedCost}</span>
                             <span className="text-muted-foreground"> / {bookingType}</span>
                         </div>
                         
@@ -306,3 +306,5 @@ export default function RideDetailsPage() {
     </>
   );
 }
+
+    

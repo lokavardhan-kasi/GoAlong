@@ -49,7 +49,7 @@ function RideHistoryList({ bookings }: { bookings: any[] | null }) {
                                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                                         <span className="flex items-center gap-1"><MapPin className="h-4 w-4"/> With {ride.driverId.substring(0, 6)}...</span>
                                         <span className="flex items-center gap-1"><Calendar className="h-4 w-4"/> {new Date(ride.confirmationTime?.toDate()).toLocaleDateString()}</span>
-                                        <span className="flex items-center gap-1"><IndianRupee className="h-4 w-4"/> INR {ride.estimatedCost}</span>
+                                        <span className="flex items-center gap-1"><IndianRupee className="h-4 w-4"/> ₹{ride.estimatedCost}</span>
                                     </div>
                                 </div>
                                 <div className="flex flex-col items-start md:items-end gap-2">
@@ -109,3 +109,5 @@ export default function RideHistoryPage() {
     </>
   );
 }
+
+    
