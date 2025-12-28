@@ -1,6 +1,6 @@
 
 'use client';
-import { useParams, useRouter, usePathname } from 'next/navigation';
+import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation';
 import { rides } from '@/lib/mock-data';
 import { PageHeader } from '@/components/common/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
@@ -12,28 +12,43 @@ import { Clock, IndianRupee, MapPin, Star, Users, CheckCircle, Send, Package, Za
 import Link from 'next/link';
 import CountUp from '@/components/common/count-up';
 import { useToast } from '@/hooks/use-toast';
-import { useState } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
 import { collection, addDoc, serverTimestamp, where, query, getDocs, doc, increment } from 'firebase/firestore';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { motion } from 'framer-motion';
 
 export default function RideDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const pathname = usePathname();
+  const searchParams = useSearchParams();
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
   const ride = rides.find(r => r.id === params.id);
   const [bookingType, setBookingType] = useState<'seat' | 'parcel'>('seat');
   const [isBooking, setIsBooking] = useState(false);
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+
+  const from = searchParams.get('from');
+  const to = searchParams.get('to');
+
+  const rideRoute = useMemo(() => {
+    if (!ride) return { from: '', to: '' };
+    return {
+      from: from || ride.route.from,
+      to: to || ride.route.to,
+    }
+  }, [ride, from, to]);
 
   if (!ride) {
     return (
         <div className="p-4 md:p-8">
             <PageHeader title="Ride not found" description="This ride is no longer available or the link is incorrect." showBackButton />
-            <Button asChild><Link href="/find-ride">Back to all rides</Link></Button>
+            <Button asChild><Link href="/search">Back to all rides</Link></Button>
         </div>
     );
   }
@@ -41,7 +56,7 @@ export default function RideDetailsPage() {
   const estimatedCost = bookingType === 'seat' ? ride.price.seat : ride.price.parcel;
 
   const handleBooking = async () => {
-    if (isBooking || isUserLoading) return; // Prevent multiple clicks
+    if (isBooking || isUserLoading) return;
     if (!user) {
       localStorage.setItem('redirectAfterLogin', pathname);
       router.push('/login');
@@ -51,13 +66,18 @@ export default function RideDetailsPage() {
 
     setIsBooking(true);
 
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
+    console.log(`Message sent to driver ${ride.driver.name}: New booking request from ${user.displayName}`);
+
     try {
         const rideRequestData = {
             riderId: user.uid,
             driverId: ride.driver.id,
             routeId: ride.id,
-            pickupLocation: ride.route.from,
-            dropoffLocation: ride.route.to,
+            pickupLocation: rideRoute.from,
+            dropoffLocation: rideRoute.to,
             desiredTime: ride.times.departure,
             status: 'pending',
             bookingType,
@@ -67,27 +87,17 @@ export default function RideDetailsPage() {
         const rideRequestsCollection = collection(firestore, 'rideRequests');
         await addDoc(rideRequestsCollection, rideRequestData);
 
-        // Check if a conversation already exists
         const conversationsRef = collection(firestore, 'conversations');
         const q = query(
           conversationsRef,
-          where('participantIds', 'array-contains', user.uid)
+          where('participantIds', 'array-contains-all', [user.uid, ride.driver.id])
         );
+
         const querySnapshot = await getDocs(q);
-        let existingConversation: any = null;
-        querySnapshot.forEach(doc => {
-            const conv = doc.data();
-            if (conv.participantIds.includes(ride.driver.id)) {
-                existingConversation = { id: doc.id, ...conv };
-            }
-        });
-
-        let conversationId;
-
-        if (existingConversation) {
-            conversationId = existingConversation.id;
+        let conversationId: string | null = null;
+        if (!querySnapshot.empty) {
+          conversationId = querySnapshot.docs[0].id;
         } else {
-            // Create a new conversation
             const newConversation = {
                 participantIds: [user.uid, ride.driver.id],
                 participantDetails: {
@@ -102,7 +112,7 @@ export default function RideDetailsPage() {
                 },
                 unreadCounts: {
                   [user.uid]: 0,
-                  [ride.driver.id]: 1,
+                  [ride.driver.id]: 0,
                 },
                 createdAt: serverTimestamp(),
                 lastMessage: null,
@@ -111,39 +121,26 @@ export default function RideDetailsPage() {
             conversationId = conversationRef.id;
         }
 
-        // Add the initial message to the conversation
-        const messageText = `Hi ${ride.driver.name}, I'd like to request a ${bookingType} for your ride from ${ride.route.from} to ${ride.route.to}.`;
+        const messageText = `Hi ${ride.driver.name}, I'd like to request a ${bookingType} for your ride from ${rideRoute.from} to ${rideRoute.to}.`;
         const messagesCol = collection(firestore, `conversations/${conversationId}/messages`);
+        
         await addDoc(messagesCol, {
             text: messageText,
             senderId: user.uid,
             timestamp: serverTimestamp(),
         });
         
-        // Update the last message on the conversation
-        const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
-        
-        const updatePayload: any = { 
-          lastMessage: { text: messageText, senderId: user.uid, timestamp: serverTimestamp() }
-        };
-        // only increment if the conversation already existed.
-        if (existingConversation) {
-          updatePayload[`unreadCounts.${ride.driver.id}`] = increment(1);
-        }
-
+        const conversationDocRef = doc(firestore, 'conversations', conversationId);
         setDocumentNonBlocking(
-            doc(firestore, 'conversations', conversationId), 
-            updatePayload,
+            conversationDocRef,
+            { 
+              lastMessage: { text: messageText, senderId: user.uid, timestamp: serverTimestamp() },
+              [`unreadCounts.${ride.driver.id}`]: increment(1),
+            },
             { merge: true }
         );
 
-
-        toast({
-            title: "Success: Booking Request Sent!",
-            description: `Your request for the ride with ${ride.driver.name} has been sent.`,
-        });
-        
-        router.push(`/inbox/${conversationId}`);
+        setBookingSuccess(true);
 
     } catch (error: any) {
         toast({
@@ -177,7 +174,7 @@ export default function RideDetailsPage() {
                     <div className="flex-1">
                         <div className="flex items-start justify-between">
                             <div>
-                                <p className="font-bold">{ride.route.from}</p>
+                                <p className="font-bold">{rideRoute.from}</p>
                                 <p className="text-sm text-muted-foreground">Pick up point</p>
                             </div>
                             <p className="font-bold text-lg">{ride.times.departure}</p>
@@ -194,7 +191,7 @@ export default function RideDetailsPage() {
                         
                         <div className="flex items-start justify-between">
                             <div>
-                                <p className="font-bold">{ride.route.to}</p>
+                                <p className="font-bold">{rideRoute.to}</p>
                                 <p className="text-sm text-muted-foreground">Drop off point</p>
                             </div>
                             <p className="font-bold text-lg">{ride.times.arrival}</p>
@@ -277,6 +274,35 @@ export default function RideDetailsPage() {
             </div>
         </div>
       </div>
+
+       {bookingSuccess && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="bg-white rounded-2xl p-8 text-center max-w-sm w-full mx-4 shadow-2xl"
+            >
+                <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ delay: 0.2, type: 'spring', stiffness: 260, damping: 20 }}
+                >
+                    <CheckCircle className="h-20 w-20 text-green-500 mx-auto" />
+                </motion.div>
+                <h2 className="text-2xl font-bold mt-6">Booking Request Sent!</h2>
+                <p className="text-muted-foreground mt-2">
+                    We have sent a message to <span className="font-semibold text-foreground">{ride.driver.name}</span>. They will confirm your ride shortly.
+                </p>
+                <Button 
+                    size="lg" 
+                    className="w-full mt-8"
+                    onClick={() => router.push('/dashboard')}
+                >
+                    Go to Dashboard
+                </Button>
+            </motion.div>
+        </div>
+      )}
     </>
   );
 }

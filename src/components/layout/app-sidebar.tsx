@@ -153,7 +153,7 @@ export function AppSidebar() {
   };
 
   return (
-    <div className="hidden border-r bg-white md:block w-64 h-screen flex flex-col">
+    <div className="hidden md:block h-screen sticky top-0 overflow-y-auto w-64 border-r border-gray-100 bg-white flex-col">
       <div className="flex h-20 items-center border-b px-6 shrink-0">
         <Logo />
       </div>
