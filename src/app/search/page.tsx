@@ -1,5 +1,6 @@
 
 'use client';
+import { useMemo } from 'react';
 import { PageHeader } from '@/components/common/page-header';
 import { rides, Ride } from '@/lib/mock-data';
 import { Card, CardContent } from '@/components/ui/card';
@@ -10,7 +11,11 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { IndianRupee } from 'lucide-react';
 
-function RideCard({ ride }: { ride: Ride }) {
+const SEARCH_FROM = "Visakhapatnam";
+const SEARCH_TO = "Vijayawada";
+
+
+function RideCard({ ride, isEnRouteMatch }: { ride: Ride, isEnRouteMatch: boolean }) {
   return (
     <Link href={`/ride/${ride.id}`} className="block">
       <Card className="cursor-pointer transition-all duration-300 hover:shadow-md border-gray-100 rounded-2xl">
@@ -57,6 +62,11 @@ function RideCard({ ride }: { ride: Ride }) {
                 {ride.features.parcelSpace !== 'None' && (
                     <Badge className="bg-purple-50 text-purple-700 hover:bg-purple-100 border-purple-100"><Package className="h-3 w-3 mr-1" /> {ride.features.parcelSpace} Space</Badge>
                 )}
+                 {isEnRouteMatch && (
+                    <Badge variant="outline" className="text-amber-700 border-amber-200 bg-amber-50">
+                        <MapPin className="h-3 w-3 mr-1"/> Drop-off en route
+                    </Badge>
+                 )}
             </div>
           </div>
 
@@ -85,15 +95,37 @@ function RideCard({ ride }: { ride: Ride }) {
 
 
 export default function SearchPage() {
+  const filteredRides = useMemo(() => {
+    const from = SEARCH_FROM.toLowerCase();
+    const to = SEARCH_TO.toLowerCase();
+
+    return rides
+      .map(ride => {
+        const rideFrom = ride.route.from.toLowerCase();
+        if (rideFrom !== from) return null;
+
+        const rideTo = ride.route.to.toLowerCase();
+        const isDirectMatch = rideTo === to;
+        const isEnRouteMatch = !isDirectMatch && ride.route.stops.some(stop => stop.toLowerCase() === to);
+
+        if (isDirectMatch || isEnRouteMatch) {
+            return { ride, isEnRouteMatch };
+        }
+        
+        return null;
+      })
+      .filter(Boolean) as { ride: Ride; isEnRouteMatch: boolean }[];
+  }, []);
+
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
       <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg -mx-4 -mt-8 mb-8 px-4 py-4 border-b">
          <div className="flex items-center justify-between">
             <div className="flex gap-4 items-center">
                 <PageHeader title='' showBackButton/>
-                <p className="font-semibold">Visakhapatnam</p>
+                <p className="font-semibold">{SEARCH_FROM}</p>
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                <p className="font-semibold">Hyderabad</p>
+                <p className="font-semibold">{SEARCH_TO}</p>
              </div>
              <div className="flex gap-4 items-center text-sm text-muted-foreground">
                  <span className="flex items-center gap-2"><Calendar className="h-4 w-4" />Today</span>
@@ -104,10 +136,11 @@ export default function SearchPage() {
       </div>
 
       <div className="space-y-6">
-        {rides.map(ride => (
-          <RideCard key={ride.id} ride={ride} />
+        {filteredRides.map(({ ride, isEnRouteMatch }) => (
+          <RideCard key={ride.id} ride={ride} isEnRouteMatch={isEnRouteMatch} />
         ))}
       </div>
     </div>
   );
 }
+

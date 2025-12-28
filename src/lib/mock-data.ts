@@ -58,7 +58,7 @@ export const rides: Ride[] = [
       verified: true,
     },
     route: {
-      from: 'Vizag',
+      from: 'Visakhapatnam',
       to: 'Hyderabad',
       stops: ['Rajahmundry', 'Vijayawada'],
     },
@@ -92,9 +92,9 @@ export const rides: Ride[] = [
       verified: true,
     },
     route: {
-      from: 'Vizag',
+      from: 'Visakhapatnam',
       to: 'Hyderabad',
-      stops: [],
+      stops: ['Anakapalle', 'Rajahmundry', 'Vijayawada', 'Suryapet'],
     },
     times: {
       departure: '09:30',
@@ -126,7 +126,7 @@ export const rides: Ride[] = [
       verified: false,
     },
     route: {
-      from: 'Vizag',
+      from: 'Visakhapatnam',
       to: 'Hyderabad',
       stops: ['Vijayawada'],
     },
@@ -194,7 +194,7 @@ export const rides: Ride[] = [
       verified: true,
     },
      route: {
-      from: 'Vizag',
+      from: 'Visakhapatnam',
       to: 'Vijayawada',
       stops: [],
     },
