@@ -15,6 +15,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from '@/components/ui/command';
 import { cn } from '@/lib/utils';
 import { rides } from '@/lib/mock-data';
+import { useToast } from '@/hooks/use-toast';
 
 const uniqueLocations = Array.from(new Set(rides.flatMap(r => [r.route.from, r.route.to, ...r.route.stops])));
 
@@ -78,6 +79,7 @@ export default function LandingPage() {
   const [scrolled, setScrolled] = useState(false);
   const { isLoggedIn } = useContext(UserContext);
   const router = useRouter();
+  const { toast } = useToast();
 
   const [leavingFrom, setLeavingFrom] = useState('');
   const [goingTo, setGoingTo] = useState('');
@@ -102,6 +104,16 @@ export default function LandingPage() {
       },
     }),
   };
+
+  const handleSubscribe = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    toast({
+      title: 'Successfully Subscribed!',
+      description: 'You will be notified with future updates.',
+    });
+    const form = e.target as HTMLFormElement;
+    form.reset();
+  }
 
   return (
     <div className="bg-white font-sans relative">
@@ -345,7 +357,7 @@ export default function LandingPage() {
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Contact</h3>
                         <p className="text-gray-400 text-sm">Email: kasilokavardhan20@gmail.com</p>
-                        <form className="mt-4 space-y-2" onSubmit={(e) => { e.preventDefault(); console.log('Form submitted'); }}>
+                        <form className="mt-4 space-y-2" onSubmit={handleSubscribe}>
                             <Input type="email" placeholder="Your email" className="bg-gray-800 border-gray-700 text-white h-10"/>
                             <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500">Subscribe</Button>
                         </form>
