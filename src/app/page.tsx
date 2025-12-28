@@ -268,6 +268,35 @@ export default function LandingPage() {
 
         <section className="py-24 bg-white">
             <div className="container mx-auto px-4 text-center">
+                <h2 className="text-4xl font-bold mb-12">How It Works</h2>
+                <div className="grid md:grid-cols-3 gap-8 text-left">
+                    <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.1 }}>
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 font-bold text-xl shrink-0">1</div>
+                            <h3 className="text-xl font-bold">Create Your Profile</h3>
+                        </div>
+                        <p className="text-gray-600 md:ml-16">Sign up in minutes. Add your vehicle details and a quick bio to let others know you.</p>
+                    </motion.div>
+                     <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.3 }}>
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 font-bold text-xl shrink-0">2</div>
+                            <h3 className="text-xl font-bold">Publish or Find a Ride</h3>
+                        </div>
+                        <p className="text-gray-600 md:ml-16">Let us know where you're going, or search for rides along your desired route.</p>
+                    </motion.div>
+                     <motion.div initial={{ opacity: 0, y: 50 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.5 }} transition={{ duration: 0.5, delay: 0.5 }}>
+                        <div className="flex items-center gap-4 mb-4">
+                            <div className="flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 text-blue-600 font-bold text-xl shrink-0">3</div>
+                            <h3 className="text-xl font-bold">Connect and Go</h3>
+                        </div>
+                        <p className="text-gray-600 md:ml-16">Accept requests or book your ride. Coordinate with your match and enjoy the shared journey!</p>
+                    </motion.div>
+                </div>
+            </div>
+        </section>
+
+        <section className="py-24 bg-gray-50/70">
+            <div className="container mx-auto px-4 text-center">
                 <h2 className="text-4xl font-bold mb-12">Making Real Impact</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
                     <div className="text-center">
