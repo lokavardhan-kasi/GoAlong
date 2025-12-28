@@ -206,38 +206,48 @@ export default function LandingPage() {
 
             {/* Right Side: Image Grid */}
             <div className="w-full lg:w-1/2 relative hidden lg:block">
-            <div className="grid grid-cols-2 gap-4">
-                    <motion.div 
-                        className="relative group rounded-2xl col-span-2 row-span-1"
-                        variants={imageVariants}
-                        initial="hidden"
-                        animate="visible"
-                        custom={0}
-                    >
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
-                        <Image src="https://picsum.photos/seed/hero1/800/400" width={800} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
-                    </motion.div>
-                    <motion.div 
-                        className="relative group rounded-2xl"
-                        variants={imageVariants}
-                        initial="hidden"
-                        animate="visible"
-                        custom={1}
-                    >
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
-                        <Image src="https://picsum.photos/seed/hero2/400/400" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="pet travel" />
-                    </motion.div>
-                    <motion.div 
-                        className="relative group rounded-2xl"
-                        variants={imageVariants}
-                        initial="hidden"
-                        animate="visible"
-                        custom={2}
-                    >
-                        <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
-                        <Image src="https://picsum.photos/seed/hero3/400/400" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
-                    </motion.div>
-                </div>
+              <div className="grid grid-cols-2 gap-4">
+                  <motion.div 
+                      className="relative group rounded-2xl"
+                      variants={imageVariants}
+                      initial="hidden"
+                      animate="visible"
+                      custom={0}
+                  >
+                      <div className="absolute -inset-4 bg-gradient-to-tr from-pink-500 to-purple-600 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
+                      <Image src="https://picsum.photos/seed/hero1/400/400" width={400} height={400} alt="Carpooling happy people" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="people car"/>
+                  </motion.div>
+                  <motion.div 
+                      className="relative group rounded-2xl"
+                      variants={imageVariants}
+                      initial="hidden"
+                      animate="visible"
+                      custom={1}
+                  >
+                      <div className="absolute -inset-4 bg-gradient-to-tr from-teal-400 to-emerald-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
+                      <Image src="https://picsum.photos/seed/hero2/400/400" width={400} height={400} alt="A person with their happy dog" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="pet travel" />
+                  </motion.div>
+                  <motion.div 
+                      className="relative group rounded-2xl"
+                      variants={imageVariants}
+                      initial="hidden"
+                      animate="visible"
+                      custom={2}
+                  >
+                      <div className="absolute -inset-4 bg-gradient-to-tr from-blue-400 to-indigo-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
+                      <Image src="https://picsum.photos/seed/hero3/400/400" width={400} height={400} alt="Delivery person handing a package" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="delivery package" />
+                  </motion.div>
+                  <motion.div 
+                      className="relative group rounded-2xl"
+                      variants={imageVariants}
+                      initial="hidden"
+                      animate="visible"
+                      custom={3}
+                  >
+                      <div className="absolute -inset-4 bg-gradient-to-tr from-yellow-400 to-orange-500 blur-3xl rounded-3xl opacity-30 scale-95 transition-all duration-500 ease-in-out -z-10 group-hover:opacity-100 group-hover:scale-105"></div>
+                      <Image src="https://picsum.photos/seed/hero4/400/400" width={400} height={400} alt="Scenic road trip" className="rounded-2xl relative z-10 shadow-md w-full h-full object-cover" data-ai-hint="road trip" />
+                  </motion.div>
+              </div>
             </div>
           </div>
         </section>
@@ -342,3 +352,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
