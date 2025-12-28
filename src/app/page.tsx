@@ -265,6 +265,7 @@ export default function LandingPage() {
                     <div>
                         <h3 className="text-lg font-semibold mb-4">Contact</h3>
                         <p className="text-gray-400 text-sm">Email: kasilokavardhan20@gmail.com</p>
+                        <p className="text-gray-400 text-sm">Phone: 9866228041</p>
                         <form className="mt-4 space-y-2" onSubmit={handleSubscribe}>
                             <input type="email" placeholder="Your email" className="bg-gray-800 border-gray-700 text-white h-10 w-full rounded-md px-3 text-sm"/>
                             <Button type="submit" className="w-full bg-gradient-to-r from-purple-600 to-blue-500">Subscribe</Button>
