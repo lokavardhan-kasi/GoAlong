@@ -41,7 +41,7 @@ export default function RideDetailsPage() {
   const estimatedCost = bookingType === 'seat' ? ride.price.seat : ride.price.parcel;
 
   const handleBooking = async () => {
-    if (isUserLoading) return;
+    if (isBooking || isUserLoading) return; // Prevent multiple clicks
     if (!user) {
       localStorage.setItem('redirectAfterLogin', pathname);
       router.push('/login');
