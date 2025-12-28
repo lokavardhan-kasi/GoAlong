@@ -274,6 +274,9 @@ export type Conversation = {
             displayName: string;
             avatarUrl?: string;
         }
+    };
+    unreadCounts?: {
+        [key: string]: number;
     }
 };
 
@@ -321,4 +324,5 @@ export type BookingConfirmation = {
 
 export type WithId<T> = T & { id: string };
 
+    
     

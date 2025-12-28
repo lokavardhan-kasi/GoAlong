@@ -3,7 +3,7 @@
 import { useParams } from 'next/navigation';
 import { useCollection, useDoc, useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
-import { collection, doc, orderBy, query, serverTimestamp, addDoc } from 'firebase/firestore';
+import { collection, doc, orderBy, query, serverTimestamp, addDoc, increment, updateDoc } from 'firebase/firestore';
 import { WithId, Conversation, Message } from '@/lib/mock-data';
 import { PageHeader } from '@/components/common/page-header';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -50,9 +50,23 @@ export default function ConversationPage() {
     scrollToBottom();
   }, [messages]);
 
+  useEffect(() => {
+    if (user && conversationRef && firestore) {
+      // Mark messages as read by setting the user's unread count to 0
+      const unreadCountKey = `unreadCounts.${user.uid}`;
+      updateDoc(conversationRef, {
+        [unreadCountKey]: 0,
+      });
+    }
+  }, [user, conversationRef, firestore, messages]);
+
+
   const handleSendMessage = async (e: FormEvent) => {
     e.preventDefault();
-    if (!firestore || !user || !conversationRef || !newMessage.trim()) return;
+    if (!firestore || !user || !conversationRef || !newMessage.trim() || !otherParticipant) return;
+
+    const otherParticipantId = conversation.participantIds.find(id => id !== user.uid);
+    if (!otherParticipantId) return;
 
     const messagesCol = collection(conversationRef, 'messages');
     
@@ -62,9 +76,14 @@ export default function ConversationPage() {
       timestamp: serverTimestamp(),
     });
     
+    // Increment unread count for the other participant and update last message
+    const unreadCountKey = `unreadCounts.${otherParticipantId}`;
     setDocumentNonBlocking(
       conversationRef,
-      { lastMessage: { text: newMessage, senderId: user.uid, timestamp: serverTimestamp() } },
+      { 
+        lastMessage: { text: newMessage, senderId: user.uid, timestamp: serverTimestamp() },
+        [unreadCountKey]: increment(1),
+      },
       { merge: true }
     );
 
@@ -119,3 +138,5 @@ export default function ConversationPage() {
     </div>
   );
 }
+
+    

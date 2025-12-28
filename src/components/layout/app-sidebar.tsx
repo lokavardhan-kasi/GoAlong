@@ -21,7 +21,7 @@ import {
 } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import { Badge } from '../ui/badge';
-import { useAuth, useUser } from '@/firebase';
+import { useAuth, useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -31,8 +31,11 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useRouter } from 'next/navigation';
+import { collection, query, where } from 'firebase/firestore';
+import { Conversation, WithId } from '@/lib/mock-data';
+import { useMemo } from 'react';
 
-const menuItems = [
+const baseMenuItems = [
   {
     label: 'Dashboard',
     href: '/dashboard',
@@ -47,7 +50,6 @@ const menuItems = [
     label: 'Inbox',
     href: '/inbox',
     icon: Bell,
-    badge: 3,
   },
 ];
 
@@ -103,7 +105,7 @@ function MenuItem({ href, label, icon: Icon, pathname, badge }: MenuItemProps) {
       >
         <Icon className="h-5 w-5" />
         <span>{label}</span>
-        {badge && (
+        {badge && badge > 0 && (
           <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
             {badge}
           </Badge>
@@ -117,7 +119,31 @@ export function AppSidebar() {
   const pathname = usePathname();
   const { user } = useUser();
   const auth = useAuth();
+  const firestore = useFirestore();
   const router = useRouter();
+
+  const conversationsQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    return query(collection(firestore, 'conversations'), where('participantIds', 'array-contains', user.uid));
+  }, [user, firestore]);
+
+  const { data: conversations } = useCollection<Conversation>(conversationsQuery);
+
+  const unreadCount = useMemo(() => {
+    if (!conversations || !user) return 0;
+    return conversations.reduce((acc, conv) => {
+      return acc + (conv.unreadCounts?.[user.uid] || 0);
+    }, 0);
+  }, [conversations, user]);
+
+  const menuItems = useMemo(() => {
+    return baseMenuItems.map(item => {
+      if (item.href === '/inbox') {
+        return { ...item, badge: unreadCount };
+      }
+      return item;
+    });
+  }, [unreadCount]);
 
   const handleLogout = () => {
     if (auth) {
@@ -207,3 +233,5 @@ export function AppSidebar() {
     </div>
   );
 }
+
+    

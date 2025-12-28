@@ -16,7 +16,7 @@ import { useState } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
-import { collection, addDoc, serverTimestamp, where, query, getDocs, doc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, where, query, getDocs, doc, increment } from 'firebase/firestore';
 
 export default function RideDetailsPage() {
   const params = useParams();
@@ -74,7 +74,7 @@ export default function RideDetailsPage() {
           where('participantIds', 'array-contains', user.uid)
         );
         const querySnapshot = await getDocs(q);
-        let existingConversation = null;
+        let existingConversation: any = null;
         querySnapshot.forEach(doc => {
             const conv = doc.data();
             if (conv.participantIds.includes(ride.driver.id)) {
@@ -100,6 +100,10 @@ export default function RideDetailsPage() {
                         avatarUrl: ride.driver.avatarUrl,
                     }
                 },
+                unreadCounts: {
+                  [user.uid]: 0,
+                  [ride.driver.id]: 1,
+                },
                 createdAt: serverTimestamp(),
                 lastMessage: null,
             };
@@ -117,11 +121,19 @@ export default function RideDetailsPage() {
         });
         
         // Update the last message on the conversation
-        // This is a fire-and-forget operation, we don't need to wait for it.
         const { setDocumentNonBlocking } = await import('@/firebase/non-blocking-updates');
+        
+        const updatePayload: any = { 
+          lastMessage: { text: messageText, senderId: user.uid, timestamp: serverTimestamp() }
+        };
+        // only increment if the conversation already existed.
+        if (existingConversation) {
+          updatePayload[`unreadCounts.${ride.driver.id}`] = increment(1);
+        }
+
         setDocumentNonBlocking(
             doc(firestore, 'conversations', conversationId), 
-            { lastMessage: { text: messageText, senderId: user.uid, timestamp: serverTimestamp() }}, 
+            updatePayload,
             { merge: true }
         );
 
@@ -268,3 +280,5 @@ export default function RideDetailsPage() {
     </>
   );
 }
+
+    
