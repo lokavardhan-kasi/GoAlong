@@ -5,7 +5,7 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
+    --background: 200 20% 98%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -14,7 +14,7 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 210 93% 54%; /* Deep Sky Blue */
+    --primary: 210 100% 56%; /* #3399FF */
     --primary-foreground: 210 40% 98%;
 
     --secondary: 210 40% 96.1%;
@@ -22,26 +22,18 @@
 
     --muted: 210 40% 96.1%;
     --muted-foreground: 215.4 16.3% 46.9%;
-
-    --accent: 98 100% 60%; /* Soft Green */
-    --accent-foreground: 210 40% 98%;
+    
+    --accent: 98 100% 59%; /* #80FF33 */
+    --accent-foreground: 24 9.8% 10%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 210 93% 54%;
+    --ring: 210 100% 56%;
 
     --radius: 0.5rem;
-    --sidebar-background: 210 30% 98%;
-    --sidebar-foreground: 210 40% 15%;
-    --sidebar-primary: 210 100% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 30% 90%;
-    --sidebar-accent-foreground: 210 40% 15%;
-    --sidebar-border: 210 20% 85%;
-    --sidebar-ring: 210 100% 60%;
   }
 
   .dark {
@@ -54,7 +46,7 @@
     --popover: 222.2 84% 4.9%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 93% 54%;
+    --primary: 210 100% 56%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
     --secondary: 217.2 32.6% 17.5%;
@@ -63,7 +55,7 @@
     --muted: 217.2 32.6% 17.5%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 98 100% 60%;
+    --accent: 98 100% 59%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
@@ -71,16 +63,7 @@
 
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
-    --ring: 210 93% 54%;
-    
-    --sidebar-background: 210 20% 12%;
-    --sidebar-foreground: 210 20% 95%;
-    --sidebar-primary: 210 100% 60%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 20% 20%;
-    --sidebar-accent-foreground: 210 20% 95%;
-    --sidebar-border: 210 20% 25%;
-    --sidebar-ring: 210 100% 60%;
+    --ring: 210 100% 56%;
   }
 }
 
@@ -94,4 +77,7 @@
   }
 }
 
+html {
+    --background: 196 100% 95%; /* very light cyan */
+}
     

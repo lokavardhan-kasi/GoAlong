@@ -1,6 +1,7 @@
 
 'use client';
 import { useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/components/common/page-header';
 import { rides, Ride } from '@/lib/mock-data';
 import { Card, CardContent } from '@/components/ui/card';
@@ -11,13 +12,13 @@ import Link from 'next/link';
 import { Badge } from '@/components/ui/badge';
 import { IndianRupee } from 'lucide-react';
 
-const SEARCH_FROM = "Visakhapatnam";
-const SEARCH_TO = "Vijayawada";
+function RideCard({ ride, searchParams }: { ride: Ride, searchParams: URLSearchParams }) {
+  const to = searchParams.get('to');
+  const isEnRouteMatch = to && ride.route.to.toLowerCase() !== to.toLowerCase() && ride.route.stops.some(stop => stop.toLowerCase() === to.toLowerCase());
+  const link = `/ride/${ride.id}?${searchParams.toString()}`;
 
-
-function RideCard({ ride, isEnRouteMatch }: { ride: Ride, isEnRouteMatch: boolean }) {
   return (
-    <Link href={`/ride/${ride.id}`} className="block">
+    <Link href={link} className="block">
       <Card className="cursor-pointer transition-all duration-300 hover:shadow-md border-gray-100 rounded-2xl">
         <CardContent className="p-6 flex flex-row justify-between items-center">
           {/* Left: Time & Route */}
@@ -95,37 +96,47 @@ function RideCard({ ride, isEnRouteMatch }: { ride: Ride, isEnRouteMatch: boolea
 
 
 export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const from = searchParams.get('from') || 'Anywhere';
+  const to = searchParams.get('to') || 'Anywhere';
+
   const filteredRides = useMemo(() => {
-    const from = SEARCH_FROM.toLowerCase();
-    const to = SEARCH_TO.toLowerCase();
+    const searchFrom = from.toLowerCase();
+    const searchTo = to.toLowerCase();
+
+    if (searchFrom === 'anywhere' && searchTo === 'anywhere') {
+        return rides;
+    }
 
     return rides
-      .map(ride => {
+      .filter(ride => {
         const rideFrom = ride.route.from.toLowerCase();
-        if (rideFrom !== from) return null;
+        if (searchFrom !== 'anywhere' && rideFrom !== searchFrom) return false;
 
         const rideTo = ride.route.to.toLowerCase();
-        const isDirectMatch = rideTo === to;
-        const isEnRouteMatch = !isDirectMatch && ride.route.stops.some(stop => stop.toLowerCase() === to);
+        const isDirectMatch = rideTo === searchTo;
+        const isEnRouteMatch = ride.route.stops.some(stop => stop.toLowerCase() === searchTo);
 
-        if (isDirectMatch || isEnRouteMatch) {
-            return { ride, isEnRouteMatch };
+        if (searchTo !== 'anywhere' && !isDirectMatch && !isEnRouteMatch) {
+            return false;
         }
         
-        return null;
-      })
-      .filter(Boolean) as { ride: Ride; isEnRouteMatch: boolean }[];
-  }, []);
+        return true;
+      });
+  }, [from, to]);
+
+  const capitalizedFrom = from.charAt(0).toUpperCase() + from.slice(1);
+  const capitalizedTo = to.charAt(0).toUpperCase() + to.slice(1);
 
   return (
     <div className="max-w-4xl mx-auto py-8 px-4">
-      <div className="sticky top-0 z-10 bg-white/80 backdrop-blur-lg -mx-4 -mt-8 mb-8 px-4 py-4 border-b">
+      <div className="sticky top-0 z-10 bg-background/80 backdrop-blur-lg -mx-4 -mt-8 mb-8 px-4 py-4 border-b">
          <div className="flex items-center justify-between">
             <div className="flex gap-4 items-center">
                 <PageHeader title='' showBackButton/>
-                <p className="font-semibold">{SEARCH_FROM}</p>
+                <p className="font-semibold">{capitalizedFrom}</p>
                 <ArrowRight className="h-5 w-5 text-muted-foreground" />
-                <p className="font-semibold">{SEARCH_TO}</p>
+                <p className="font-semibold">{capitalizedTo}</p>
              </div>
              <div className="flex gap-4 items-center text-sm text-muted-foreground">
                  <span className="flex items-center gap-2"><Calendar className="h-4 w-4" />Today</span>
@@ -136,13 +147,16 @@ export default function SearchPage() {
       </div>
 
       <div className="space-y-6">
-        {filteredRides.map(({ ride, isEnRouteMatch }) => (
-          <RideCard key={ride.id} ride={ride} isEnRouteMatch={isEnRouteMatch} />
-        ))}
+        {filteredRides.length > 0 ? filteredRides.map((ride) => (
+          <RideCard key={ride.id} ride={ride} searchParams={searchParams} />
+        )) : (
+            <Card>
+                <CardContent className="p-12 text-center">
+                    <p className="text-muted-foreground">No rides found matching your search criteria.</p>
+                </CardContent>
+            </Card>
+        )}
       </div>
     </div>
   );
 }
-
-
-    

@@ -8,11 +8,10 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Clock, IndianRupee, MapPin, Star, Users, CheckCircle, Send, Package, Zap, ShieldCheck } from 'lucide-react';
+import { Clock, IndianRupee, MapPin, Star, Users, CheckCircle, Send, Package, Zap, ShieldCheck, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
-import CountUp from '@/components/common/count-up';
 import { useToast } from '@/hooks/use-toast';
-import { useState, useMemo, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useUser, useFirestore } from '@/firebase';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
@@ -32,6 +31,7 @@ export default function RideDetailsPage() {
   const [bookingType, setBookingType] = useState<'seat' | 'parcel'>('seat');
   const [isBooking, setIsBooking] = useState(false);
   const [bookingSuccess, setBookingSuccess] = useState(false);
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   const from = searchParams.get('from');
   const to = searchParams.get('to');
@@ -58,18 +58,13 @@ export default function RideDetailsPage() {
   const handleBooking = async () => {
     if (isBooking || isUserLoading) return;
     if (!user) {
-      localStorage.setItem('redirectAfterLogin', pathname);
+      localStorage.setItem('redirectAfterLogin', `${pathname}?${searchParams.toString()}`);
       router.push('/login');
       return;
     }
     if (!firestore || !ride) return;
 
     setIsBooking(true);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1500));
-
-    console.log(`Message sent to driver ${ride.driver.name}: New booking request from ${user.displayName}`);
 
     try {
         const rideRequestData = {
@@ -90,13 +85,16 @@ export default function RideDetailsPage() {
         const conversationsRef = collection(firestore, 'conversations');
         const q = query(
           conversationsRef,
-          where('participantIds', 'array-contains-all', [user.uid, ride.driver.id])
+          where('participantIds', 'array-contains', user.uid),
         );
 
         const querySnapshot = await getDocs(q);
-        let conversationId: string | null = null;
-        if (!querySnapshot.empty) {
-          conversationId = querySnapshot.docs[0].id;
+        let convId: string | null = null;
+        
+        const existingConv = querySnapshot.docs.find(doc => doc.data().participantIds.includes(ride.driver.id));
+
+        if (existingConv) {
+          convId = existingConv.id;
         } else {
             const newConversation = {
                 participantIds: [user.uid, ride.driver.id],
@@ -118,11 +116,13 @@ export default function RideDetailsPage() {
                 lastMessage: null,
             };
             const conversationRef = await addDoc(conversationsRef, newConversation);
-            conversationId = conversationRef.id;
+            convId = conversationRef.id;
         }
 
+        setConversationId(convId);
+
         const messageText = `Hi ${ride.driver.name}, I'd like to request a ${bookingType} for your ride from ${rideRoute.from} to ${rideRoute.to}.`;
-        const messagesCol = collection(firestore, `conversations/${conversationId}/messages`);
+        const messagesCol = collection(firestore, `conversations/${convId}/messages`);
         
         await addDoc(messagesCol, {
             text: messageText,
@@ -130,7 +130,7 @@ export default function RideDetailsPage() {
             timestamp: serverTimestamp(),
         });
         
-        const conversationDocRef = doc(firestore, 'conversations', conversationId);
+        const conversationDocRef = doc(firestore, 'conversations', convId);
         setDocumentNonBlocking(
             conversationDocRef,
             { 
@@ -232,8 +232,10 @@ export default function RideDetailsPage() {
                     <div>
                         <p className="font-semibold">{ride.vehicle.model}</p>
                         <p className="text-sm text-muted-foreground">Vehicle</p>
+                        <Image src={ride.vehicle.imageUrl} alt={ride.vehicle.model} width={600} height={400} className="mt-4 rounded-lg object-cover w-full aspect-video" data-ai-hint="car side" />
+
                         <p className="mt-4 text-sm text-muted-foreground">
-                            Ladies and gents also come next any one want to direct book...
+                            {ride.driver.name}'s note: "Happy to take passengers or parcels. My car is clean and I'm a safe driver. Looking forward to sharing the ride!"
                         </p>
                     </div>
                 </CardContent>
@@ -258,7 +260,7 @@ export default function RideDetailsPage() {
                             <span className="text-muted-foreground"> / {bookingType}</span>
                         </div>
                         
-                        <Button size="lg" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95" onClick={handleBooking} disabled={isBooking || isUserLoading}>
+                        <Button size="lg" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-primary to-blue-600 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95" onClick={handleBooking} disabled={isBooking || isUserLoading}>
                           {isBooking ? 'Requesting...' : 'Request to Book'}
                         </Button>
 
@@ -276,7 +278,7 @@ export default function RideDetailsPage() {
       </div>
 
        {bookingSuccess && (
-        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
             <motion.div 
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
@@ -293,13 +295,23 @@ export default function RideDetailsPage() {
                 <p className="text-muted-foreground mt-2">
                     We have sent a message to <span className="font-semibold text-foreground">{ride.driver.name}</span>. They will confirm your ride shortly.
                 </p>
-                <Button 
-                    size="lg" 
-                    className="w-full mt-8"
-                    onClick={() => router.push('/dashboard')}
-                >
-                    Go to Dashboard
-                </Button>
+                <div className="flex flex-col gap-2 mt-8">
+                  <Button 
+                      size="lg" 
+                      className="w-full"
+                      onClick={() => router.push('/dashboard')}
+                  >
+                      Go to Dashboard
+                  </Button>
+                  <Button 
+                      size="lg" 
+                      variant="outline"
+                      className="w-full"
+                      onClick={() => router.push(`/inbox/${conversationId}`)}
+                  >
+                      <MessageSquare className="mr-2"/> Go to Conversation
+                  </Button>
+                </div>
             </motion.div>
         </div>
       )}
@@ -307,4 +319,3 @@ export default function RideDetailsPage() {
   );
 }
 
-    

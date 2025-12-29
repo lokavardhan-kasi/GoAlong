@@ -1,7 +1,7 @@
 
 'use client';
 import { useState, useEffect } from 'react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Search, Calendar, MapPin, Check, ChevronsUpDown } from 'lucide-react';
@@ -72,19 +72,41 @@ export function HomeSearchCard() {
   const [leavingFrom, setLeavingFrom] = useState('');
   const [goingTo, setGoingTo] = useState('');
   const [isClient, setIsClient] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (leavingFrom) params.set('from', leavingFrom);
+    if (goingTo) params.set('to', goingTo);
+    router.push(`/search?${params.toString()}`);
+  }
+
   if (!isClient) {
-    return null; // Or a placeholder/skeleton
+    return (
+        <Card className="rounded-2xl shadow-xl p-6 bg-white/90 backdrop-blur-md border">
+            <CardContent className="p-0">
+                <div className="space-y-4 animate-pulse">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="h-12 bg-gray-200 rounded-md"></div>
+                        <div className="h-12 bg-gray-200 rounded-md"></div>
+                    </div>
+                    <div className="h-12 bg-gray-200 rounded-md"></div>
+                    <div className="h-12 bg-gray-200 rounded-full"></div>
+                </div>
+            </CardContent>
+        </Card>
+    );
   }
 
   return (
     <Card className="rounded-2xl shadow-xl p-6 bg-white/90 backdrop-blur-md border">
       <CardContent className="p-0">
-        <form className="space-y-4">
+        <form onSubmit={handleSearch} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
               <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 z-10" />
@@ -100,11 +122,11 @@ export function HomeSearchCard() {
             <Input
               type="date"
               defaultValue={new Date().toISOString().substring(0, 10)}
-              className="pl-10 h-12 text-base focus:ring-4 focus:ring-purple-100 transition-shadow bg-white"
+              className="pl-10 h-12 text-base focus:ring-4 focus:ring-primary/20 transition-shadow bg-white"
             />
           </div>
-          <Button asChild type="submit" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-purple-600 to-blue-500 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
-            <Link href="/search"><Search className="mr-2" /> Find a Ride</Link>
+          <Button type="submit" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-primary to-blue-600 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95">
+            <Search className="mr-2" /> Find a Ride
           </Button>
         </form>
       </CardContent>
