@@ -11,6 +11,7 @@ import { useAuth, useUser } from '@/firebase';
 import { GoogleAuthProvider, signInWithEmailAndPassword, signInWithPopup } from 'firebase/auth';
 import { useToast } from '@/hooks/use-toast';
 import { FormEvent, useEffect, useState } from 'react';
+import { CarLoader } from '@/components/ui/CarLoader';
 
 export default function LoginPage() {
   const auth = useAuth();
@@ -59,7 +60,7 @@ export default function LoginPage() {
   if (isUserLoading || user) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        Loading...
+        <CarLoader />
       </div>
     );
   }

@@ -12,6 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useRouter } from 'next/navigation';
 import { FormEvent, useEffect, useState } from 'react';
 import { doc, setDoc } from 'firebase/firestore';
+import { CarLoader } from '@/components/ui/CarLoader';
 
 export default function RegisterPage() {
   const auth = useAuth();
@@ -92,7 +93,7 @@ export default function RegisterPage() {
   if (isUserLoading || user) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center">
-        Loading...
+        <CarLoader />
       </div>
     );
   }

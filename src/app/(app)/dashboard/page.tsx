@@ -79,7 +79,7 @@ function ActivityFeed() {
                                 <div className="flex gap-2 mt-2">
                                     <Button size="sm" className="h-8 active:scale-95">Accept</Button>
                                     <Button size="sm" variant="ghost" className="h-8 text-destructive hover:bg-destructive/10 active:scale-95" onClick={() => handleDelete(req.id)}>
-                                        <Trash2 className="mr-2"/> Decline
+                                        <Trash2 className="mr-2 h-4 w-4"/> Decline
                                     </Button>
                                 </div>
                             </div>

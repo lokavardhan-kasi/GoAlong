@@ -8,7 +8,7 @@ import { FirebaseClientProvider } from "@/firebase/client-provider";
 
 const poppins = Poppins({ 
   subsets: ['latin'],
-  weight: ['400', '700'],
+  weight: ['400', '700', '900'],
   variable: '--font-poppins',
 })
 

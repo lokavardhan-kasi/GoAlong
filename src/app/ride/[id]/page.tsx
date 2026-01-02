@@ -1,6 +1,6 @@
 
 'use client';
-import { useParams, useRouter, usePathname, useSearchParams } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { PageHeader } from '@/components/common/page-header';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -11,10 +11,10 @@ import { Clock, IndianRupee, MapPin, Star, Users, CheckCircle, Send, Package, Za
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
-import { collection, addDoc, serverTimestamp, where, query, getDocs, doc, increment } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, where, query, getDocs, doc, increment, collectionGroup } from 'firebase/firestore';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { motion } from 'framer-motion';
 import { Route as RideRoute, UserProfile } from '@/lib/mock-data';
@@ -23,7 +23,6 @@ import { CarLoader } from '@/components/ui/CarLoader';
 export default function RideDetailsPage() {
   const params = useParams();
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
   const { toast } = useToast();
   const { user, isUserLoading } = useUser();
@@ -38,35 +37,21 @@ export default function RideDetailsPage() {
   const to = searchParams.get('to');
   const routeId = params.id as string;
 
-  const routeRef = useMemoFirebase(() => {
-      // This is a hack because we don't know the user ID. This will fail if multiple routes have the same ID.
-      // In a real app, the route ID should be globally unique, or we'd need the driver's ID.
-      if (!firestore || !routeId) return null;
-      // This assumes routeId is unique across all routes subcollections.
-      // A better approach would be to have a root `/routes` collection.
-      // For the hackathon, we can't easily query a subcollection without its parent.
-      // So, we are making an assumption that the `ride` page is passed a `driverId` or the `routeId` is from a root collection.
-      // Let's assume there's a `driverId` in the search params for a robust solution.
-      // For now, this will likely fail. We need to fetch from a collection group or have a flat structure.
-      // The search page now queries collectionGroup, but the ride page gets just the ID.
-      // This page needs to know the driver ID to construct the full path.
-      // This is a limitation of the current data model for this page.
-      // A possible fix would be to change the route path to a root collection.
-      // Let's assume for now we can't get the driverId, so we can't make a direct doc ref.
-      return null;
-  }, [firestore, routeId]);
-
-  // Since we can't get a direct doc ref, we have to fetch ALL routes and find the one. This is inefficient but will work for the demo.
    const allRoutesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
-    return query(collection(firestore, 'routes'));
+    return query(collectionGroup(firestore, 'routes'), where('__name__', '!=', ''));
   }, [firestore]);
+  
   const { data: allRoutes, isLoading: isLoadingAllRoutes } = useCollection<RideRoute>(allRoutesQuery);
   
   const ride = useMemo(() => {
-      if (!allRoutes) return null;
-      return allRoutes.find(r => r.id === routeId);
+    if (!allRoutes) return null;
+    // The route ID is the document ID, but the path is users/{userId}/routes/{routeId}.
+    // `useCollection` with `collectionGroup` doesn't give us the full path to extract the ID easily.
+    // However, the document `id` is the `routeId`. So we can find it.
+    return allRoutes.find(r => r.id === routeId);
   }, [allRoutes, routeId]);
+
 
   const driverProfileRef = useMemoFirebase(() => {
     if (!firestore || !ride?.driverId) return null;
@@ -102,7 +87,7 @@ export default function RideDetailsPage() {
   const handleBooking = async () => {
     if (isBooking || isUserLoading) return;
     if (!user) {
-      localStorage.setItem('redirectAfterLogin', `${pathname}?${searchParams.toString()}`);
+      localStorage.setItem('redirectAfterLogin', `${window.location.pathname}?${searchParams.toString()}`);
       router.push('/login');
       return;
     }
@@ -251,14 +236,16 @@ export default function RideDetailsPage() {
                              <div className="flex items-center gap-2 text-muted-foreground">
                                 <Star className="h-5 w-5 fill-yellow-400 text-yellow-500" />
                                 <span className="font-semibold">4.9</span>
-                                {/* Verified status can be added */}
+                                {driverProfile.isDriver && (
+                                   <><Separator orientation="vertical" className="h-4" /><ShieldCheck className="h-5 w-5 text-blue-500" /> <span className="text-xs font-semibold">Verified</span></>
+                                )}
                             </div>
                         </div>
                     </div>
                     <Separator className="my-4"/>
                     <div>
                         <p className="font-semibold">Vehicle model</p>
-                        <p className="text-sm text-muted-foreground">Vehicle</p>
+                        <p className="text-sm text-muted-foreground">Vehicle details not available</p>
                         <Image src={"https://picsum.photos/seed/car-default/600/400"} alt={"Vehicle"} width={600} height={400} className="mt-4 rounded-lg object-cover w-full aspect-video" data-ai-hint="car side" />
 
                         <p className="mt-4 text-sm text-muted-foreground">
@@ -337,3 +324,5 @@ export default function RideDetailsPage() {
     </>
   );
 }
+
+    
