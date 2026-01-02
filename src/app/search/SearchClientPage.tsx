@@ -3,19 +3,38 @@
 import { useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/common/page-header';
-import { rides, Ride } from '@/lib/mock-data';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Calendar, Clock, MapPin, Package, ShieldCheck, Users } from 'lucide-react';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { ArrowRight, Calendar, Users } from 'lucide-react';
 import Link from 'next/link';
+import { useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
+import { collectionGroup, query, where, doc } from 'firebase/firestore';
+import { Route as RideRoute, UserProfile } from '@/lib/mock-data';
+import { CarLoader } from '@/components/ui/CarLoader';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { IndianRupee } from 'lucide-react';
+import { Clock, IndianRupee, MapPin, Package, ShieldCheck } from 'lucide-react';
 
-function RideCard({ ride, searchParams }: { ride: Ride, searchParams: URLSearchParams }) {
-  const to = searchParams.get('to');
-  const isEnRouteMatch = to && ride.route.to.toLowerCase() !== to.toLowerCase() && ride.route.stops.some(stop => stop.toLowerCase() === to.toLowerCase());
-  const link = `/ride/${ride.id}?${searchParams.toString()}`;
+function RideCard({ route, searchParams }: { route: RideRoute & { id: string }, searchParams: URLSearchParams }) {
+  const firestore = useFirestore();
+  const link = `/ride/${route.id}?${searchParams.toString()}`;
+
+  const driverProfileRef = useMemoFirebase(() => {
+    if (!firestore || !route.driverId) return null;
+    return doc(firestore, 'userProfiles', route.driverId);
+  }, [firestore, route.driverId]);
+
+  const { data: driverProfile, isLoading: isDriverLoading } = useDoc<UserProfile>(driverProfileRef);
+  
+  if (isDriverLoading || !driverProfile) {
+    return (
+        <Card className="rounded-2xl">
+            <CardContent className="p-6">
+                <CarLoader />
+            </CardContent>
+        </Card>
+    );
+  }
 
   return (
     <Link href={link} className="block">
@@ -30,13 +49,15 @@ function RideCard({ ride, searchParams }: { ride: Ride, searchParams: URLSearchP
             </div>
             <div className="flex flex-col justify-between">
                 <div>
-                    <p className="font-bold text-lg">{ride.times.departure}</p>
-                    <p className="text-sm text-muted-foreground">{ride.route.from}</p>
+                    <p className="font-bold text-lg">{route.travelTime}</p>
+                    <p className="text-sm text-muted-foreground">{route.startPoint}</p>
                 </div>
-                <p className="text-xs text-muted-foreground my-2 flex items-center gap-2"><Clock className="h-3 w-3" /> {ride.times.duration}</p>
+                {/* Duration can be added if available in route data */}
+                <div className="flex-1"></div>
                 <div>
-                    <p className="font-bold text-lg">{ride.times.arrival}</p>
-                    <p className="text-sm text-muted-foreground">{ride.route.to}</p>
+                    {/* Arrival time could be calculated or stored */}
+                    <p className="font-bold text-lg">{route.endPoint}</p>
+                    <p className="text-sm text-muted-foreground">{route.endPoint}</p>
                 </div>
             </div>
           </div>
@@ -45,48 +66,26 @@ function RideCard({ ride, searchParams }: { ride: Ride, searchParams: URLSearchP
           <div className="flex flex-col justify-center items-start">
              <div className="flex items-center gap-3">
                 <Avatar className="h-10 w-10">
-                    <AvatarImage src={ride.driver.avatarUrl} alt={ride.driver.name} data-ai-hint="person face" />
-                    <AvatarFallback>{ride.driver.name.charAt(0)}</AvatarFallback>
+                    <AvatarImage src={driverProfile.profilePictureUrl} alt={driverProfile.firstName} data-ai-hint="person face" />
+                    <AvatarFallback>{driverProfile.firstName?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                    <p className="font-semibold text-base">{ride.driver.name}</p>
-                     {ride.driver.verified && (
-                        <div className="flex items-center gap-1 text-xs text-blue-600">
-                            <ShieldCheck className="h-3 w-3"/>
-                            <span>Verified</span>
-                        </div>
-                    )}
+                    <p className="font-semibold text-base">{driverProfile.firstName} {driverProfile.lastName}</p>
+                     {/* Verified status can be added to UserProfile */}
                 </div>
             </div>
             <div className="flex items-center gap-2 mt-4">
-                <Badge variant="secondary"><Users className="h-3 w-3 mr-1" /> {ride.features.availableSeats} seats</Badge>
-                {ride.features.parcelSpace !== 'None' && (
-                    <Badge className="bg-purple-50 text-purple-700 hover:bg-purple-100 border-purple-100"><Package className="h-3 w-3 mr-1" /> {ride.features.parcelSpace} Space</Badge>
-                )}
-                 {isEnRouteMatch && (
-                    <Badge variant="outline" className="text-amber-700 border-amber-200 bg-amber-50">
-                        <MapPin className="h-3 w-3 mr-1"/> Drop-off en route
-                    </Badge>
-                 )}
+                <Badge variant="secondary"><Users className="h-3 w-3 mr-1" /> {route.availableSeats} seats</Badge>
+                {/* Parcel space can be added to Route data */}
             </div>
           </div>
 
           {/* Right: Price */}
           <div className="flex flex-col items-end text-right min-w-[120px]">
-            {/* Seat Price */}
             <div className="mb-2">
-              <span className="text-2xl font-bold text-gray-900">₹{ride.price.seat}</span>
+              <span className="text-2xl font-bold text-gray-900">₹{route.price}</span>
               <p className="text-xs text-gray-500 -mt-1">per seat</p>
             </div>
-
-            {/* Parcel Price - Conditional */}
-            {ride.features.parcelSpace !== 'None' && (
-              <div className="flex items-center gap-1 bg-purple-50 px-2 py-1 rounded-lg">
-                <Package className="w-3 h-3 text-purple-600" />
-                <span className="text-sm font-semibold text-purple-700">₹{ride.price.parcel}</span>
-                <span className="text-[10px] text-purple-600">/box</span>
-              </div>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -98,33 +97,42 @@ function RideCard({ ride, searchParams }: { ride: Ride, searchParams: URLSearchP
 export function SearchClientPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const firestore = useFirestore();
+
   const from = searchParams.get('from') || 'Anywhere';
   const to = searchParams.get('to') || 'Anywhere';
 
+  const routesQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    // Query all routes across all users
+    return query(collectionGroup(firestore, 'routes'));
+  }, [firestore]);
+
+  const { data: allRoutes, isLoading, error } = useCollection<RideRoute>(routesQuery);
+
   const filteredRides = useMemo(() => {
+    if (!allRoutes) return [];
+    
     const searchFrom = from.toLowerCase();
     const searchTo = to.toLowerCase();
 
     if (searchFrom === 'anywhere' && searchTo === 'anywhere') {
-        return rides;
+        return allRoutes;
     }
 
-    return rides
-      .filter(ride => {
-        const rideFrom = ride.route.from.toLowerCase();
-        if (searchFrom !== 'anywhere' && rideFrom !== searchFrom) return false;
+    return allRoutes.filter(route => {
+      const routeFrom = route.startPoint.toLowerCase();
+      if (searchFrom !== 'anywhere' && routeFrom !== searchFrom) return false;
 
-        const rideTo = ride.route.to.toLowerCase();
-        const isDirectMatch = rideTo === searchTo;
-        const isEnRouteMatch = ride.route.stops.some(stop => stop.toLowerCase() === searchTo);
-
-        if (searchTo !== 'anywhere' && !isDirectMatch && !isEnRouteMatch) {
-            return false;
-        }
-        
-        return true;
-      });
-  }, [from, to]);
+      const routeTo = route.endPoint.toLowerCase();
+      // For now, we only match direct destinations. Stopover matching can be added later.
+      if (searchTo !== 'anywhere' && routeTo !== searchTo) {
+          return false;
+      }
+      
+      return true;
+    });
+  }, [from, to, allRoutes]);
 
   const capitalizedFrom = from.charAt(0).toUpperCase() + from.slice(1);
   const capitalizedTo = to.charAt(0).toUpperCase() + to.slice(1);
@@ -147,15 +155,26 @@ export function SearchClientPage() {
          </div>
       </div>
 
+      {isLoading && <CarLoader />}
+      {!isLoading && error && (
+        <Card>
+            <CardContent className="p-12 text-center text-destructive">
+                <p>Error fetching rides: {error.message}</p>
+            </CardContent>
+        </Card>
+      )}
+
       <div className="space-y-6">
-        {filteredRides.length > 0 ? filteredRides.map((ride) => (
-          <RideCard key={ride.id} ride={ride} searchParams={searchParams} />
-        )) : (
-            <Card>
-                <CardContent className="p-12 text-center">
-                    <p className="text-muted-foreground">No rides found matching your search criteria.</p>
-                </CardContent>
-            </Card>
+        {!isLoading && !error && (
+            filteredRides.length > 0 ? filteredRides.map((route) => (
+            <RideCard key={route.id} route={route} searchParams={searchParams} />
+            )) : (
+                <Card>
+                    <CardContent className="p-12 text-center">
+                        <p className="text-muted-foreground">No rides found matching your search criteria.</p>
+                    </CardContent>
+                </Card>
+            )
         )}
       </div>
     </div>
