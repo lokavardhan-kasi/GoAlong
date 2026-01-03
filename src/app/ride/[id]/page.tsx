@@ -1,5 +1,5 @@
 import { collectionGroup, query, getDocs } from 'firebase/firestore';
-import { getSdks } from '@/firebase';
+import { initializeFirebase } from '@/firebase';
 import { Route as RideRoute } from '@/lib/mock-data';
 import RideDetailsClient from '@/components/app/RideDetailsClient';
 
@@ -7,7 +7,7 @@ import RideDetailsClient from '@/components/app/RideDetailsClient';
 export async function generateStaticParams() {
   // We can't use hooks here, so we initialize a temporary connection to Firestore.
   // Note: This assumes your production environment is configured for Firebase.
-  const { firestore } = getSdks();
+  const { firestore } = initializeFirebase();
   const routesQuery = query(collectionGroup(firestore, 'routes'));
   const querySnapshot = await getDocs(routesQuery);
   const routes: RideRoute[] = [];
