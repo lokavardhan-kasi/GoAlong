@@ -10,14 +10,41 @@ import { Clock, IndianRupee, MapPin, Star, Users, CheckCircle, Send, Package, Za
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { useState, useMemo, useEffect } from 'react';
-import { useUser, useFirestore, useDoc, useMemoFirebase, useCollection } from '@/firebase';
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
-import { collection, addDoc, serverTimestamp, where, query, getDocs, doc, increment, collectionGroup } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, where, query, getDocs, doc, increment, getDoc } from 'firebase/firestore';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { motion } from 'framer-motion';
-import { Route as RideRoute, UserProfile } from '@/lib/mock-data';
+import { Route as RideRoute, UserProfile, WithId } from '@/lib/mock-data';
 import { CarLoader } from '@/components/ui/CarLoader';
+
+async function findRouteDoc(db: any, routeId: string): Promise<Document | null> {
+    // This is not very efficient, but it's the only way to get the full path
+    // of a document from a collection group query with just the ID.
+    // A better approach in a real app would be to include the full path in the URL
+    // or have a more predictable top-level collection structure.
+    const routesQuery = query(collection(db, `users/${'some-user-id-placeholder'}/routes`), where('__name__', '==', routeId));
+    
+    // This is a simplified example. In a real app, you would need to know the driver's ID
+    // or query across all 'routes' collection groups which is more complex on the client.
+    // Let's assume for now we have a way to find the document.
+    
+    // A more robust but slower way is to fetch ALL routes and filter by id, but that's what we are trying to avoid.
+    // For this hackathon, we will have to find a workaround. A direct doc() call needs the full path.
+
+    // Let's try to construct path, this is a big assumption
+    const userDocs = await getDocs(collection(db, 'userProfiles'));
+    for (const userDoc of userDocs.docs) {
+        const routeRef = doc(db, `users/${userDoc.id}/routes`, rideId);
+        const routeSnap = await getDoc(routeRef);
+        if (routeSnap.exists()) {
+            return routeSnap;
+        }
+    }
+    return null;
+}
+
 
 export default function RideDetailsClient({ rideId }: { rideId: string }) {
   const router = useRouter();
@@ -31,43 +58,55 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
   const [bookingSuccess, setBookingSuccess] = useState(false);
   const [conversationId, setConversationId] = useState<string | null>(null);
 
+  const [route, setRoute] = useState<WithId<RideRoute> | null>(null);
+  const [isLoadingRoute, setIsLoadingRoute] = useState(true);
+
+  // This effect is a workaround to find the route document
+  // since we only have the ID from a collectionGroup query.
+   useEffect(() => {
+    if (!firestore || !rideId) return;
+
+    const findRoute = async () => {
+        setIsLoadingRoute(true);
+        const userProfilesSnap = await getDocs(collection(firestore, 'userProfiles'));
+        for (const userDoc of userProfilesSnap.docs) {
+            const routeRef = doc(firestore, 'users', userDoc.id, 'routes', rideId);
+            const routeSnap = await getDoc(routeRef);
+            if (routeSnap.exists()) {
+                setRoute({ id: routeSnap.id, ...routeSnap.data() } as WithId<RideRoute>);
+                setIsLoadingRoute(false);
+                return;
+            }
+        }
+        setIsLoadingRoute(false); // Route not found
+    };
+    findRoute();
+   }, [firestore, rideId]);
+
   const from = searchParams.get('from');
   const to = searchParams.get('to');
-
-   const allRoutesQuery = useMemoFirebase(() => {
-    if (!firestore) return null;
-    return query(collectionGroup(firestore, 'routes'));
-  }, [firestore]);
   
-  const { data: allRoutes, isLoading: isLoadingAllRoutes } = useCollection<RideRoute>(allRoutesQuery);
-  
-  const ride = useMemo(() => {
-    if (!allRoutes) return null;
-    return allRoutes.find(r => r.id === rideId);
-  }, [allRoutes, rideId]);
-
-
   const driverProfileRef = useMemoFirebase(() => {
-    if (!firestore || !ride?.driverId) return null;
-    return doc(firestore, 'userProfiles', ride.driverId);
-  }, [firestore, ride]);
+    if (!firestore || !route?.driverId) return null;
+    return doc(firestore, 'userProfiles', route.driverId);
+  }, [firestore, route]);
 
   const { data: driverProfile, isLoading: isDriverLoading } = useDoc<UserProfile>(driverProfileRef);
 
 
   const rideRoute = useMemo(() => {
-    if (!ride) return { from: '', to: '' };
+    if (!route) return { from: '', to: '' };
     return {
-      from: from || ride.startPoint,
-      to: to || ride.endPoint,
+      from: from || route.startPoint,
+      to: to || route.endPoint,
     }
-  }, [ride, from, to]);
+  }, [route, from, to]);
 
-  if (isLoadingAllRoutes || isDriverLoading) {
+  if (isLoadingRoute || isDriverLoading || isUserLoading) {
       return <div className="flex h-full items-center justify-center"><CarLoader /></div>
   }
 
-  if (!ride || !driverProfile) {
+  if (!route || !driverProfile) {
     return (
         <div className="p-4 md:p-8">
             <PageHeader title="Ride not found" description="This ride is no longer available or the link is incorrect." showBackButton />
@@ -76,27 +115,27 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
     );
   }
   
-  const estimatedCost = ride.price;
+  const estimatedCost = route.price;
 
   const handleBooking = async () => {
-    if (isBooking || isUserLoading) return;
+    if (isBooking) return;
     if (!user) {
       localStorage.setItem('redirectAfterLogin', `${window.location.pathname}?${searchParams.toString()}`);
       router.push('/login');
       return;
     }
-    if (!firestore || !ride) return;
+    if (!firestore || !route) return;
 
     setIsBooking(true);
 
     try {
         const rideRequestData = {
             riderId: user.uid,
-            driverId: ride.driverId,
-            routeId: ride.id,
+            driverId: route.driverId,
+            routeId: route.id,
             pickupLocation: rideRoute.from,
             dropoffLocation: rideRoute.to,
-            desiredTime: ride.travelTime,
+            desiredTime: route.travelTime,
             status: 'pending',
             bookingType,
             createdAt: serverTimestamp(),
@@ -114,26 +153,26 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
         const querySnapshot = await getDocs(q);
         let convId: string | null = null;
         
-        const existingConv = querySnapshot.docs.find(doc => doc.data().participantIds.includes(ride.driverId));
+        const existingConv = querySnapshot.docs.find(doc => doc.data().participantIds.includes(route.driverId));
 
         if (existingConv) {
           convId = existingConv.id;
         } else {
             const newConversation = {
-                participantIds: [user.uid, ride.driverId],
+                participantIds: [user.uid, route.driverId],
                 participantDetails: {
                     [user.uid]: {
                         displayName: user.displayName || 'Me',
                         avatarUrl: user.photoURL || '',
                     },
-                    [ride.driverId]: {
+                    [route.driverId]: {
                         displayName: `${driverProfile.firstName} ${driverProfile.lastName}`,
                         avatarUrl: driverProfile.profilePictureUrl || '',
                     }
                 },
                 unreadCounts: {
                   [user.uid]: 0,
-                  [ride.driverId]: 0,
+                  [route.driverId]: 0,
                 },
                 createdAt: serverTimestamp(),
                 lastMessage: null,
@@ -158,7 +197,7 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
             conversationDocRef,
             { 
               lastMessage: { text: messageText, senderId: user.uid, timestamp: serverTimestamp() },
-              [`unreadCounts.${ride.driverId}`]: increment(1),
+              [`unreadCounts.${route.driverId}`]: increment(1),
             },
             { merge: true }
         );
@@ -200,7 +239,7 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
                                 <p className="font-bold">{rideRoute.from}</p>
                                 <p className="text-sm text-muted-foreground">Pick up point</p>
                             </div>
-                            <p className="font-bold text-lg">{ride.travelTime}</p>
+                            <p className="font-bold text-lg">{route.travelTime}</p>
                         </div>
                         
                         <div className="flex items-start justify-between mt-12">
@@ -231,7 +270,7 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
                                 <Star className="h-5 w-5 fill-yellow-400 text-yellow-500" />
                                 <span className="font-semibold">4.9</span>
                                 {driverProfile.isDriver && (
-                                   <><Separator orientation="vertical" className="h-4" /><ShieldCheck className="h-5 w-5 text-blue-500" /> <span className="text-xs font-semibold">Verified</span></>
+                                   <><Separator orientation="vertical" className="h-4" /><ShieldCheck className="h-5 w-5 text-blue-500" /> <span className="text-xs font-semibold">Verified Driver</span></>
                                 )}
                             </div>
                         </div>
@@ -268,7 +307,7 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
                             <span className="text-muted-foreground"> / {bookingType}</span>
                         </div>
                         
-                        <Button size="lg" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-primary to-blue-600 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95" onClick={handleBooking} disabled={isBooking || isUserLoading}>
+                        <Button size="lg" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-primary to-blue-600 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95" onClick={handleBooking} disabled={isBooking}>
                           {isBooking ? 'Requesting...' : 'Request to Book'}
                         </Button>
                     </CardContent>
@@ -308,6 +347,7 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
                       variant="outline"
                       className="w-full"
                       onClick={() => router.push(`/inbox/${conversationId}`)}
+                      disabled={!conversationId}
                   >
                       <MessageSquare className="mr-2"/> Go to Conversation
                   </Button>

@@ -1,11 +1,10 @@
-
 'use client';
 import { useMemo } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { PageHeader } from '@/components/common/page-header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Calendar, Users } from 'lucide-react';
+import { ArrowRight, Calendar, Users, Package } from 'lucide-react';
 import Link from 'next/link';
 import { useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
 import { collectionGroup, query, where, doc } from 'firebase/firestore';
@@ -13,7 +12,7 @@ import { Route as RideRoute, UserProfile } from '@/lib/mock-data';
 import { CarLoader } from '@/components/ui/CarLoader';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { Clock, IndianRupee, MapPin, Package, ShieldCheck } from 'lucide-react';
+import { Clock, IndianRupee, MapPin, ShieldCheck } from 'lucide-react';
 
 function RideCard({ route, searchParams }: { route: RideRoute & { id: string }, searchParams: URLSearchParams }) {
   const firestore = useFirestore();
@@ -39,15 +38,15 @@ function RideCard({ route, searchParams }: { route: RideRoute & { id: string }, 
   return (
     <Link href={link} className="block">
       <Card className="cursor-pointer transition-all duration-300 hover:shadow-md border-gray-100 rounded-2xl">
-        <CardContent className="p-6 flex flex-row justify-between items-center">
+        <CardContent className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
           {/* Left: Time & Route */}
-          <div className="flex gap-6 items-center">
+          <div className="flex gap-6 items-center flex-1">
             <div className="flex flex-col items-center self-stretch">
               <div className="w-3 h-3 rounded-full bg-primary" />
-              <div className="flex-1 w-px bg-gray-200" />
+              <div className="flex-1 w-px bg-gray-200 my-2" />
               <div className="w-3 h-3 rounded-full border-2 border-primary" />
             </div>
-            <div className="flex flex-col justify-between">
+            <div className="flex flex-col justify-between gap-2">
                 <div>
                     <p className="font-bold text-lg">{route.travelTime}</p>
                     <p className="text-sm text-muted-foreground">{route.startPoint}</p>
@@ -71,7 +70,12 @@ function RideCard({ route, searchParams }: { route: RideRoute & { id: string }, 
                 </Avatar>
                 <div>
                     <p className="font-semibold text-base">{driverProfile.firstName} {driverProfile.lastName}</p>
-                     {/* Verified status can be added to UserProfile */}
+                     {driverProfile.isDriver && (
+                        <div className="flex items-center gap-1 text-xs text-blue-600">
+                            <ShieldCheck className="h-3 w-3"/>
+                            <span>Verified Driver</span>
+                        </div>
+                    )}
                 </div>
             </div>
             <div className="flex items-center gap-2 mt-4">
