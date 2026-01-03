@@ -99,8 +99,8 @@ export function SearchClientPage() {
   const router = useRouter();
   const firestore = useFirestore();
 
-  const from = searchParams.get('from') || 'Anywhere';
-  const to = searchParams.get('to') || 'Anywhere';
+  const from = searchParams.get('from') || 'anywhere';
+  const to = searchParams.get('to') || 'anywhere';
 
   const routesQuery = useMemoFirebase(() => {
     if (!firestore) return null;
@@ -122,15 +122,19 @@ export function SearchClientPage() {
 
     return allRoutes.filter(route => {
       const routeFrom = route.startPoint.toLowerCase();
-      if (searchFrom !== 'anywhere' && routeFrom !== searchFrom) return false;
-
       const routeTo = route.endPoint.toLowerCase();
-      // For now, we only match direct destinations. Stopover matching can be added later.
-      if (searchTo !== 'anywhere' && routeTo !== searchTo) {
-          return false;
+      
+      let fromMatch = true;
+      if (searchFrom !== 'anywhere') {
+        fromMatch = routeFrom.includes(searchFrom);
+      }
+
+      let toMatch = true;
+      if (searchTo !== 'anywhere') {
+        toMatch = routeTo.includes(searchTo);
       }
       
-      return true;
+      return fromMatch && toMatch;
     });
   }, [from, to, allRoutes]);
 
@@ -172,6 +176,7 @@ export function SearchClientPage() {
                 <Card>
                     <CardContent className="p-12 text-center">
                         <p className="text-muted-foreground">No rides found matching your search criteria.</p>
+                        <Button variant="link" asChild><Link href="/request-ride">Request a custom ride?</Link></Button>
                     </CardContent>
                 </Card>
             )
