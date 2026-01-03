@@ -1,6 +1,7 @@
 
 
 import { Timestamp } from "firebase/firestore";
+import { PlaceHolderImages } from './placeholder-images';
 
 export type Ride = {
   id: string;
