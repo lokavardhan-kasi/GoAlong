@@ -52,13 +52,15 @@ export default function PlanRoutePage() {
   const router = useRouter();
   
   const [scheduleType, setScheduleType] = useState<'recurring' | 'one-time'>('recurring');
+  const [timeHours, setTimeHours] = useState('09');
+  const [timeMinutes, setTimeMinutes] = useState('00');
+  const [timePeriod, setTimePeriod] = useState<'am' | 'pm'>('am');
 
   const [formData, setFormData] = useState({
       startPoint: '',
       endPoint: '',
       routeDays: [] as string[],
       date: new Date(),
-      travelTime: '09:00',
       availableSeats: 1,
       allowParcels: false,
       parcelSizes: [] as string[],
@@ -89,19 +91,29 @@ export default function PlanRoutePage() {
       try {
         const routeCollection = collection(firestore, `users/${user.uid}/routes`);
         
-        const [hours, minutes] = formData.travelTime.split(':').map(Number);
+        let hours = parseInt(timeHours, 10);
+        const minutes = parseInt(timeMinutes, 10);
+
+        if (timePeriod === 'pm' && hours < 12) {
+          hours += 12;
+        }
+        if (timePeriod === 'am' && hours === 12) { // Midnight case
+          hours = 0;
+        }
+
         const departureDateTime = new Date(formData.date);
         departureDateTime.setHours(hours, minutes, 0, 0);
 
         // Estimate arrival time (e.g., 8 hours duration for this example)
         const arrivalDateTime = new Date(departureDateTime.getTime() + 8 * 60 * 60 * 1000);
-
+        
+        const formattedTime = `${timeHours}:${timeMinutes} ${timePeriod.toUpperCase()}`;
 
         const routeData: any = {
           driverId: user.uid,
           startPoint: formData.startPoint,
           endPoint: formData.endPoint,
-          travelTime: formData.travelTime,
+          travelTime: formattedTime,
           availableSeats: formData.availableSeats,
           price: formData.price[0],
           scheduleType: scheduleType,
@@ -113,7 +125,6 @@ export default function PlanRoutePage() {
           routeData.routeDays = formData.routeDays;
         } else {
            // For one-time rides, the specific date is already part of the timestamp.
-          // We can still store the date string if needed for display purposes, but it's redundant.
           routeData.date = formData.date.toISOString().split('T')[0];
         }
 
@@ -227,7 +238,36 @@ export default function PlanRoutePage() {
 
                             <div className="flex flex-col items-center w-full pt-4">
                                  <h3 className="font-semibold mb-2 flex items-center gap-2"><Clock className="h-5 w-5 text-primary"/> Departure Time</h3>
-                                 <Input name="travelTime" type="time" value={formData.travelTime} onChange={handleChange} className="h-12 text-base w-full max-w-xs" />
+                                 <div className="flex items-center gap-2">
+                                    <Input
+                                      type="number"
+                                      min="1"
+                                      max="12"
+                                      value={timeHours}
+                                      onChange={(e) => setTimeHours(e.target.value)}
+                                      className="h-12 text-base w-20 text-center"
+                                      aria-label="Hour"
+                                    />
+                                    <span className="font-bold text-lg">:</span>
+                                    <Input
+                                      type="number"
+                                      min="0"
+                                      max="59"
+                                      value={timeMinutes}
+                                      onChange={(e) => setTimeMinutes(e.target.value.padStart(2, '0'))}
+                                      className="h-12 text-base w-20 text-center"
+                                      aria-label="Minute"
+                                    />
+                                    <ToggleGroup
+                                      type="single"
+                                      variant="outline"
+                                      value={timePeriod}
+                                      onValueChange={(value) => value && setTimePeriod(value as 'am' | 'pm')}
+                                    >
+                                      <ToggleGroupItem value="am" aria-label="AM">AM</ToggleGroupItem>
+                                      <ToggleGroupItem value="pm" aria-label="PM">PM</ToggleGroupItem>
+                                    </ToggleGroup>
+                                </div>
                             </div>
                         </div>
                     )}
@@ -300,7 +340,5 @@ export default function PlanRoutePage() {
     </>
   );
 }
-
-    
 
     
