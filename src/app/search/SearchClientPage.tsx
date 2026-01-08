@@ -7,12 +7,13 @@ import { Button } from '@/components/ui/button';
 import { ArrowRight, Calendar, Users, Package } from 'lucide-react';
 import Link from 'next/link';
 import { useFirestore, useCollection, useMemoFirebase, useDoc } from '@/firebase';
-import { collectionGroup, query, where, doc } from 'firebase/firestore';
+import { collectionGroup, query, where, doc, Timestamp } from 'firebase/firestore';
 import { Route as RideRoute, UserProfile } from '@/lib/mock-data';
 import { CarLoader } from '@/components/ui/CarLoader';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Clock, IndianRupee, MapPin, ShieldCheck } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 function RideCard({ route, searchParams }: { route: RideRoute & { id: string }, searchParams: URLSearchParams }) {
   const firestore = useFirestore();
@@ -25,6 +26,17 @@ function RideCard({ route, searchParams }: { route: RideRoute & { id: string }, 
 
   const { data: driverProfile, isLoading: isDriverLoading } = useDoc<UserProfile>(driverProfileRef);
   
+  const rideStatus = useMemo(() => {
+    if (!route?.arrivalTimestamp) {
+        return 'Upcoming';
+    }
+    const now = Timestamp.now();
+    if (now > route.arrivalTimestamp) {
+        return 'Completed';
+    }
+    return 'Upcoming';
+  }, [route]);
+
   if (isDriverLoading || !driverProfile) {
     return (
         <Card className="rounded-2xl">
@@ -80,7 +92,7 @@ function RideCard({ route, searchParams }: { route: RideRoute & { id: string }, 
             </div>
             <div className="flex items-center gap-2 mt-4">
                 <Badge variant="secondary"><Users className="h-3 w-3 mr-1" /> {route.availableSeats} seats</Badge>
-                {/* Parcel space can be added to Route data */}
+                {rideStatus === 'Completed' && <Badge className='bg-gray-100 text-gray-800'>{rideStatus}</Badge>}
             </div>
           </div>
 

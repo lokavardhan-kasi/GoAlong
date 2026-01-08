@@ -13,11 +13,12 @@ import { useState, useMemo, useEffect } from 'react';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { Separator } from '@/components/ui/separator';
-import { collection, addDoc, serverTimestamp, where, query, getDocs, doc, increment, getDoc } from 'firebase/firestore';
+import { collection, addDoc, serverTimestamp, where, query, getDocs, doc, increment, getDoc, Timestamp } from 'firebase/firestore';
 import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { motion } from 'framer-motion';
 import { Route as RideRoute, UserProfile, WithId } from '@/lib/mock-data';
 import { CarLoader } from '@/components/ui/CarLoader';
+import { cn } from '@/lib/utils';
 
 async function findRouteDoc(db: any, routeId: string): Promise<Document | null> {
     // This is not very efficient, but it's the only way to get the full path
@@ -101,6 +102,18 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
       to: to || route.endPoint,
     }
   }, [route, from, to]);
+
+  const rideStatus = useMemo(() => {
+    if (!route?.arrivalTimestamp) {
+        return 'Upcoming';
+    }
+    const now = Timestamp.now();
+    if (now > route.arrivalTimestamp) {
+        return 'Completed';
+    }
+    return 'Upcoming';
+  }, [route]);
+
 
   if (isLoadingRoute || isDriverLoading || isUserLoading) {
       return <div className="flex h-full items-center justify-center"><CarLoader /></div>
@@ -293,22 +306,32 @@ export default function RideDetailsClient({ rideId }: { rideId: string }) {
             <div className="sticky top-24">
                 <Card className="shadow-xl rounded-2xl">
                     <CardContent className="p-6 space-y-4">
-                        <ToggleGroup type="single" defaultValue="seat" className="w-full" value={bookingType} onValueChange={(value) => value && setBookingType(value as any)}>
-                            <ToggleGroupItem value="seat" className="w-1/2 gap-2 data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700 data-[state=on]:border-blue-200 border">
-                                <Users className="h-5 w-5" /> Book Seat
-                            </ToggleGroupItem>
-                            <ToggleGroupItem value="parcel" disabled className="w-1/2 gap-2 data-[state=on]:bg-emerald-100 data-[state=on]:text-emerald-700 data-[state=on]:border-emerald-200 border">
-                                <Package className="h-5 w-5" /> Send Parcel
-                            </ToggleGroupItem>
-                        </ToggleGroup>
+                        {rideStatus === 'Completed' ? (
+                            <Badge className="w-full justify-center text-base bg-gray-100 text-gray-800 hover:bg-gray-100">Ride Completed</Badge>
+                        ) : (
+                            <ToggleGroup type="single" defaultValue="seat" className="w-full" value={bookingType} onValueChange={(value) => value && setBookingType(value as any)}>
+                                <ToggleGroupItem value="seat" className="w-1/2 gap-2 data-[state=on]:bg-blue-100 data-[state=on]:text-blue-700 data-[state=on]:border-blue-200 border">
+                                    <Users className="h-5 w-5" /> Book Seat
+                                </ToggleGroupItem>
+                                <ToggleGroupItem value="parcel" disabled className="w-1/2 gap-2 data-[state=on]:bg-emerald-100 data-[state=on]:text-emerald-700 data-[state=on]:border-emerald-200 border">
+                                    <Package className="h-5 w-5" /> Send Parcel
+                                </ToggleGroupItem>
+                            </ToggleGroup>
+                        )}
+                        
 
                         <div className="text-center py-4">
                             <span className="text-4xl font-bold">₹{estimatedCost}</span>
                             <span className="text-muted-foreground"> / {bookingType}</span>
                         </div>
                         
-                        <Button size="lg" className="w-full h-12 text-base rounded-full bg-gradient-to-r from-primary to-blue-600 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95" onClick={handleBooking} disabled={isBooking}>
-                          {isBooking ? 'Requesting...' : 'Request to Book'}
+                        <Button 
+                          size="lg" 
+                          className="w-full h-12 text-base rounded-full bg-gradient-to-r from-primary to-blue-600 text-white transition-all duration-300 hover:shadow-lg hover:brightness-110 active:scale-95" 
+                          onClick={handleBooking} 
+                          disabled={isBooking || rideStatus === 'Completed'}
+                        >
+                          {isBooking ? 'Requesting...' : rideStatus === 'Completed' ? 'Ride Completed' : 'Request to Book'}
                         </Button>
                     </CardContent>
                 </Card>

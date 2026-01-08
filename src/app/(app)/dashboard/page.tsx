@@ -174,15 +174,17 @@ function FrequentRoutes() {
         }
         if (route.departureTimestamp) {
             const now = Timestamp.now();
+            if (route.arrivalTimestamp && now > route.arrivalTimestamp) {
+                return { text: 'Completed', className: 'bg-gray-200 text-gray-800' };
+            }
             if (now < route.departureTimestamp) {
                 return { text: 'Upcoming', className: 'bg-green-100 text-green-800' };
-            } else if (route.arrivalTimestamp && now >= route.departureTimestamp && now <= route.arrivalTimestamp) {
+            } 
+            if (route.arrivalTimestamp && now >= route.departureTimestamp && now <= route.arrivalTimestamp) {
                 return { text: 'Ongoing', className: 'bg-yellow-100 text-yellow-800' };
-            } else {
-                 return { text: 'Completed', className: 'bg-gray-100 text-gray-800' };
             }
         }
-        return { text: 'Completed', className: 'bg-gray-100 text-gray-800' }; // Default for old data
+        return { text: 'Upcoming', className: 'bg-green-100 text-green-800' }; // Default for old data
     };
 
 
