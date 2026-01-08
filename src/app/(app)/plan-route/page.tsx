@@ -106,13 +106,13 @@ export default function PlanRoutePage() {
                 toast({ title: "Please enter a valid date.", variant: "destructive" });
                 return;
             }
-            departureDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-            departureDateTime.setHours(hours, minutes, 0, 0);
-
+            departureDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hours, minutes);
+            
             const now = new Date();
-            now.setHours(0,0,0,0); // Compare dates only, not time
+            // We only compare dates, not times. If a user wants to post a ride for later today, they should be able to.
+            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
-            if (departureDateTime < now) {
+            if (departureDateTime < today) {
                  toast({ title: "Cannot Publish Ride", description: "You cannot publish a ride for a past date.", variant: "destructive" });
                  return;
             }

@@ -1,3 +1,4 @@
+
 {
   "entities": {
     "UserProfile": {
@@ -93,6 +94,10 @@
         "arrivalTimestamp": {
           "type": "object",
           "description": "Firestore Timestamp representing the exact arrival date and time."
+        },
+        "scheduleType": {
+          "type": "string",
+          "description": "The type of schedule ('recurring' or 'one-time')."
         }
       },
       "required": [
