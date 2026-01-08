@@ -14,7 +14,7 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, doc, deleteDoc, getDocs, Timestamp } from 'firebase/firestore';
+import { collection, query, where, doc, deleteDoc, getDocs, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
 import { RideRequest, WithId, Route as RideRoute } from '@/lib/mock-data';
 import { CarLoader } from '@/components/ui/CarLoader';
 import { useToast } from '@/hooks/use-toast';
@@ -122,7 +122,6 @@ function FrequentRoutes() {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
-    const router = useRouter();
 
     const routesQuery = useMemoFirebase(() => {
         if (!user) return null;
@@ -130,6 +129,39 @@ function FrequentRoutes() {
     }, [user, firestore]);
 
     const { data: routes, isLoading } = useCollection<RouteWithStatus>(routesQuery);
+    
+    const handleCompleteRide = async (route: RouteWithStatus) => {
+        if (!user || !firestore) return;
+        try {
+            // 1. Create a booking confirmation
+            const bookingConfirmationData = {
+                driverId: user.uid,
+                riderId: 'self-completed', // Indicates driver completed it manually
+                rideRequestId: route.id, // Use route id for reference
+                pickupLocation: route.startPoint,
+                dropoffLocation: route.endPoint,
+                estimatedCost: route.price,
+                confirmationTime: serverTimestamp(),
+            };
+            await addDoc(collection(firestore, 'bookingConfirmations'), bookingConfirmationData);
+
+            // 2. Delete the original route
+            await deleteDoc(doc(firestore, `users/${user.uid}/routes`, route.id));
+
+            toast({
+                title: 'Ride Completed',
+                description: 'The ride has been moved to your history.',
+            });
+
+        } catch (error) {
+            console.error("Error completing ride: ", error);
+            toast({
+                title: "Error",
+                description: "Could not complete the ride. Please try again.",
+                variant: "destructive",
+            });
+        }
+    };
     
     const handleDeleteRoute = async (routeId: string) => {
         if (!user) return;
@@ -184,12 +216,12 @@ function FrequentRoutes() {
                                           <Badge variant="secondary">{route.availableSeats} seats</Badge>
                                           <Tooltip>
                                             <TooltipTrigger asChild>
-                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600/70 hover:bg-green-600/10 hover:text-green-600 active:scale-95" onClick={() => router.push('/ride-history')}>
+                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600/70 hover:bg-green-600/10 hover:text-green-600 active:scale-95" onClick={() => handleCompleteRide(route)}>
                                                     <Check className="h-4 w-4"/>
                                                 </Button>
                                             </TooltipTrigger>
                                             <TooltipContent>
-                                                <p>View in History</p>
+                                                <p>Mark as Completed & Move to History</p>
                                             </TooltipContent>
                                           </Tooltip>
                                           <Tooltip>
@@ -298,3 +330,6 @@ export default function DashboardPage() {
 
     
 
+
+
+    
