@@ -13,12 +13,13 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, doc, deleteDoc, getDocs } from 'firebase/firestore';
+import { collection, query, where, doc, deleteDoc, getDocs, Timestamp } from 'firebase/firestore';
 import { RideRequest, WithId, Route as RideRoute } from '@/lib/mock-data';
 import { CarLoader } from '@/components/ui/CarLoader';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { IndianRupee } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const stats = [
     { title: "Rides Completed", value: 24, icon: Car, color: "text-blue-500", bgColor: "bg-blue-100" },
@@ -107,6 +108,13 @@ function ActivityFeed() {
     );
 }
 
+type RouteWithStatus = RideRoute & {
+    id: string;
+    scheduleType?: 'recurring' | 'one-time';
+    date?: string;
+    departureTimestamp?: Timestamp;
+};
+
 function FrequentRoutes() {
     const { user } = useUser();
     const firestore = useFirestore();
@@ -117,13 +125,29 @@ function FrequentRoutes() {
         return collection(firestore, `users/${user.uid}/routes`);
     }, [user, firestore]);
 
-    const { data: routes, isLoading } = useCollection<RideRoute & { scheduleType?: 'recurring' | 'one-time'; date?: string }>(routesQuery);
+    const { data: routes, isLoading } = useCollection<RouteWithStatus>(routesQuery);
     
     const handleDeleteRoute = async (routeId: string) => {
         if (!user) return;
         await deleteDoc(doc(firestore, `users/${user.uid}/routes`, routeId));
         toast({ title: "Route Deleted", description: "Your route has been successfully removed." });
     }
+
+    const getStatus = (route: RouteWithStatus): { text: 'Upcoming' | 'Completed' | 'Recurring'; className: string } => {
+        if (route.scheduleType === 'recurring') {
+            return { text: 'Recurring', className: 'bg-blue-100 text-blue-800' };
+        }
+        if (route.departureTimestamp) {
+            const now = Timestamp.now();
+            if (route.departureTimestamp.toMillis() > now.toMillis()) {
+                return { text: 'Upcoming', className: 'bg-green-100 text-green-800' };
+            } else {
+                return { text: 'Completed', className: 'bg-gray-100 text-gray-800' };
+            }
+        }
+        return { text: 'Completed', className: 'bg-gray-100 text-gray-800' }; // Default for old data
+    };
+
 
     return (
         <Card>
@@ -134,26 +158,30 @@ function FrequentRoutes() {
                 {isLoading && <CarLoader />}
                 {!isLoading && routes && routes.length > 0 ? (
                     <div className="space-y-4">
-                        {routes.map(route => (
-                            <div key={route.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                <div>
-                                    <p className="font-semibold">{route.startPoint} to {route.endPoint}</p>
-                                    <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                        {route.scheduleType === 'one-time' && route.date ? (
-                                            <><Calendar className="h-4 w-4" /> {format(new Date(route.date), 'PPP')} at {route.travelTime}</>
-                                        ) : (
-                                            <>{route.travelTime} - {route.routeDays.join(', ')}</>
-                                        )}
-                                    </p>
+                        {routes.map(route => {
+                            const status = getStatus(route);
+                            return (
+                                <div key={route.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                    <div>
+                                        <p className="font-semibold">{route.startPoint} to {route.endPoint}</p>
+                                        <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                            {route.scheduleType === 'one-time' && route.departureTimestamp ? (
+                                                <><Calendar className="h-4 w-4" /> {format(route.departureTimestamp.toDate(), 'PPP')} at {route.travelTime}</>
+                                            ) : (
+                                                <>{route.travelTime} - {route.routeDays.join(', ')}</>
+                                            )}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <Badge variant="secondary" className={cn(status.className)}>{status.text}</Badge>
+                                      <Badge variant="secondary">{route.availableSeats} seats</Badge>
+                                      <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:scale-95" onClick={() => handleDeleteRoute(route.id)}>
+                                            <Trash2 className="h-4 w-4"/>
+                                        </Button>
+                                    </div>
                                 </div>
-                                <div className="flex items-center gap-2">
-                                  <Badge variant="secondary">{route.availableSeats} seats</Badge>
-                                   <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:scale-95" onClick={() => handleDeleteRoute(route.id)}>
-                                        <Trash2 className="h-4 w-4"/>
-                                    </Button>
-                                </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
                     !isLoading && <p className="text-sm text-muted-foreground">You haven't published any routes yet.</p>
@@ -240,5 +268,7 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
 
     

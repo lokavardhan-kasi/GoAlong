@@ -15,7 +15,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle-group';
 import { PageHeader } from '@/components/common/page-header';
 import { useFirestore, useUser } from '@/firebase';
-import { addDoc, collection } from 'firebase/firestore';
+import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import { format } from 'date-fns';
 
@@ -88,6 +88,11 @@ export default function PlanRoutePage() {
       }
       try {
         const routeCollection = collection(firestore, `users/${user.uid}/routes`);
+        
+        const [hours, minutes] = formData.travelTime.split(':').map(Number);
+        const departureDateTime = new Date(formData.date);
+        departureDateTime.setHours(hours, minutes, 0, 0);
+
         const routeData: any = {
           driverId: user.uid,
           startPoint: formData.startPoint,
@@ -95,13 +100,16 @@ export default function PlanRoutePage() {
           travelTime: formData.travelTime,
           availableSeats: formData.availableSeats,
           price: formData.price[0],
-          scheduleType: scheduleType
+          scheduleType: scheduleType,
+          departureTimestamp: Timestamp.fromDate(departureDateTime),
         };
 
         if (scheduleType === 'recurring') {
           routeData.routeDays = formData.routeDays;
         } else {
-          routeData.date = formData.date.toISOString();
+           // For one-time rides, the specific date is already part of the timestamp.
+          // We can still store the date string if needed for display purposes, but it's redundant.
+          routeData.date = formData.date.toISOString().split('T')[0];
         }
 
         await addDoc(routeCollection, routeData);
@@ -205,6 +213,7 @@ export default function PlanRoutePage() {
                                         selected={formData.date}
                                         onSelect={(day) => day && setFormData(p => ({...p, date: day}))}
                                         className="rounded-md border"
+                                        disabled={{ before: new Date() }}
                                       />
                                     </div>
                                 )}
@@ -286,3 +295,5 @@ export default function PlanRoutePage() {
     </>
   );
 }
+
+    
