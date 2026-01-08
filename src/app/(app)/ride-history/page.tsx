@@ -2,14 +2,12 @@
 'use client';
 
 import { PageHeader } from '@/components/common/page-header';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
-import { pastRides, BookingConfirmation, Ride } from '@/lib/mock-data';
+import { BookingConfirmation } from '@/lib/mock-data';
 import { StarRating } from '@/components/common/star-rating';
-import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
-import { Calendar, Car, IndianRupee, MapPin } from 'lucide-react';
-import { useState } from 'react';
+import { Calendar, Car, IndianRupee, MapPin, Package } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection, query, where } from 'firebase/firestore';
@@ -43,7 +41,7 @@ function RideHistoryList({ bookings }: { bookings: any[] | null }) {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                 <div className="md:col-span-2 space-y-2">
                                     <div className="flex items-center gap-2">
-                                        <Car className="h-5 w-5 text-primary"/>
+                                        {ride.deliveryRequestId ? <Package className="h-5 w-5 text-primary"/> : <Car className="h-5 w-5 text-primary"/>}
                                         <p className="font-semibold">{ride.pickupLocation} to {ride.dropoffLocation}</p>
                                     </div>
                                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
@@ -109,5 +107,3 @@ export default function RideHistoryPage() {
     </>
   );
 }
-
-    
