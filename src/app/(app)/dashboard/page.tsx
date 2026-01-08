@@ -6,8 +6,9 @@ import { PageHeader } from '@/components/common/page-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowRight, Car, Leaf, MessageSquare, Route, Trash2, Calendar } from 'lucide-react';
+import { ArrowRight, Car, Leaf, MessageSquare, Route, Trash2, Calendar, Check } from 'lucide-react';
 import CountUp from '@/components/common/count-up';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -20,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { IndianRupee } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const stats = [
     { title: "Rides Completed", value: 24, icon: Car, color: "text-blue-500", bgColor: "bg-blue-100" },
@@ -120,6 +122,7 @@ function FrequentRoutes() {
     const { user } = useUser();
     const firestore = useFirestore();
     const { toast } = useToast();
+    const router = useRouter();
 
     const routesQuery = useMemoFirebase(() => {
         if (!user) return null;
@@ -158,37 +161,56 @@ function FrequentRoutes() {
                 <CardTitle className="font-headline">Your Published Routes</CardTitle>
             </CardHeader>
             <CardContent>
-                {isLoading && <CarLoader />}
-                {!isLoading && routes && routes.length > 0 ? (
-                    <div className="space-y-4">
-                        {routes.map(route => {
-                            const status = getStatus(route);
-                            return (
-                                <div key={route.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
-                                    <div>
-                                        <p className="font-semibold">{route.startPoint} to {route.endPoint}</p>
-                                        <p className="text-sm text-muted-foreground flex items-center gap-2">
-                                            {route.scheduleType === 'one-time' && route.departureTimestamp ? (
-                                                <><Calendar className="h-4 w-4" /> {format(route.departureTimestamp.toDate(), 'PPP')} at {route.travelTime}</>
-                                            ) : (
-                                                <>{route.travelTime} - {route.routeDays.join(', ')}</>
-                                            )}
-                                        </p>
+                <TooltipProvider>
+                    {isLoading && <CarLoader />}
+                    {!isLoading && routes && routes.length > 0 ? (
+                        <div className="space-y-4">
+                            {routes.map(route => {
+                                const status = getStatus(route);
+                                return (
+                                    <div key={route.id} className="flex justify-between items-center p-3 bg-gray-50 rounded-lg">
+                                        <div>
+                                            <p className="font-semibold">{route.startPoint} to {route.endPoint}</p>
+                                            <p className="text-sm text-muted-foreground flex items-center gap-2">
+                                                {route.scheduleType === 'one-time' && route.departureTimestamp ? (
+                                                    <><Calendar className="h-4 w-4" /> {format(route.departureTimestamp.toDate(), 'PPP')} at {route.travelTime}</>
+                                                ) : (
+                                                    <>{route.travelTime} - {route.routeDays.join(', ')}</>
+                                                )}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center gap-1">
+                                          <Badge variant="secondary" className={cn(status.className)}>{status.text}</Badge>
+                                          <Badge variant="secondary">{route.availableSeats} seats</Badge>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <Button size="icon" variant="ghost" className="h-8 w-8 text-green-600/70 hover:bg-green-600/10 hover:text-green-600 active:scale-95" onClick={() => router.push('/ride-history')}>
+                                                    <Check className="h-4 w-4"/>
+                                                </Button>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                                <p>View in History</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                          <Tooltip>
+                                                <TooltipTrigger asChild>
+                                                    <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:scale-95" onClick={() => handleDeleteRoute(route.id)}>
+                                                        <Trash2 className="h-4 w-4"/>
+                                                    </Button>
+                                                </TooltipTrigger>
+                                                <TooltipContent>
+                                                    <p>Delete Route</p>
+                                                </TooltipContent>
+                                          </Tooltip>
+                                        </div>
                                     </div>
-                                    <div className="flex items-center gap-2">
-                                      <Badge variant="secondary" className={cn(status.className)}>{status.text}</Badge>
-                                      <Badge variant="secondary">{route.availableSeats} seats</Badge>
-                                      <Button size="icon" variant="ghost" className="h-8 w-8 text-destructive/70 hover:bg-destructive/10 hover:text-destructive active:scale-95" onClick={() => handleDeleteRoute(route.id)}>
-                                            <Trash2 className="h-4 w-4"/>
-                                        </Button>
-                                    </div>
-                                </div>
-                            );
-                        })}
-                    </div>
-                ) : (
-                    !isLoading && <p className="text-sm text-muted-foreground">You haven't published any routes yet.</p>
-                )}
+                                );
+                            })}
+                        </div>
+                    ) : (
+                        !isLoading && <p className="text-sm text-muted-foreground">You haven't published any routes yet.</p>
+                    )}
+                </TooltipProvider>
             </CardContent>
         </Card>
     );
@@ -275,3 +297,4 @@ export default function DashboardPage() {
     
 
     
+
