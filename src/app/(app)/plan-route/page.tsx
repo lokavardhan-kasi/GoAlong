@@ -90,8 +90,6 @@ export default function PlanRoutePage() {
         return;
       }
       try {
-        const routeCollection = collection(firestore, `users/${user.uid}/routes`);
-        
         let hours = parseInt(timeHours, 10);
         const minutes = parseInt(timeMinutes, 10);
 
@@ -104,12 +102,25 @@ export default function PlanRoutePage() {
 
         let departureDateTime;
         if(scheduleType === 'one-time') {
+            if (!day || !month || !year) {
+                toast({ title: "Please enter a valid date.", variant: "destructive" });
+                return;
+            }
             departureDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+            departureDateTime.setHours(hours, minutes, 0, 0);
+
+            const now = new Date();
+            now.setHours(0,0,0,0); // Compare dates only, not time
+
+            if (departureDateTime < now) {
+                 toast({ title: "Cannot Publish Ride", description: "You cannot publish a ride for a past date.", variant: "destructive" });
+                 return;
+            }
+
         } else {
             departureDateTime = new Date(); // Default for recurring, can be improved
+            departureDateTime.setHours(hours, minutes, 0, 0);
         }
-
-        departureDateTime.setHours(hours, minutes, 0, 0);
 
         // Estimate arrival time (e.g., 8 hours duration for this example)
         const arrivalDateTime = new Date(departureDateTime.getTime() + 8 * 60 * 60 * 1000);
@@ -135,6 +146,7 @@ export default function PlanRoutePage() {
           routeData.date = departureDateTime.toISOString().split('T')[0];
         }
 
+        const routeCollection = collection(firestore, `users/${user.uid}/routes`);
         await addDoc(routeCollection, routeData);
 
         toast({
@@ -369,5 +381,3 @@ export default function PlanRoutePage() {
     </>
   );
 }
-
-    
