@@ -13,14 +13,15 @@ import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, doc, deleteDoc, getDocs, Timestamp, addDoc, serverTimestamp, updateDoc, increment } from 'firebase/firestore';
-import { RideRequest, WithId, Route as RideRoute } from '@/lib/mock-data';
+import { collection, query, where, doc, deleteDoc, getDocs, Timestamp, addDoc, serverTimestamp, updateDoc, increment, getDoc } from 'firebase/firestore';
+import { RideRequest, WithId, Route as RideRoute, UserProfile } from '@/lib/mock-data';
 import { CarLoader } from '@/components/ui/CarLoader';
 import { useToast } from '@/hooks/use-toast';
 import { format } from 'date-fns';
 import { IndianRupee } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import { setDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const stats = [
     { title: "Rides Completed", value: 24, icon: Car, color: "text-blue-500", bgColor: "bg-blue-100" },
@@ -57,15 +58,13 @@ function ActivityFeed() {
         if (!user || !firestore || !req.routeId) return;
 
         try {
-            // Find the original route to get price and other details
             const routeRef = doc(firestore, `users/${user.uid}/routes`, req.routeId);
-            
-            // This is a simplified approach. In a real-world scenario with many users,
-            // you'd need a more robust way to find the route, possibly via a collection group query
-            // or by storing the full route path in the request.
-            
-            // For now, let's proceed with the direct path construction.
-            
+            const routeSnap = await getDoc(routeRef);
+            if (!routeSnap.exists()) {
+                throw new Error("Original route not found.");
+            }
+            const routeData = routeSnap.data();
+
             const bookingConfirmationData = {
                 driverId: req.driverId,
                 riderId: req.riderId,
@@ -73,34 +72,74 @@ function ActivityFeed() {
                 pickupLocation: req.pickupLocation,
                 dropoffLocation: req.dropoffLocation,
                 confirmationTime: serverTimestamp(),
-                // Estimated cost should ideally be on the request or fetched from route
-                estimatedCost: 0, 
+                estimatedCost: routeData.price || 0, 
             };
 
-            // 1. Create a booking confirmation
             await addDoc(collection(firestore, 'bookingConfirmations'), bookingConfirmationData);
-
-            // 2. Update the ride request status to 'accepted'
             await updateDoc(doc(firestore, 'rideRequests', req.id), { status: 'accepted' });
-            
-            // 3. Decrement available seats on the route
             await updateDoc(routeRef, { availableSeats: increment(-1) });
+
+            // Find or create conversation and send a message
+            const riderProfileSnap = await getDoc(doc(firestore, 'userProfiles', req.riderId));
+            if (!riderProfileSnap.exists()) {
+                console.error("Rider profile not found, cannot send message.");
+            }
+
+            const conversationsRef = collection(firestore, 'conversations');
+            const q = query(conversationsRef, where('participantIds', 'array-contains', user.uid));
+            const querySnapshot = await getDocs(q);
+            let convId: string | null = null;
+            const existingConv = querySnapshot.docs.find(d => d.data().participantIds.includes(req.riderId));
+            
+            const driverProfile = {
+                displayName: user.displayName || 'Driver',
+                avatarUrl: user.photoURL || '',
+            };
+
+            const riderProfileData = riderProfileSnap.data() as UserProfile;
+            const riderProfile = {
+                displayName: `${riderProfileData.firstName} ${riderProfileData.lastName}`,
+                avatarUrl: riderProfileData.profilePictureUrl || '',
+            }
+
+            if (existingConv) {
+                convId = existingConv.id;
+            } else {
+                 const newConversation = {
+                    participantIds: [user.uid, req.riderId],
+                    participantDetails: {
+                        [user.uid]: driverProfile,
+                        [req.riderId]: riderProfile,
+                    },
+                    unreadCounts: { [user.uid]: 0, [req.riderId]: 0 },
+                    createdAt: serverTimestamp(),
+                    lastMessage: null,
+                };
+                const conversationRef = await addDoc(conversationsRef, newConversation);
+                convId = conversationRef.id;
+            }
+
+            const messageText = `Great news! I've accepted your request for the ride from ${req.pickupLocation} to ${req.dropoffLocation}.`;
+            const messagesCol = collection(firestore, `conversations/${convId}/messages`);
+            await addDoc(messagesCol, { text: messageText, senderId: user.uid, timestamp: serverTimestamp() });
+            const conversationDocRef = doc(firestore, 'conversations', convId);
+            setDocumentNonBlocking(conversationDocRef, { 
+                lastMessage: { text: messageText, senderId: user.uid, timestamp: serverTimestamp() },
+                [`unreadCounts.${req.riderId}`]: increment(1),
+            }, { merge: true });
+
 
             toast({
                 title: "Ride Accepted!",
-                description: "The booking has been confirmed.",
-                action: (
-                    <div className="p-2 rounded-full bg-green-500">
-                        <CheckCircle className="text-white"/>
-                    </div>
-                )
+                description: "The booking is confirmed and the rider has been notified.",
+                action: <div className="p-2 rounded-full bg-green-500"><CheckCircle className="text-white"/></div>
             });
 
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error accepting ride:", error);
             toast({
                 title: "Error",
-                description: "Could not accept the ride request. Please try again.",
+                description: `Could not accept the ride request. ${error.message}`,
                 variant: "destructive",
             });
         }
