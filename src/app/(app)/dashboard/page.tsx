@@ -113,6 +113,7 @@ type RouteWithStatus = RideRoute & {
     scheduleType?: 'recurring' | 'one-time';
     date?: string;
     departureTimestamp?: Timestamp;
+    arrivalTimestamp?: Timestamp;
 };
 
 function FrequentRoutes() {
@@ -133,16 +134,18 @@ function FrequentRoutes() {
         toast({ title: "Route Deleted", description: "Your route has been successfully removed." });
     }
 
-    const getStatus = (route: RouteWithStatus): { text: 'Upcoming' | 'Completed' | 'Recurring'; className: string } => {
+    const getStatus = (route: RouteWithStatus): { text: 'Upcoming' | 'Ongoing' | 'Completed' | 'Recurring'; className: string } => {
         if (route.scheduleType === 'recurring') {
             return { text: 'Recurring', className: 'bg-blue-100 text-blue-800' };
         }
         if (route.departureTimestamp) {
             const now = Timestamp.now();
-            if (route.departureTimestamp.toMillis() > now.toMillis()) {
+            if (now < route.departureTimestamp) {
                 return { text: 'Upcoming', className: 'bg-green-100 text-green-800' };
+            } else if (route.arrivalTimestamp && now >= route.departureTimestamp && now <= route.arrivalTimestamp) {
+                return { text: 'Ongoing', className: 'bg-yellow-100 text-yellow-800' };
             } else {
-                return { text: 'Completed', className: 'bg-gray-100 text-gray-800' };
+                 return { text: 'Completed', className: 'bg-gray-100 text-gray-800' };
             }
         }
         return { text: 'Completed', className: 'bg-gray-100 text-gray-800' }; // Default for old data

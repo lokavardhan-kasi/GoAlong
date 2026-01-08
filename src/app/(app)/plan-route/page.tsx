@@ -93,6 +93,10 @@ export default function PlanRoutePage() {
         const departureDateTime = new Date(formData.date);
         departureDateTime.setHours(hours, minutes, 0, 0);
 
+        // Estimate arrival time (e.g., 8 hours duration for this example)
+        const arrivalDateTime = new Date(departureDateTime.getTime() + 8 * 60 * 60 * 1000);
+
+
         const routeData: any = {
           driverId: user.uid,
           startPoint: formData.startPoint,
@@ -102,6 +106,7 @@ export default function PlanRoutePage() {
           price: formData.price[0],
           scheduleType: scheduleType,
           departureTimestamp: Timestamp.fromDate(departureDateTime),
+          arrivalTimestamp: Timestamp.fromDate(arrivalDateTime),
         };
 
         if (scheduleType === 'recurring') {
