@@ -16,7 +16,7 @@ import { PageHeader } from '@/components/common/page-header';
 import { useFirestore, useUser } from '@/firebase';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { isValid, parse } from 'date-fns';
+import { isValid, parse, isBefore, startOfDay } from 'date-fns';
 
 const steps = [
   { id: 'Step 1', name: 'Route', fields: ['startPoint', 'endPoint'] },
@@ -112,17 +112,14 @@ export default function PlanRoutePage() {
                  toast({ title: "Invalid Date", description: "Please enter a valid date in YYYY-MM-DD format.", variant: "destructive" });
                  return;
             }
+            
+            if (isBefore(parsedDate, startOfDay(new Date()))) {
+              toast({ title: "Invalid Date", description: "You cannot publish a ride for a past date.", variant: "destructive" });
+              return;
+            }
 
             departureDateTime = new Date(parsedDate);
             departureDateTime.setHours(hours, minutes, 0, 0);
-            
-            const now = new Date();
-            const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-
-            if (departureDateTime < today) {
-                 toast({ title: "Cannot Publish Ride", description: "You cannot publish a ride for a past date.", variant: "destructive" });
-                 return;
-            }
 
         } else {
             departureDateTime = new Date(); // Default for recurring, can be improved
