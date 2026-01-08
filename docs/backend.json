@@ -236,6 +236,8 @@
       "required": [
         "id",
         "driverId",
+        "pickupLocation",
+        "dropoffLocation",
         "estimatedCost",
         "confirmationTime"
       ]
