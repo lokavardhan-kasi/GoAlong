@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Switch } from '@/components/ui/switch';
 import { Slider } from '@/components/ui/slider';
 import { useToast } from '@/hooks/use-toast';
@@ -17,7 +16,6 @@ import { PageHeader } from '@/components/common/page-header';
 import { useFirestore, useUser } from '@/firebase';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { format } from 'date-fns';
 
 const steps = [
   { id: 'Step 1', name: 'Route', fields: ['startPoint', 'endPoint'] },
@@ -55,12 +53,15 @@ export default function PlanRoutePage() {
   const [timeHours, setTimeHours] = useState('09');
   const [timeMinutes, setTimeMinutes] = useState('00');
   const [timePeriod, setTimePeriod] = useState<'am' | 'pm'>('am');
+  const [day, setDay] = useState('');
+  const [month, setMonth] = useState('');
+  const [year, setYear] = useState('');
+
 
   const [formData, setFormData] = useState({
       startPoint: '',
       endPoint: '',
       routeDays: [] as string[],
-      date: new Date(),
       availableSeats: 1,
       allowParcels: false,
       parcelSizes: [] as string[],
@@ -101,7 +102,13 @@ export default function PlanRoutePage() {
           hours = 0;
         }
 
-        const departureDateTime = new Date(formData.date);
+        let departureDateTime;
+        if(scheduleType === 'one-time') {
+            departureDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        } else {
+            departureDateTime = new Date(); // Default for recurring, can be improved
+        }
+
         departureDateTime.setHours(hours, minutes, 0, 0);
 
         // Estimate arrival time (e.g., 8 hours duration for this example)
@@ -125,7 +132,7 @@ export default function PlanRoutePage() {
           routeData.routeDays = formData.routeDays;
         } else {
            // For one-time rides, the specific date is already part of the timestamp.
-          routeData.date = formData.date.toISOString().split('T')[0];
+          routeData.date = departureDateTime.toISOString().split('T')[0];
         }
 
         await addDoc(routeCollection, routeData);
@@ -223,14 +230,36 @@ export default function PlanRoutePage() {
                                     </div>
                                 ) : (
                                     <div className="flex flex-col items-center">
-                                      <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Select a Date</h3>
-                                      <CalendarComponent
-                                        mode="single"
-                                        selected={formData.date}
-                                        onSelect={(day) => day && setFormData(p => ({...p, date: day}))}
-                                        className="rounded-md border"
-                                        disabled={{ before: new Date() }}
-                                      />
+                                      <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Enter a Date</h3>
+                                      <div className="flex items-center gap-2">
+                                        <Input
+                                          type="text"
+                                          maxLength={2}
+                                          placeholder="DD"
+                                          value={day}
+                                          onChange={(e) => setDay(e.target.value)}
+                                          className="h-12 text-base w-16 text-center"
+                                          aria-label="Day"
+                                        />
+                                        <Input
+                                          type="text"
+                                          maxLength={2}
+                                          placeholder="MM"
+                                          value={month}
+                                          onChange={(e) => setMonth(e.target.value)}
+                                          className="h-12 text-base w-16 text-center"
+                                          aria-label="Month"
+                                        />
+                                        <Input
+                                          type="text"
+                                          maxLength={4}
+                                          placeholder="YYYY"
+                                          value={year}
+                                          onChange={(e) => setYear(e.target.value)}
+                                          className="h-12 text-base w-24 text-center"
+                                          aria-label="Year"
+                                        />
+                                      </div>
                                     </div>
                                 )}
                               </motion.div>
