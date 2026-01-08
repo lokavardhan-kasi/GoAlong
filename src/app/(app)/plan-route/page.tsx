@@ -16,6 +16,7 @@ import { PageHeader } from '@/components/common/page-header';
 import { useFirestore, useUser } from '@/firebase';
 import { addDoc, collection, Timestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import { isValid, parse } from 'date-fns';
 
 const steps = [
   { id: 'Step 1', name: 'Route', fields: ['startPoint', 'endPoint'] },
@@ -53,9 +54,7 @@ export default function PlanRoutePage() {
   const [timeHours, setTimeHours] = useState('09');
   const [timeMinutes, setTimeMinutes] = useState('00');
   const [timePeriod, setTimePeriod] = useState<'am' | 'pm'>('am');
-  const [day, setDay] = useState('');
-  const [month, setMonth] = useState('');
-  const [year, setYear] = useState('');
+  const [date, setDate] = useState('');
 
 
   const [formData, setFormData] = useState({
@@ -102,14 +101,22 @@ export default function PlanRoutePage() {
 
         let departureDateTime;
         if(scheduleType === 'one-time') {
-            if (!day || !month || !year) {
+            if (!date) {
                 toast({ title: "Please enter a valid date.", variant: "destructive" });
                 return;
             }
-            departureDateTime = new Date(parseInt(year), parseInt(month) - 1, parseInt(day), hours, minutes);
+            
+            const parsedDate = parse(date, 'yyyy-MM-dd', new Date());
+
+            if (!isValid(parsedDate)) {
+                 toast({ title: "Invalid Date", description: "Please enter a valid date in YYYY-MM-DD format.", variant: "destructive" });
+                 return;
+            }
+
+            departureDateTime = new Date(parsedDate);
+            departureDateTime.setHours(hours, minutes, 0, 0);
             
             const now = new Date();
-            // We only compare dates, not times. If a user wants to post a ride for later today, they should be able to.
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
 
             if (departureDateTime < today) {
@@ -245,31 +252,12 @@ export default function PlanRoutePage() {
                                       <h3 className="font-semibold mb-2 flex items-center gap-2"><Calendar className="h-5 w-5 text-primary" /> Enter a Date</h3>
                                       <div className="flex items-center gap-2">
                                         <Input
-                                          type="text"
-                                          maxLength={2}
-                                          placeholder="DD"
-                                          value={day}
-                                          onChange={(e) => setDay(e.target.value)}
-                                          className="h-12 text-base w-16 text-center"
-                                          aria-label="Day"
-                                        />
-                                        <Input
-                                          type="text"
-                                          maxLength={2}
-                                          placeholder="MM"
-                                          value={month}
-                                          onChange={(e) => setMonth(e.target.value)}
-                                          className="h-12 text-base w-16 text-center"
-                                          aria-label="Month"
-                                        />
-                                        <Input
-                                          type="text"
-                                          maxLength={4}
-                                          placeholder="YYYY"
-                                          value={year}
-                                          onChange={(e) => setYear(e.target.value)}
-                                          className="h-12 text-base w-24 text-center"
-                                          aria-label="Year"
+                                            type="date"
+                                            value={date}
+                                            onChange={(e) => setDate(e.target.value)}
+                                            className="h-12 text-base w-48 text-center"
+                                            placeholder="YYYY-MM-DD"
+                                            aria-label="Date"
                                         />
                                       </div>
                                     </div>
