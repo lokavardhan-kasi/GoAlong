@@ -7,13 +7,13 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowRight, Car, Leaf, MessageSquare, Route, Trash2, Calendar, Check } from 'lucide-react';
+import { ArrowRight, Car, Leaf, MessageSquare, Route, Trash2, Calendar, Check, CheckCircle } from 'lucide-react';
 import CountUp from '@/components/common/count-up';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Separator } from '@/components/ui/separator';
 import { useCollection, useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { collection, query, where, doc, deleteDoc, getDocs, Timestamp, addDoc, serverTimestamp } from 'firebase/firestore';
+import { collection, query, where, doc, deleteDoc, getDocs, Timestamp, addDoc, serverTimestamp, updateDoc, increment } from 'firebase/firestore';
 import { RideRequest, WithId, Route as RideRoute } from '@/lib/mock-data';
 import { CarLoader } from '@/components/ui/CarLoader';
 import { useToast } from '@/hooks/use-toast';
@@ -53,8 +53,61 @@ function ActivityFeed() {
 
     const { data: rideRequests, isLoading } = useCollection<RideRequest>(rideRequestsQuery);
     
+    const handleAccept = async (req: WithId<RideRequest>) => {
+        if (!user || !firestore || !req.routeId) return;
+
+        try {
+            // Find the original route to get price and other details
+            const routeRef = doc(firestore, `users/${user.uid}/routes`, req.routeId);
+            
+            // This is a simplified approach. In a real-world scenario with many users,
+            // you'd need a more robust way to find the route, possibly via a collection group query
+            // or by storing the full route path in the request.
+            
+            // For now, let's proceed with the direct path construction.
+            
+            const bookingConfirmationData = {
+                driverId: req.driverId,
+                riderId: req.riderId,
+                rideRequestId: req.id,
+                pickupLocation: req.pickupLocation,
+                dropoffLocation: req.dropoffLocation,
+                confirmationTime: serverTimestamp(),
+                // Estimated cost should ideally be on the request or fetched from route
+                estimatedCost: 0, 
+            };
+
+            // 1. Create a booking confirmation
+            await addDoc(collection(firestore, 'bookingConfirmations'), bookingConfirmationData);
+
+            // 2. Update the ride request status to 'accepted'
+            await updateDoc(doc(firestore, 'rideRequests', req.id), { status: 'accepted' });
+            
+            // 3. Decrement available seats on the route
+            await updateDoc(routeRef, { availableSeats: increment(-1) });
+
+            toast({
+                title: "Ride Accepted!",
+                description: "The booking has been confirmed.",
+                action: (
+                    <div className="p-2 rounded-full bg-green-500">
+                        <CheckCircle className="text-white"/>
+                    </div>
+                )
+            });
+
+        } catch (error) {
+            console.error("Error accepting ride:", error);
+            toast({
+                title: "Error",
+                description: "Could not accept the ride request. Please try again.",
+                variant: "destructive",
+            });
+        }
+    }
+    
     const handleDelete = async (requestId: string) => {
-        await deleteDoc(doc(firestore, 'rideRequests', requestId));
+        await updateDoc(doc(firestore, 'rideRequests', requestId), { status: 'declined' });
         toast({ title: "Request Declined", description: "The request has been removed." });
     }
 
@@ -79,7 +132,7 @@ function ActivityFeed() {
                             <div className="flex-1">
                                 <p className="text-sm"><span className="font-semibold">{req.riderId.substring(0, 6)}...</span> wants to book a {req.bookingType}.</p>
                                 <div className="flex gap-2 mt-2">
-                                    <Button size="sm" className="h-8 active:scale-95">Accept</Button>
+                                    <Button size="sm" className="h-8 active:scale-95" onClick={() => handleAccept(req)}>Accept</Button>
                                     <Button size="sm" variant="ghost" className="h-8 text-destructive hover:bg-destructive/10 active:scale-95" onClick={() => handleDelete(req.id)}>
                                         <Trash2 className="mr-2 h-4 w-4"/> Decline
                                     </Button>
@@ -326,3 +379,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
