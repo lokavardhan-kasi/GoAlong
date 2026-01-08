@@ -6,20 +6,15 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
-import { Edit, IndianRupee } from 'lucide-react';
-import { useDoc, useUser } from '@/firebase';
-import { doc, setDoc } from 'firebase/firestore';
+import { Edit, IndianRupee, Car, Package } from 'lucide-react';
+import { useDoc, useUser, useCollection, useMemoFirebase } from '@/firebase';
+import { doc, setDoc, collection, query, where } from 'firebase/firestore';
 import { useFirestore } from '@/firebase';
-import { UserProfile } from '@/lib/mock-data';
-import { useEffect, useState } from 'react';
+import { UserProfile, BookingConfirmation } from '@/lib/mock-data';
+import { useEffect, useMemo, useState } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { CarLoader } from '@/components/ui/CarLoader';
-
-const stats = [
-    { label: "Total Rides", value: "24" },
-    { label: "Total Deliveries", value: "5" },
-    { label: "Total Savings", value: "₹120.50" },
-];
+import CountUp from '@/components/common/count-up';
 
 export default function ProfilePage() {
   const { user } = useUser();
@@ -27,7 +22,20 @@ export default function ProfilePage() {
   const { toast } = useToast();
   
   const userProfileRef = user ? doc(firestore, 'userProfiles', user.uid) : null;
-  const { data: userProfile, isLoading } = useDoc<UserProfile>(userProfileRef);
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
+
+  const bookingsAsRiderQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    return query(collection(firestore, 'bookingConfirmations'), where('riderId', '==', user.uid));
+  }, [user, firestore]);
+
+  const bookingsAsDriverQuery = useMemoFirebase(() => {
+    if (!user) return null;
+    return query(collection(firestore, 'bookingConfirmations'), where('driverId', '==', user.uid));
+  }, [user, firestore]);
+
+  const { data: ridesAsRider, isLoading: loadingRiderBookings } = useCollection<BookingConfirmation>(bookingsAsRiderQuery);
+  const { data: ridesAsDriver, isLoading: loadingDriverBookings } = useCollection<BookingConfirmation>(bookingsAsDriverQuery);
 
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<Partial<UserProfile>>({});
@@ -37,6 +45,24 @@ export default function ProfilePage() {
       setFormData(userProfile);
     }
   }, [userProfile]);
+
+  const stats = useMemo(() => {
+    const riderBookings = ridesAsRider || [];
+    const driverBookings = ridesAsDriver || [];
+
+    const totalRides = riderBookings.filter(b => !b.deliveryRequestId).length + driverBookings.filter(b => b.riderId !== 'self-completed').length;
+    const totalDeliveries = riderBookings.filter(b => !!b.deliveryRequestId).length;
+    
+    const totalSavings = riderBookings.reduce((acc, booking) => acc + (booking.estimatedCost || 0), 0);
+    const totalEarnings = driverBookings.reduce((acc, booking) => acc + (booking.estimatedCost || 0), 0);
+    
+    return [
+      { label: "Total Trips", value: totalRides, icon: Car, color: "text-blue-500", bgColor: "bg-blue-100" },
+      { label: "Total Deliveries", value: totalDeliveries, icon: Package, color: "text-purple-500", bgColor: "bg-purple-100" },
+      { label: "Total Savings/Earnings", value: totalSavings + totalEarnings, icon: IndianRupee, prefix: '₹', color: "text-green-500", bgColor: "bg-green-100"},
+    ];
+  }, [ridesAsRider, ridesAsDriver]);
+
 
   const handleSave = async () => {
     if (userProfileRef) {
@@ -50,6 +76,8 @@ export default function ProfilePage() {
     const { id, value } = e.target;
     setFormData(prev => ({...prev, [id]: value}));
   }
+
+  const isLoading = isProfileLoading || loadingRiderBookings || loadingDriverBookings;
 
   if (isLoading || !userProfile) {
     return (
@@ -69,7 +97,10 @@ export default function ProfilePage() {
         {!isEditing ? (
           <Button onClick={() => setIsEditing(true)}><Edit className="mr-2"/> Edit Profile</Button>
         ) : (
-          <Button onClick={handleSave}>Save Changes</Button>
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={() => setIsEditing(false)}>Cancel</Button>
+            <Button onClick={handleSave}>Save Changes</Button>
+          </div>
         )}
       </PageHeader>
       
@@ -88,21 +119,6 @@ export default function ProfilePage() {
                 </CardContent>
             </Card>
 
-            <Card className="mt-8">
-                <CardHeader>
-                    <CardTitle className="font-headline">Activity</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <dl className="space-y-2">
-                        {stats.map(stat => (
-                            <div key={stat.label} className="flex justify-between">
-                                <dt className="text-muted-foreground">{stat.label}</dt>
-                                <dd className="font-semibold">{stat.value}</dd>
-                            </div>
-                        ))}
-                    </dl>
-                </CardContent>
-            </Card>
         </div>
         <div className="lg:col-span-2">
             <Card>
@@ -133,8 +149,31 @@ export default function ProfilePage() {
             </Card>
         </div>
       </div>
+      
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4 font-headline tracking-tight">Your Dashboard</h2>
+         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {stats.map((stat) => (
+                <Card key={stat.label}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                        <CardTitle className="text-sm font-medium">{stat.label}</CardTitle>
+                        <div className={`p-2 rounded-full ${stat.bgColor}`}>
+                            <stat.icon className={`h-5 w-5 ${stat.color}`} />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="text-3xl font-bold">
+                        <CountUp 
+                            end={stat.value} 
+                            prefix={stat.prefix} 
+                        />
+                        </div>
+                        <p className="text-xs text-muted-foreground">Across all time</p>
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+      </div>
     </>
   );
 }
-
-    
